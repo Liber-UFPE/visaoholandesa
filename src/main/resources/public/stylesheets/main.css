@@ -1,0 +1,69 @@
+:root {
+    /* Colors */
+    --vh-white-rgb: 255, 255, 255;
+    --vh-dark-green: #198754;
+    --vh-darker-green: rgba(0, 92, 69, 1);
+    --vh-text-opacity: 1;
+    --vh-highlight-rgb: 241, 185, 128;
+    /* Fonts */
+    --font-family: Roboto, sans-serif;
+    --vh-diagonal-angle: 2deg;
+}
+
+#header .nav-link {
+    margin-top: 5px;
+    margin-right: 5px;
+}
+
+#header .nav-link.show {
+    color: white;
+}
+
+#header .dropdown-item:hover {
+    color: white;
+    background-color: #198754;
+}
+
+#header .nav-link:hover {
+    color: white;
+}
+
+body {
+    font-family: var(--font-family);
+}
+
+.bg-dark {
+    color: rgba(var(--vh-white-rgb), var(--vh-text-opacity));
+    background-image: linear-gradient(0deg, var(--vh-darker-green), var(--vh-darker-green));
+}
+
+.bg-dark .display-6 {
+    color: rgba(var(--vh-white-rgb), .8);
+}
+
+.text-highlight {
+    color: rgba(var(--vh-highlight-rgb), 1);
+}
+
+.primary-content {
+    margin-top: -2rem;
+    padding-top: 12rem;
+    padding-bottom: 5rem;
+}
+
+.form-check-label:hover {
+    cursor: pointer;
+}
+
+#footer .nav-link {
+    color: rgba(var(--vh-white-rgb), var(--vh-text-opacity));
+}
+
+#footer .nav-link .align-middle:hover {
+    text-decoration: underline;
+}
+
+.turbo-progress-bar {
+    height: 5px;
+    background-color: var(--vh-dark-green);
+}

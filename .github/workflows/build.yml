@@ -1,0 +1,153 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+env:
+  GRADLE_OPTS: "-Dorg.gradle.console=plain -Dorg.gradle.caching=true -Dkotlin.caching.enabled=true"
+
+jobs:
+  compile:
+    name: Build / compile
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Gradle and Java
+        uses: ./.github/gradle-action
+        with:
+          # Allows this job to write to the cache every time it runs
+          gradle-cache-read-only: false
+      - name: Start Gradle Daemon
+        run: gradle --info
+      - run: gradle testClasses
+      - name: Gradle Tasks Summary
+        run: cat build/reports/build-times.md >> $GITHUB_STEP_SUMMARY
+
+  detekt:
+    name: Code Analysis / detekt
+    runs-on: ubuntu-latest
+    needs:
+      - compile
+    steps:
+      - uses: actions/checkout@v4
+      - name: detekt report
+        uses: natiginfo/action-detekt-all@1.23.4
+        with:
+          args: |
+            --report md:build/reports/detekt/detekt.md
+      - name: Detekt Summary
+        run: cat build/reports/detekt/detekt.md >> $GITHUB_STEP_SUMMARY
+
+  ktlint:
+    name: Code Analysis / ktlint
+    runs-on: ubuntu-latest
+    needs:
+      - compile
+    steps:
+      - uses: actions/checkout@v4
+      - uses: nbadal/action-ktlint-setup@v1
+      - run: ktlint --version
+      - run: ktlint --relative >> $GITHUB_STEP_SUMMARY
+
+  test:
+    name: Tests / test
+    runs-on: ubuntu-latest
+    needs:
+      - detekt
+      - ktlint
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Gradle and Java
+        uses: ./.github/gradle-action
+      - name: Run tests
+        run: gradle koverHtmlReport -x accessibilityTest
+      - name: Gradle Tasks Summary
+        run: cat build/reports/build-times.md >> $GITHUB_STEP_SUMMARY
+      - name: Setup Pandoc
+        uses: r-lib/actions/setup-pandoc@v2
+      - name: Output Kover summary
+        # Adapted from https://github.com/Kotlin/kotlinx-kover/issues/419#issuecomment-1632572084
+        run: |
+          pandoc build/reports/kover/html/index.html -f html -t gfm | \
+            sed -n '/# project-starter: Overall Coverage Summary/,/<\/div>/p' | \
+            grep -v "</div>" >> $GITHUB_STEP_SUMMARY
+      - name: Test Summary Report
+        uses: phoenix-actions/test-reporting@v12
+        if: always()
+        with:
+          name: Kotest Report
+          path: "build/test-results/test/TEST-*.xml"
+          reporter: java-junit
+          output-to: "step-summary"
+          only-summary: "true"
+
+  build-docker:
+    name: Package / Docker / build
+    runs-on: ubuntu-latest
+    env:
+      REGISTRY: ghcr.io
+      IMAGE_NAME: ${{ github.repository }}
+    needs:
+      - test
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Gradle and Java
+        uses: ./.github/gradle-action
+      - name: Docker / Set up QEMU
+        uses: docker/setup-qemu-action@v3
+      - name: Docker / Set up Buildx
+        uses: docker/setup-buildx-action@v3
+      - name: Docker / Create Image
+        run: gradle dockerBuild
+      - name: Gradle Tasks Summary
+        run: cat build/reports/build-times.md >> $GITHUB_STEP_SUMMARY
+      - name: Docker / List images
+        run: docker images
+      # Adapted from https://docs.docker.com/build/ci/github-actions/test-before-push/
+      - name: Docker / Get image name
+        id: dockerImageName
+        run: echo "dockerImageName=$(gradle -q dockerImageName)" >> "$GITHUB_OUTPUT"
+      - name: Docker / Test Image
+        id: dockerImageTest
+        # From `docker run --help`:
+        #   -d, --detach          Run container in background and print container ID
+        #   --rm                  Automatically remove the container when it exits
+        #   -p, --publish list    Publish a container's port(s) to the host
+        run: |
+          containerId=$(docker run -d --rm --publish 8080:8080 ${{ steps.dockerImageName.outputs.dockerImageName }})
+          wget --retry-connrefused --tries=20 -nv --wait=1 --spider http://localhost:8080/
+          docker container logs "$containerId"
+          docker container stop "$containerId"
+
+  check-if-prod:
+    if: ${{ github.ref == 'refs/heads/main' }}
+    name: Check if prod
+    runs-on: ubuntu-latest
+    needs:
+      - test
+    steps:
+      - run: echo "This is a push to main branch. Following with release and deploy"
+
+  create-release:
+    name: Creates a GitHub Release
+    runs-on: ubuntu-latest
+    needs:
+      - check-if-prod
+      - build-docker
+    # Docs:
+    # https://docs.github.com/en/actions/using-jobs/assigning-permissions-to-jobs
+    permissions:
+      contents: write
+      packages: read # to preserve default permissions
+    steps:
+      - uses: actions/checkout@v4
+      - name: Create Github Release
+        env:
+          GH_TOKEN: ${{ secrets.RELEASE_GITHUB_TOKEN }}
+        run: |
+          RELEASE_TITLE=$(date '+%Y %b %d %H:%M:%S')
+          TAG_NAME="v${{ github.run_number }}-$(git log HEAD -1 --pretty=format:'%h')"
+          gh release create "$TAG_NAME" --title "$RELEASE_TITLE" --generate-notes --latest

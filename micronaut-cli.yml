@@ -1,0 +1,6 @@
+applicationType: default
+defaultPackage: br.ufpe.liber
+testFramework: kotest
+sourceLanguage: kotlin
+buildTool: gradle_kotlin
+features: [app-name, config4k, graalvm, gradle, http-client-test, kotest, kotlin, kotlin-application, kotlin-extension-functions, ksp, logback, micronaut-aot, micronaut-build, micronaut-http-validation, netty-server, properties, readme, serialization-jackson, shade, views-jte]

@@ -1,0 +1,32 @@
+#!/usr/bin/env bash
+
+GREEN=$(tput setaf 2)
+BOLD=$(tput bold)
+RESET=$(tput sgr0)
+
+function runKtlint {
+  echo -e "Running ${BOLD}${GREEN}ktlint${RESET} pre-commit hook on staged files"
+  git diff --name-only -z --cached --relative -- '*.kt' '*.kts' | ktlint --relative --patterns-from-stdin=''
+}
+
+function runDetekt {
+  echo -e "Running ${BOLD}${GREEN}detekt${RESET} pre-commit hook on staged files"
+  changeset="$(git diff --name-only --cached --relative -- '*.kt' '*.kts' | paste -sd "," -)"
+  if [ -n "$changeset" ]; then
+    detekt --config detekt-config.yml \
+      --build-upon-default-config\
+      --input "$changeset"
+  else
+    echo "No Kotlin files to check!"
+  fi
+}
+
+runKtlint
+KTLINT_STATUS=$?
+
+runDetekt
+DETEKT_STATUS=$?
+
+[ $KTLINT_STATUS -ne 0 ] || [ $DETEKT_STATUS -ne 0 ] && exit 1
+
+exit 0

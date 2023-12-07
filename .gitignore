@@ -1,0 +1,29 @@
+Thumbs.db
+.DS_Store
+.gradle
+
+bin
+build/
+jte-classes
+target/
+out/
+
+.lighthouseci
+.micronaut/
+.vagrant
+
+.idea
+*.iml
+*.ipr
+*.iws
+
+.project
+.settings
+.classpath
+.factorypath
+
+# Avoid ignoring Gradle wrapper jar file (.jar files are usually ignored)
+!gradle-wrapper.jar
+
+# Avoid ignore Gradle wrappper properties
+!gradle-wrapper.properties

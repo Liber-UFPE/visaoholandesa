@@ -1,0 +1,32 @@
+name: Main
+
+on:
+  release:
+    types:
+      - published
+
+permissions:
+  contents: write
+
+env:
+  GRADLE_OPTS: "-Dorg.gradle.console=plain -Dorg.gradle.caching=true -Dkotlin.caching.enabled=true"
+
+jobs:
+  gh-dependency-graph:
+    name: Generate and Submit Dependency Graph
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: "21"
+          distribution: "temurin"
+      - name: Setup Gradle
+        uses: gradle/gradle-build-action@v2
+        with:
+          dependency-graph: generate-and-submit
+      - name: Generate Dependency Graph
+        run: ./gradlew testClasses
+      - name: Gradle Tasks Summary
+        run: cat build/reports/build-times.md >> $GITHUB_STEP_SUMMARY

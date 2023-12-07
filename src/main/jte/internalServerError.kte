@@ -1,0 +1,9 @@
+@param path: String
+@param message: String
+
+@template.layout(title = "500 - Erro Interno", content = @`
+    @template.partials.top(
+        title = "Ooops, houve um erro interno",
+        subtext = @`Erro ao processar a página que você tentou accessar: ${path}. Erro: ${message}`
+    )
+`)

@@ -1,0 +1,11 @@
+@param title: String
+@param subtext: gg.jte.Content = br.ufpe.liber.views.ViewsHelper.emptyContent()
+
+<section class="position-relative overflow-hidden bg-dark primary-content">
+  <div class="container">
+    <div class="row">
+      <h1 class="display-1">${title}</h1>
+      <p class="display-6">${subtext}</p>
+    </div>
+  </div>
+</section>

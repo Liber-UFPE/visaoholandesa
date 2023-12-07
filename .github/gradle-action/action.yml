@@ -1,0 +1,32 @@
+name: 'Gradle Build Action'
+description: 'Reusable GitHub Action for performing a gradle build or running a gradle task.'
+
+inputs:
+  gradle-cache-disabled:
+    description: 'Caching is enabled by default. You can disable caching for the action using this parameter'
+    required: false
+    default: "false"
+  gradle-cache-read-only:
+    description: 'Configure read-only caching for the gradle-build-action'
+    required: false
+    default: ${{ github.ref != 'refs/heads/main' }}
+  gradle-cache-write-only:
+    description: 'Configure write-only caching for the gradle-build-action'
+    required: false
+    default: "false"
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Set up JDK 21
+      uses: actions/setup-java@v3
+      with:
+        java-version: "21"
+        distribution: "temurin"
+    - name: Set up Gradle
+      uses: gradle/gradle-build-action@v2
+      with:
+        generate-job-summary: false
+        cache-disabled: ${{ inputs.gradle-cache-disabled }}
+        cache-read-only: ${{ inputs.gradle-cache-read-only }}
+        cache-write-only: ${{ inputs.gradle-cache-write-only }}

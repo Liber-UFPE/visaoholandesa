@@ -1,0 +1,71 @@
+#
+# Configuration for Github App Settings:
+# https://github.com/apps/settings
+#
+---
+repository:
+  name: project-starter
+  description: "UFPE / Liber / project-starter"
+  homepage: "http://www.liber.ufpe.br/project-starter/"
+  private: true
+  has_issues: true
+  has_projects: true
+  has_wiki: false
+  default_branch: main
+  allow_squash_merge: false
+  allow_merge_commit: true
+  allow_rebase_merge: true
+  delete_branch_on_merge: true
+  enable_automated_security_fixes: true
+  enable_vulnerability_alerts: true
+
+labels:
+  - name: "bug"
+    description: "Something isn't working"
+    color: "#D73A4A"
+  - name: "documentation"
+    description: "Improvements or additions to documentation"
+    color: "#0075CA"
+  - name: "duplicate"
+    description: "This issue or pull request already exists"
+    color: "#CFD3D7"
+  - name: "enhancement"
+    description: "New feature or request"
+    color: "#A2EEEF"
+  - name: "good first issue"
+    description: "Good for newcomers"
+    color: "#7057FF"
+  - name: "help wanted"
+    description: "Extra attention is needed"
+    color: "#008672"
+  - name: "invalid"
+    description: "This doesn't seem right"
+    color: "#E4E669"
+  - name: "question"
+    description: "Further information is requested"
+    color: "#D876E3"
+  - name: "wontfix"
+    description: "This will not be worked on"
+    color: "#FFFFFF"
+  - name: "dependencies"
+    description: "Pull requests that update a dependency file"
+    color: "#0366D6"
+  - name: "github_actions"
+    description: "Pull requests that update GitHub Actions code"
+    color: "#000000"
+  - name: "java"
+    description: "Pull requests that update Java code"
+    color: "#FFA221"
+
+branches:
+  - name: main
+    protection:
+      enforce_admins: true
+      required_linear_history: true
+      required_pull_request_reviews:
+        required_approving_review_count: 1
+        dismiss_stale_reviews: false
+        require_code_owner_reviews: false
+      required_status_checks:
+        strict: true
+        context: ["Build / compile", "Tests / test"]

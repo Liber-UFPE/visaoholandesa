@@ -1,0 +1,7 @@
+@param content: gg.jte.Content
+
+<div class="py-5 bg-body-tertiary">
+    <div class="container">
+        ${content}
+    </div>
+</div>
