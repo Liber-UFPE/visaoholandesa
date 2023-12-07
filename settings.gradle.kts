@@ -1,5 +1,5 @@
 plugins {
-    id("io.micronaut.platform.catalog") version "4.2.0"
+    id("io.micronaut.platform.catalog") version "4.2.1"
 }
 
 rootProject.name = "project-starter"
