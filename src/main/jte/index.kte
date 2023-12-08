@@ -1,6 +1,6 @@
 @template.layout(title = "Início", content = @`
     @template.partials.top(
-        title = "Bemvindo ao project-starter",
+        title = "Bemvindo ao Visão Holandesa",
         subtext = @`Esse é apenas um template para projetos do Laboratório Liber`
     )
     @template.partials.main(content = @`

@@ -72,7 +72,7 @@ jobs:
         # Adapted from https://github.com/Kotlin/kotlinx-kover/issues/419#issuecomment-1632572084
         run: |
           pandoc build/reports/kover/html/index.html -f html -t gfm | \
-            sed -n '/# project-starter: Overall Coverage Summary/,/<\/div>/p' | \
+            sed -n '/# visaoholandesa: Overall Coverage Summary/,/<\/div>/p' | \
             grep -v "</div>" >> $GITHUB_STEP_SUMMARY
       - name: Test Summary Report
         uses: phoenix-actions/test-reporting@v12
