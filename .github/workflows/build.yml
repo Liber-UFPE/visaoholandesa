@@ -10,6 +10,28 @@ env:
   GRADLE_OPTS: "-Dorg.gradle.console=plain -Dorg.gradle.caching=true -Dkotlin.caching.enabled=true"
 
 jobs:
+  ktlint:
+    name: Code Analysis / ktlint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: nbadal/action-ktlint-setup@v1
+      - run: ktlint --version
+      - run: ktlint --relative >> $GITHUB_STEP_SUMMARY
+
+  detekt:
+    name: Code Analysis / detekt
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: detekt report
+        uses: natiginfo/action-detekt-all@1.23.4
+        with:
+          args: |
+            --report md:build/reports/detekt/detekt.md
+      - name: Detekt Summary
+        run: cat build/reports/detekt/detekt.md >> $GITHUB_STEP_SUMMARY
+
   compile:
     name: Build / compile
     runs-on: ubuntu-latest
@@ -26,36 +48,11 @@ jobs:
       - name: Gradle Tasks Summary
         run: cat build/reports/build-times.md >> $GITHUB_STEP_SUMMARY
 
-  detekt:
-    name: Code Analysis / detekt
-    runs-on: ubuntu-latest
-    needs:
-      - compile
-    steps:
-      - uses: actions/checkout@v4
-      - name: detekt report
-        uses: natiginfo/action-detekt-all@1.23.4
-        with:
-          args: |
-            --report md:build/reports/detekt/detekt.md
-      - name: Detekt Summary
-        run: cat build/reports/detekt/detekt.md >> $GITHUB_STEP_SUMMARY
-
-  ktlint:
-    name: Code Analysis / ktlint
-    runs-on: ubuntu-latest
-    needs:
-      - compile
-    steps:
-      - uses: actions/checkout@v4
-      - uses: nbadal/action-ktlint-setup@v1
-      - run: ktlint --version
-      - run: ktlint --relative >> $GITHUB_STEP_SUMMARY
-
   test:
     name: Tests / test
     runs-on: ubuntu-latest
     needs:
+      - compile
       - detekt
       - ktlint
     steps:
