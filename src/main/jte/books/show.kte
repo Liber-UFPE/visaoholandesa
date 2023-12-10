@@ -1,0 +1,76 @@
+@import br.ufpe.liber.views.JavaScriptHelpers.jsonLdEncode
+@import br.ufpe.liber.views.LinksHelper.linkTo
+@import br.ufpe.liber.views.Markdown
+
+@param book: br.ufpe.liber.model.Book
+
+@template.layout(title = book.title, content = @`
+    @template.partials.top(
+        title = book.title,
+        subtext = @`Escrito por <span class="text-highlight">${book.creator}</span> e publicado por <span class="text-highlight">${book.publisher}</span>`
+    )
+    @template.books.showPage(
+        book = book,
+        page = book.firstPage()
+    )
+`, metadata = @`
+    <meta property="og:title" content="${book.title}">
+    <meta property="og:type" content="website">
+    <meta property="og:description" content="Titulo: ${book.title}, Autor: ${book.creator}, Categoria: ${book.text}, Páginas: ${book.pagesSize}">
+    <meta property="og:locale" content="pt-BR">
+    <meta property="og:site_name" content="Laboratório Liber">
+
+    <meta name="description" content="Titulo: ${book.title}, Autor: ${book.creator}, Categoria: ${book.text}, Páginas: ${book.pagesSize}" />
+    <script type="application/ld+json">
+        {
+            "@context": "https://schema.org",
+            "@type": "Book",
+            "name": "$unsafe{jsonLdEncode(book.title)}",
+            @if(book.alternative != null)
+            "alternateName": "$unsafe{jsonLdEncode(book.alternative)}",
+            @endif
+            "author": {
+              "@type": "Person",
+              "name": "$unsafe{jsonLdEncode(book.creator)}"
+            },
+            "accessMode": "textual",
+            "copyrightHolder": {
+                "@type": "ResearchOrganization",
+                "name": "Laboratório Liber",
+                "url": "https://www.liber.ufpe.br"
+            },
+            "copyrightNotice": "$unsafe{jsonLdEncode(book.rights)}",
+            "copyrightYear": "$unsafe{jsonLdEncode(book.date)}",
+            "creativeWorkStatus": "Published",
+            "creditText": "$unsafe{jsonLdEncode(book.collection)}",
+            "datePublished": "$unsafe{jsonLdEncode(book.date)}",
+            "description": "$unsafe{jsonLdEncode(book.description ?: book.alternative)}",
+            "isPartOf": {
+                "@type": "CreativeWork",
+                "name": "$unsafe{jsonLdEncode(book.source)}"
+            },
+            "inLanguage": "$unsafe{jsonLdEncode(book.language)}",
+            "locationCreated": {
+                "@type": "Place",
+                "name": "$unsafe{jsonLdEncode(book.local)}"
+            },
+            "numberOfPages": "${book.pagesSize}",
+            "publisher": {
+                "@type": "Organization",
+                "name": "$unsafe{jsonLdEncode(book.publisher)}"
+            },
+            "potentialAction": {
+                "@type": "ReadAction",
+                "target": {
+                    "@type": "EntryPoint",
+                    "urlTemplate": "$unsafe{linkTo("/obra/${book.id}/pagina/${book.firstPage().id}")}",
+                    "actionPlatform": [
+                        "https://schema.org/DesktopWebPlatform",
+                        "https://schema.org/AndroidPlatform",
+                        "https://schema.org/IOSPlatform"
+                    ]
+                }
+            }
+        }
+    </script>
+`)

@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<anti-samy-rules xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                 xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/nahsra/antisamy/main/src/main/resources/antisamy.xsd">
+    <directives>
+        <directive name="useXHTML" value="false"/>
+        <directive name="omitXMLDeclaration" value="true"/>
+        <directive name="omitDoctypeDeclaration" value="true"/>
+        <directive name="formatOutput" value="false"/>
+        <directive name="maxInputSize" value="200000"/> <!-- 200Kb -->
+        <directive name="noopenerAndNoreferrerAnchors" value="true"/>
+    </directives>
+
+    <common-regexps>
+        <regexp name="htmlId" value="[a-zA-Z0-9\:\-_\.]+"/>
+        <regexp name="htmlTitle"
+                value="[\p{L}\p{N}\s\-_',:\[\]!\./\\\(\)&amp;]*"/> <!-- force non-empty with a '+' at the end instead of '*' -->
+        <regexp name="htmlClass" value="[a-zA-Z0-9\s,\-_]+"/>
+    </common-regexps>
+
+    <common-attributes>
+        <attribute name="id"
+                   description="The 'id' of any HTML attribute should not contain anything besides letters and numbers">
+            <regexp-list>
+                <regexp name="htmlId"/>
+            </regexp-list>
+        </attribute>
+
+        <attribute name="style"
+                   description="The 'style' attribute provides the ability for users to change many attributes of the tag's contents using a strict syntax"/>
+
+        <attribute name="title"
+                   description="The 'title' attribute provides text that shows up in a 'tooltip' when a user hovers their mouse over the element">
+            <regexp-list>
+                <regexp name="htmlTitle"/>
+            </regexp-list>
+        </attribute>
+
+        <attribute name="class"
+                   description="The 'class' of any HTML attribute is usually a single word, but it can also be a list of class names separated by spaces">
+            <regexp-list>
+                <regexp name="htmlClass"/>
+            </regexp-list>
+        </attribute>
+
+        <attribute name="lang"
+                   description="The 'lang' attribute tells the browser what language the element's attribute values and content are written in">
+            <regexp-list>
+                <regexp value="[a-zA-Z0-9-]{2,20}"/>
+            </regexp-list>
+        </attribute>
+    </common-attributes>
+
+    <global-tag-attributes>
+        <!-- Not valid in base, head, html, meta, param, script, style, and title elements. -->
+        <attribute name="id"/>
+        <attribute name="style"/>
+        <attribute name="title"/>
+        <attribute name="class"/>
+        <!-- Not valid in base, br, frame, frameset, hr, iframe, param, and script elements. -->
+        <attribute name="lang"/>
+    </global-tag-attributes>
+
+    <!-- filter: remove tags, but keep content. -->
+    <tag-rules>
+        <tag name="p" action="filter"/>
+        <tag name="br" action="filter"/>
+        <tag name="em" action="filter"/>
+        <tag name="strong" action="filter"/>
+        <tag name="div" action="validate"/>
+        <tag name="mark" action="validate"/>
+        <tag name="span" action="validate"/>
+    </tag-rules>
+
+    <css-rules>
+
+    </css-rules>
+</anti-samy-rules>

@@ -1,0 +1,108 @@
+@import br.ufpe.liber.views.LinksHelper.linkTo
+
+@param query: String
+@param results: br.ufpe.liber.search.SearchResults
+
+@template.layout(title = "Resultado da Busca", content = @`
+    @template.partials.top(title = "Resultado da Busca")
+    @template.partials.main(content = @`
+        <div class="row mb-2 gy-4 search-results">
+
+            @if(results.isEmpty())
+                <div class="col">
+                    <p class="display-6">Ooops, nenhum resultado foi encontrado para a busca por <mark>${query}</mark>.</p>
+                </div>
+            @else
+                <div class="col-md-12">
+                    <div class="list-group list-group-flush">
+
+                        <p class="display-6">Página <span class="text-decoration-underline">${results.currentPage}</span> do total de <span class="text-decoration-underline">${results.hits}</span> resultados para a busca por <mark>${query}</mark>:</p>
+
+                        @for(result in results)
+                            <a hx-get="${linkTo("/obra/${result.book.id}/pagina/${result.page.id}?query=${query}")}"
+                               hx-target="#content" hx-swap="outerHTML show:top" hx-push-url="true"
+                               class="list-group-item list-group-item-action flex-column align-items-start list-group-item-spaced">
+                                <div class="d-flex w-100 justify-content-between">
+                                    <p class="fs-4 fw-medium mb-1">Página ${result.page.number} do livro ${result.book.title}</p>
+                                    @if(result.book.date != null)
+                                        <small class="text-body-secondary">Ano: ${result.book.date}</small>
+                                    @endif
+                                </div>
+                                <p class="mb-1 lead">...${result.hightlightedContent}...</p>
+                                <span class="text-body-secondary">Clique para accessar o conteúdo da página.</span>
+                            </a>
+                        @endfor
+                    </div>
+                </div>
+                <div class="col-md-12">
+                    <nav class="btn-toolbar" role="navigation" aria-label="Paginação dos resultados da busca">
+                        <div class="btn-group btn-group-lg me-2" role="group" aria-label="Botões para páginação">
+                            @if(results.isFirstPage)
+                                <button class="btn btn-outline-success" disabled aria-label="Vá para a primeira página">&laquo; Primeira</button>
+                                <button class="btn btn-outline-success" disabled>&lsaquo; Anterior</button>
+                            @else
+                                <a hx-get="${linkTo("/search/?query=${query}&page=1")}"
+                                   hx-target="#content" hx-swap="outerHTML show:top" hx-push-url="true"
+                                   class="btn btn-outline-success" aria-label="Vá para a primeira página">&laquo; Primeira</a>
+                                <a hx-get="${linkTo("/search/?query=${query}&page=${results.currentPage - 1}")}"
+                                   hx-target="#content" hx-swap="outerHTML show:top" hx-push-url="true"
+                                   class="btn btn-outline-success" aria-label="Vá para página anterior">&lsaquo; Anterior</a>
+                            @endif
+
+                            @for(page in results.pages)
+                                !{val isCurrentPage: Boolean = page.number == results.currentPage}
+                                @if(isCurrentPage)
+                                    <button class="btn btn-success" aria-label="Essa é a página atual, página ${page.number}">${page.toString()}</button>
+                                @else
+                                    @if(page.hidden)
+                                        <button class="btn btn-outline-success" disabled>${page.toString()}</button>
+                                    @else
+                                        <a hx-get="${linkTo("/search/?query=${query}&page=${page.number}")}"
+                                           hx-target="#content" hx-swap="outerHTML show:top" hx-push-url="true"
+                                           class="btn btn-outline-success" aria-label="Vá para página ${page.number}">${page.toString()}</a>
+                                    @endif
+                                @endif
+                            @endfor
+
+                            @if(results.isLastPage)
+                                <button class="btn btn-outline-success" disabled>Próxima &rsaquo;</button>
+                                <button class="btn btn-outline-success" aria-label="Vá para a última página, página ${results.totalPages}" disabled>Última &raquo;</button>
+                            @else
+                                <a hx-get="${linkTo("/search/?query=${query}&page=${results.currentPage + 1}")}"
+                                   hx-target="#content" hx-swap="outerHTML show:top" hx-push-url="true"
+                                   class="btn btn-outline-success" aria-label="Vá para a próxima página">Próxima &rsaquo;</a>
+                                <a hx-get="${linkTo("/search/?query=${query}&page=${results.totalPages}")}"
+                                   hx-target="#content" hx-swap="outerHTML show:top" hx-push-url="true"
+                                   class="btn btn-outline-success" aria-label="Vá para a última página, página ${results.totalPages}">Última &raquo;</a>
+                            @endif
+
+                        </div>
+                    </nav>
+                </div>
+            @endif
+        </div>
+    `)`, metadata = @`
+    <meta property="og:title" content="Resultados da Busca">
+    <meta property="og:type" content="website">
+    <meta property="og:description" content="Resultados para a busca por ${query}, Páginas: ${results.hits}">
+    <meta property="og:locale" content="pt-BR">
+    <meta property="og:site_name" content="Laboratório Liber">
+
+    <meta name="description" content="Resultados para a busca por ${query}, Páginas: ${results.hits}">
+    <script type="application/ld+json">
+        {
+            "@context": "https://schema.org",
+            "@type": "SearchResultsPage",
+            "name": "Resultado da Busca - Visão Holandesa",
+            "publisher": {
+                "@type": "ResearchOrganization",
+                "name": "Laboratório Liber"
+            },
+            "potentialAction": {
+                "@type": "SearchAction",
+                "query": "${query}",
+                "actionStatus": "CompletedActionStatus"
+            }
+        }
+    </script>
+`)

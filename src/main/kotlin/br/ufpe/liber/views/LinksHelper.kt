@@ -18,7 +18,7 @@ object LinksHelper {
     }
 
     @JvmStatic
-    fun baseUrl(): String = Optional.ofNullable(System.getenv("PROJECT_STARTER_PATH")).orElse("/")
+    fun baseUrl(): String = Optional.ofNullable(System.getenv("VISAOHOLANDESA_PATH")).orElse("/")
 
     fun linkTo(path: String): String {
         val baseUrl = baseUrl()

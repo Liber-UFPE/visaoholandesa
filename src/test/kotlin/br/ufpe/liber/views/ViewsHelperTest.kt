@@ -1,5 +1,6 @@
 package br.ufpe.liber.views
 
+import br.ufpe.liber.asString
 import io.kotest.core.spec.style.BehaviorSpec
 import io.kotest.matchers.optional.shouldBePresent
 import io.kotest.matchers.optional.shouldNotBePresent
@@ -7,7 +8,6 @@ import io.kotest.matchers.shouldBe
 import io.micronaut.http.HttpHeaders
 import io.micronaut.http.HttpRequest
 import io.micronaut.http.context.ServerRequestContext
-import io.micronaut.views.turbo.http.TurboHttpHeaders.TURBO_FRAME
 import io.mockk.clearStaticMockk
 import io.mockk.every
 import io.mockk.mockk
@@ -28,11 +28,11 @@ class ViewsHelperTest : BehaviorSpec({
     }
 
     given("ViewHelpers") {
-        `when`("Turbo-Frame header is present") {
+        `when`("HX-Target header is present") {
             beforeTest {
                 setupCurrentRequest { req ->
                     val headers: HttpHeaders = mockk()
-                    every { headers[TURBO_FRAME] } answers { "main-navigation-frame" }
+                    every { headers[ViewsHelper.HX_TARGET_HEADER] } answers { "main-content" }
                     every { req.headers } answers { headers }
                 }
             }
@@ -42,14 +42,80 @@ class ViewsHelperTest : BehaviorSpec({
             }
 
             then("should return its value") {
-                ViewsHelper.turboFrame().shouldBePresent { value ->
-                    value shouldBe "main-navigation-frame"
+                ViewsHelper.htmxTarget().shouldBePresent { value ->
+                    value.first shouldBe ViewsHelper.HX_TARGET_HEADER
+                    value.second shouldBe "main-content"
+                }
+            }
+        }
+
+        `when`("HX-Target header is NOT present") {
+            beforeTest {
+                setupCurrentRequest { req ->
+                    val headers: HttpHeaders = mockk()
+                    every { headers[ViewsHelper.HX_TARGET_HEADER] } answers { null }
+                    every { req.headers } answers { headers }
+                }
+            }
+
+            afterTest {
+                clearStaticMockk(ServerRequestContext::class)
+            }
+
+            then("should return empty value") {
+                ViewsHelper.htmxTarget().shouldNotBePresent()
+            }
+        }
+
+        `when`("HX-Request header value is \"true\"") {
+            beforeTest {
+                setupCurrentRequest { req ->
+                    val headers: HttpHeaders = mockk()
+                    every { headers[ViewsHelper.HX_REQUEST_HEADER] } answers { "true" }
+                    every { req.headers } answers { headers }
+                }
+            }
+
+            afterTest {
+                clearStaticMockk(ServerRequestContext::class)
+            }
+
+            then("should return its value") {
+                ViewsHelper.htmxRequest().shouldBePresent { value ->
+                    value.first shouldBe ViewsHelper.HX_REQUEST_HEADER
+                    value.second shouldBe true
                 }
             }
 
             then("should be a turbo request") {
-                ViewsHelper.isTurboRequest() shouldBe true
-                ViewsHelper.notTurboRequest() shouldBe false
+                ViewsHelper.isHtmxRequest() shouldBe true
+                ViewsHelper.notHtmxRequest() shouldBe false
+            }
+        }
+
+        `when`("HX-Request header value is \"false\"") {
+            beforeTest {
+                setupCurrentRequest { req ->
+                    val headers: HttpHeaders = mockk()
+                    every { headers[ViewsHelper.HX_REQUEST_HEADER] } answers { "false" }
+                    every { req.headers } answers { headers }
+                }
+            }
+
+            afterTest {
+                clearStaticMockk(ServerRequestContext::class)
+            }
+
+            then("should return its value") {
+                ViewsHelper.htmxRequest().shouldBePresent { value ->
+                    value.first shouldBe ViewsHelper.HX_REQUEST_HEADER
+                    value.second shouldBe false
+                }
+            }
+
+            then("should be a turbo request") {
+                ViewsHelper.isHtmxRequest() shouldBe false
+                ViewsHelper.notHtmxRequest() shouldBe true
             }
         }
 
@@ -57,18 +123,24 @@ class ViewsHelperTest : BehaviorSpec({
             beforeTest {
                 setupCurrentRequest { req ->
                     val headers: HttpHeaders = mockk()
-                    every { headers[TURBO_FRAME] } answers { null }
+                    every { headers[ViewsHelper.HX_REQUEST_HEADER] } answers { null }
                     every { req.headers } answers { headers }
                 }
             }
 
             then("should return empty value") {
-                ViewsHelper.turboFrame().shouldNotBePresent()
+                ViewsHelper.htmxRequest().shouldNotBePresent()
             }
 
             then("it should not be a turbo request") {
-                ViewsHelper.isTurboRequest() shouldBe false
-                ViewsHelper.notTurboRequest() shouldBe true
+                ViewsHelper.isHtmxRequest() shouldBe false
+                ViewsHelper.notHtmxRequest() shouldBe true
+            }
+        }
+
+        `when`(".emptyContent") {
+            then("there is nothing to render") {
+                ViewsHelper.emptyContent().asString() shouldBe ""
             }
         }
     }

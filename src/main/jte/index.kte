@@ -1,11 +1,134 @@
-@template.layout(title = "Início", content = @`
-    @template.partials.top(
-        title = "Bemvindo ao Visão Holandesa",
-        subtext = @`Esse é apenas um template para projetos do Laboratório Liber`
-    )
+@import br.ufpe.liber.views.LinksHelper
+@import br.ufpe.liber.views.LinksHelper.linkTo
+
+@template.layout(title = "O Projeto Visão Holandesa", content = @`
+    @template.partials.top(title = "Bemvindo ao Visão Holandesa", subtext = @`
+        A Visão Holandesa do Brasil é um projeto que disponibiliza para o
+        <span class="text-highlight">livre acesso</span> as mais significativas obras produzidas pelos
+        neerlandeses a respeito do Brasil.
+    `)
     @template.partials.main(content = @`
         <div class="row mb-2">
-            <p class="lead">Adicione o conteúdo correto para seu projeto.</p>
+            <p class="lead">Com o apoio da <a href="${LinksHelper.HOLANDAEVOCE}">Embaixada do Reino dos Países
+                    Baixos</a>, a iniciativa Visão Holandesa do <a href="${LinksHelper.Liber.SITE}">Laboratório
+                    Liber</a> do
+                <a href="${LinksHelper.DCI}">Departamento de Ciências da Informação</a> da <a
+                        href="${LinksHelper.UFPE}">Universidade Federal de Pernambuco</a> vem
+                disponibilizar para o livre acesso as mais significativas obras produzidas pelos neerlandeses a
+                respeito do Brasil, ocupado e administrado entre 1630 e 1650 pela Companhia das Indias
+                Ocidentais.</p>
+            <p class="lead">Do período nassoviano (1637-1644) colhe-se a produção editorial mais estruturada,
+                produzida para um
+                leitor especializado, ávido por conhecimento sobre o exótico Novo Mundo. Do período anterior e
+                posterior prevalecem os relatórios, documentação administrativa e diários de viagem que, juntos,
+                compõem um dos mais impressionantes conjuntos descritivos das conquistas do Atlântico Sul.</p>
+            <p class="lead">Ao contrário dos portugueses, que tendiam à política do sigilo para salvaguardar os seus
+                interesses, os
+                neerlandeses procuraram no peso das narrativas, sustentar o seu império.</p>
         </div>
-    `)
+    `)`, metadata = @`
+
+    <meta property="og:title" content="O Projeto Visão Holandesa">
+    <meta property="og:type" content="website">
+    <meta property="og:description" content="A Visão Holandesa do Brasil é um projeto que disponibiliza para o livre acesso as mais significativas obras produzidas pelos neerlandeses a respeito do Brasil.">
+    <meta property="og:locale" content="pt-BR">
+    <meta property="og:site_name" content="Laboratório Liber">
+
+    <meta name="description" content="A Visão Holandesa do Brasil é um projeto que disponibiliza para o livre acesso as mais significativas obras produzidas pelos neerlandeses a respeito do Brasil." />
+
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "WebPage",
+        "name": "O Projeto Visão Holandesa",
+        "about": {
+          "@type": "ResearchProject",
+          "name": "Visão Holandesa",
+          "sponsor": {
+            "@type": "Organization",
+            "name": "Embaixada do Reino dos Países Baixos",
+            "url": "https://www.netherlandsandyou.nl/web/brazil/home"
+          },
+          "member": [
+            {
+              "@type": "OrganizationRole",
+              "roleName": "Coordenador",
+              "member": {
+                "@type": "Person",
+                "name": "Marcos Galindo"
+              }
+            },
+            {
+              "@type": "OrganizationRole",
+              "roleName": "Consultor de Tecnologia",
+              "member": {
+                "@type": "Person",
+                "name": "Ney de Brito Dantas"
+              }
+            },
+            {
+              "@type": "OrganizationRole",
+              "roleName": "Gerente de Projeto",
+              "member": {
+                  "@type": "Person",
+                  "name": "Májory Miranda"
+              }
+            },
+            {
+              "@type": "OrganizationRole",
+              "roleName": "Engenheiro de Software",
+              "member": {
+                  "@type": "Person",
+                  "name": "Marcos Pereira"
+              }
+            },
+            {
+              "@type": "OrganizationRole",
+              "roleName": "UX Designer",
+              "member": {
+                  "@type": "Person",
+                  "name": "Rebeca Sá"
+              }
+            }
+          ]
+        },
+        "maintainer": {
+          "@type": "ResearchOrganization",
+          "name": "Laboratório Liber",
+          "image": "http://www.liber.ufpe.br/nova/wp-content/uploads/2018/03/Liber-2@2x.png",
+          "parentOrganization": {
+            "@type": "EducationalOrganization",
+            "name": "Universidade Federal de Pernambuco",
+            "alternateName": "UFPE",
+            "url": "https://www.ufpe.br/",
+            "logo": "https://www.ufpe.br/image/company_logo?img_id=20911&t=1697762800238"
+          },
+          "address": {
+            "@type": "PostalAddress",
+            "addressCountry": "Brasil",
+            "addressRegion": "Pernambuco",
+            "addressLocality": "Recife",
+            "postalCode": "50740-550",
+            "streetAddress": "Av. da Arquitetura, s/n"
+          },
+          "telephone": "+55 81 2126 7726",
+          "email": "liber@ufpe.br"
+        },
+        "potentialAction": {
+            "@type": "SearchAction",
+            "target": {
+                "@type": "EntryPoint",
+                "description": "Página com resultados da busca",
+                "query": "required",
+                "httpMethod": "GET",
+                "urlTemplate": "$unsafe{linkTo("/search?&query={query}")}",
+                "actionPlatform": [
+                    "https://schema.org/DesktopWebPlatform",
+                    "https://schema.org/AndroidPlatform",
+                    "https://schema.org/IOSPlatform"
+                ]
+            }
+        }
+      }
+    </script>
 `)

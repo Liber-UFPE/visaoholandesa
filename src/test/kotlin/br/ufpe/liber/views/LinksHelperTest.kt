@@ -2,9 +2,7 @@ package br.ufpe.liber.views
 
 import io.kotest.core.spec.style.BehaviorSpec
 import io.kotest.data.forAll
-import io.kotest.data.headers
 import io.kotest.data.row
-import io.kotest.data.table
 import io.kotest.extensions.system.withEnvironment
 import io.kotest.matchers.equals.shouldBeEqual
 import io.kotest.matchers.shouldBe
@@ -24,7 +22,7 @@ class LinksHelperTest : BehaviorSpec({
 
     given("LinksHelper.linkTo") {
         `when`("""when base url is "/" """) {
-            withEnvironment("PROJECT_STARTER_PATH", "/") {
+            withEnvironment("VISAOHOLANDESA_PATH", "/") {
                 forAll(
                     row("/some-path", "/some-path"),
                     row("some-path", "/some-path"),
@@ -41,17 +39,14 @@ class LinksHelperTest : BehaviorSpec({
         }
 
         `when`("""when base url is "/base" """) {
-            withEnvironment("PROJECT_STARTER_PATH", "/base") {
+            withEnvironment("VISAOHOLANDESA_PATH", "/base") {
                 forAll(
-                    table(
-                        headers("path", "expectedResult"),
-                        row("/some-path", "/base/some-path"),
-                        row("some-path", "/base/some-path"),
-                        row("/some-path/", "/base/some-path/"),
-                        row("some-path/", "/base/some-path/"),
-                        row("/", "/base/"),
-                        row("", "/base"),
-                    ),
+                    row("/some-path", "/base/some-path"),
+                    row("some-path", "/base/some-path"),
+                    row("/some-path/", "/base/some-path/"),
+                    row("some-path/", "/base/some-path/"),
+                    row("/", "/base/"),
+                    row("", "/base"),
                 ) { path, expectedResult ->
                     then("generate correct link for $path") {
                         LinksHelper.linkTo(path) shouldBeEqual expectedResult
@@ -61,7 +56,7 @@ class LinksHelperTest : BehaviorSpec({
         }
 
         `when`("""when base url is "/base/" """) {
-            withEnvironment("PROJECT_STARTER_PATH", "/base/") {
+            withEnvironment("VISAOHOLANDESA_PATH", "/base/") {
                 forAll(
                     row("/some-path", "/base/some-path"),
                     row("some-path", "/base/some-path"),

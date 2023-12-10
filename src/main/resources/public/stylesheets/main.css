@@ -19,11 +19,6 @@
     color: white;
 }
 
-#header .dropdown-item:hover {
-    color: white;
-    background-color: #198754;
-}
-
 #header .nav-link:hover {
     color: white;
 }
@@ -46,13 +41,8 @@ body {
 }
 
 .primary-content {
-    margin-top: -2rem;
-    padding-top: 12rem;
+    padding-top: 10rem;
     padding-bottom: 5rem;
-}
-
-.form-check-label:hover {
-    cursor: pointer;
 }
 
 #footer .nav-link {
@@ -63,7 +53,60 @@ body {
     text-decoration: underline;
 }
 
-.turbo-progress-bar {
-    height: 5px;
-    background-color: var(--vh-dark-green);
+.page-contents {
+    font-size: 20px;
+    font-weight: 400;
+    line-height: 2rem;
+    padding: 2rem 5rem;
+}
+
+.page-contents .footnotes li {
+    padding: 10px;
+    border-radius: 5px;
+}
+
+.blink-yellow {
+    animation-duration: 1.5s;
+    animation-name: blinkYellow;
+    animation-iteration-count: 2;
+}
+
+@keyframes blinkYellow {
+    from {
+        background-color: inherit;
+    }
+
+    30% {
+        background-color: khaki;
+    }
+
+    to {
+        background-color: inherit;
+    }
+}
+
+.list-group-item-spaced {
+    padding: 2rem 2rem;
+}
+
+.book-card:hover {
+    cursor: pointer;
+}
+
+.book-metadata.list-group-horizontal {
+    margin-top: 15px;
+}
+
+.book-metadata .list-group-item {
+    background-color: inherit;
+    border: none;
+    padding-left: 0;
+}
+
+.search-results .list-group-item-action:hover {
+    cursor: pointer;
+}
+
+.search-results .display-6 {
+    line-height: 1.5;
 }

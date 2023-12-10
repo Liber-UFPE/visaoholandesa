@@ -44,7 +44,7 @@ jobs:
         run: docker images
       - name: Docker / Get image name
         id: dockerImageName
-        run: echo "dockerImageName=$(gradle -q dockerImageName)" >> "$GITHUB_OUTPUT"
+        run: echo "dockerImageName=$(gradle -q dockerImageNameNative)" >> "$GITHUB_OUTPUT"
       - name: Docker / Analyse image
         uses: docker/scout-action@v1
         continue-on-error: true

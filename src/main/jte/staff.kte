@@ -1,0 +1,206 @@
+@import br.ufpe.liber.views.LinksHelper.linkTo
+
+@template.layout(title = "Equipe do Projeto", content = @`
+    @template.partials.top(title = "Equipe do Projeto", subtext = @`Quem fez o Visão Holandesa`)
+    @template.partials.main(content = @`
+        <div class="row mb-2">
+            <div class="col-md-6">
+                <div class="row g-0 border rounded overflow-hidden flex-md-row mb-4 shadow-sm h-md-250 position-relative">
+                    <div class="col p-4 d-flex flex-column position-static">
+                        <strong class="d-inline-block mb-2 text-primary-emphasis">Coordenador</strong>
+                        <p class="fs-3 fw-medium mb-0">Marcos Galindo</p>
+                        <div class="mb-1 text-body-secondary">
+                            <a href="mailto:galindo@ufpe.br">galindo@ufpe.br</a>
+                        </div>
+                        <p class="card-text mb-auto">Prof. do Departamento de Ciência da Informação da UFPE e Coordenador do Laboratório Liber</p>
+                        <a href="//lattes.cnpq.br/7413464711814360"
+                           class="icon-link gap-1 icon-link-hover stretched-link">
+                            Curriculo Lattes
+                            <svg role="none" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-chevron-right" viewBox="0 0 16 16">
+                                <path fill-rule="evenodd" d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z"/>
+                            </svg>
+                        </a>
+                    </div>
+                    <div class="col-auto d-none d-lg-block">
+                        <picture>
+                            <source srcset="${linkTo("/public/images/marcos-galindo.webp")}" type="image/webp">
+                            <img src="${linkTo("/public/images/marcos-galindo.jpg")}" alt="Marcos Galindo" height="327" width="327" />
+                        </picture>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="row g-0 border rounded overflow-hidden flex-md-row mb-4 shadow-sm h-md-250 position-relative">
+                    <div class="col p-4 d-flex flex-column position-static">
+                        <strong class="d-inline-block mb-2 text-primary-emphasis">Consultor de Tecnologia</strong>
+                        <p class="fs-3 fw-medium mb-0">Ney de Brito Dantas</p>
+                        <div class="mb-1 text-body-secondary">
+                            <a href="mailto:ney.dantas@gmail.com">ney.dantas@gmail.com</a>
+                        </div>
+                        <p class="card-text mb-auto">Pesquisador da Pós-Graduação de Design, professor do Departamento de Arquitetura da Universidade Federal de Pernambuco</p>
+                        <a href="https://sigaa.ufpe.br/sigaa/public/docente/portal.jsf?siape=1351969"
+                           class="icon-link gap-1 icon-link-hover stretched-link">
+                            Perfil SIGAA
+                            <svg role="none" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-chevron-right" viewBox="0 0 16 16">
+                                <path fill-rule="evenodd" d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z"/>
+                            </svg>
+                        </a>
+                    </div>
+                    <div class="col-auto d-none d-lg-block">
+                        <picture>
+                            <source srcset="${linkTo("/public/images/ney-dantas.webp")}" type="image/webp">
+                            <img src="${linkTo("/public/images/ney-dantas.jpg")}" alt="Ney Dantas" width="327" height="327" />
+                        </picture>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="row g-0 border rounded overflow-hidden flex-md-row mb-4 shadow-sm h-md-250 position-relative">
+                    <div class="col p-4 d-flex flex-column position-static">
+                        <strong class="d-inline-block mb-2 text-primary-emphasis">Gerente de Projeto</strong>
+                        <p class="fs-3 fw-medium mb-0">Májory Miranda</p>
+                        <div class="mb-1 text-body-secondary">
+                            <a href="mailto:majory.oliv@ufpe.br">majory.oliv@ufpe.br</a>
+                        </div>
+                        <p class="card-text mb-auto">Professora Associada 1, do Departamento de Ciência da Informação da Universidade Federal de Pernambuco.</p>
+                        <a href="//lattes.cnpq.br/5938270183811260"
+                           class="icon-link gap-1 icon-link-hover stretched-link">
+                            Curriculo Lattes
+                            <svg role="none" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-chevron-right" viewBox="0 0 16 16">
+                                <path fill-rule="evenodd" d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z"/>
+                            </svg>
+                        </a>
+                    </div>
+                    <div class="col-auto d-none d-lg-block">
+                        <picture>
+                            <source srcset="${linkTo("/public/images/majory.webp")}" type="image/webp">
+                            <img src="${linkTo("/public/images/majory.jpg")}" alt="Májory Miranda" height="327" width="327" />
+                        </picture>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="row g-0 border rounded overflow-hidden flex-md-row mb-4 shadow-sm h-md-250 position-relative">
+                    <div class="col p-4 d-flex flex-column position-static">
+                        <strong class="d-inline-block mb-2 text-primary-emphasis">Engenheiro de Software</strong>
+                        <p class="fs-3 fw-medium mb-0">Marcos Pereira</p>
+                        <div class="mb-1 text-body-secondary">
+                            <a href="mailto:marcos.silva@gmail.com">marcos.silva@gmail.com</a>
+                        </div>
+                        <p class="card-text mb-auto">Bacharel em Ciência da Computação</p>
+                        <a href="https://about.me/marcospereira" class="icon-link gap-1 icon-link-hover stretched-link">
+                            about.me/marcospereira
+                            <svg role="none" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-chevron-right" viewBox="0 0 16 16">
+                                <path fill-rule="evenodd" d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z"/>
+                            </svg>
+                        </a>
+                    </div>
+                    <div class="col-auto d-none d-lg-block">
+                        <picture>
+                            <source srcset="${linkTo("/public/images/marcos-pereira.webp")}" type="image/webp">
+                            <img src="${linkTo("/public/images/marcos-pereira.jpg")}" alt="Marcos Pereira" width="327" height="327" />
+                        </picture>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="row g-0 border rounded overflow-hidden flex-md-row mb-4 shadow-sm h-md-250 position-relative">
+                    <div class="col p-4 d-flex flex-column position-static">
+                        <strong class="d-inline-block mb-2 text-primary-emphasis">UX Designer</strong>
+                        <p class="fs-3 fw-medium mb-0">Rebeca Sá</p>
+                        <p class="card-text mb-auto">Mestre em Human Computer Interaction by Carnegie Mellon University</p>
+                        <a href="https://www.hcii.cmu.edu/people/rebeca-sa"
+                           class="icon-link gap-1 icon-link-hover stretched-link">
+                            Carnegie Mellon University Profile
+                            <svg role="none" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-chevron-right" viewBox="0 0 16 16">
+                                <path fill-rule="evenodd" d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z"/>
+                            </svg>
+                        </a>
+                    </div>
+                    <div class="col-auto d-none d-lg-block">
+                        <picture>
+                            <source srcset="${linkTo("/public/images/rebeca.webp")}" type="image/webp">
+                            <img src="${linkTo("/public/images/rebeca.jpg")}" alt="Rebeca Sá" height="327" width="327" />
+                        </picture>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `)`, metadata = @`
+    <meta property="og:title" content="Equipe do Projeto Visão Holandesa">
+    <meta property="og:type" content="website">
+    <meta property="og:description" content="A equipe responsável pelo desenvolvimento do projeto Visão Holandesa.">
+    <meta property="og:locale" content="pt-BR">
+    <meta property="og:site_name" content="Laboratório Liber">
+
+    <meta name="description" content="A equipe responsável pelo desenvolvimento do projeto Visão Holandesa." />
+    <script type="application/ld+json">
+        {
+            "@context": "https://schema.org",
+            "@type": "WebPage",
+            "name": "Equipe do Projeto Visão Holandesa",
+            "about": {
+                "@type": "Organization",
+                "name": "Equipe do Projeto Visão Holandesa",
+                "member": [
+                    {
+                        "@type": "OrganizationRole",
+                        "roleName": "Coordenador",
+                        "member": {
+                            "@type": "Person",
+                            "name": "Marcos Galindo",
+                            "email": "galindo@ufpe.br",
+                            "url": "https://lattes.cnpq.br/7413464711814360"
+                        }
+                    },
+                    {
+                        "@type": "OrganizationRole",
+                        "roleName": "Consultor de Tecnologia",
+                        "member": {
+                            "@type": "Person",
+                            "name": "Ney de Brito Dantas",
+                            "email": "ney.dantas@gmail.com",
+                            "url": "https://sigaa.ufpe.br/sigaa/public/docente/portal.jsf?siape=1351969"
+                        }
+                    },
+                    {
+                        "@type": "OrganizationRole",
+                        "roleName": "Gerente de Projeto",
+                        "member": {
+                            "@type": "Person",
+                            "name": "Májory Miranda",
+                            "email": "majory.oliv@ufpe.br",
+                            "url": "https//lattes.cnpq.br/5938270183811260"
+                        }
+                    },
+                    {
+                        "@type": "OrganizationRole",
+                        "roleName": "Engenheiro de Software",
+                        "member": {
+                            "@type": "Person",
+                            "name": "Marcos Pereira",
+                            "email": "marcos.silva@gmail.com",
+                            "url": "https://about.me/marcospereira"
+                        }
+                    },
+                    {
+                        "@type": "OrganizationRole",
+                        "roleName": "UX Designer",
+                        "member": {
+                            "@type": "Person",
+                            "name": "Rebeca Sá",
+                            "url": "https://www.hcii.cmu.edu/people/rebeca-sa"
+                        }
+                    }
+                ],
+                "parentOrganization": {
+                    "@type": "ResearchOrganization",
+                    "name": "Laboratório Liber",
+                    "alternateName": "Liber",
+                    "url": "https://www.liber.ufpe.br/",
+                    "image": "http://www.liber.ufpe.br/nova/wp-content/uploads/2018/03/Liber-2@2x.png"
+                }
+            }
+        }
+    </script>
+`)

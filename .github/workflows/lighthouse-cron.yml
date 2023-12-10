@@ -1,0 +1,33 @@
+name: Lighthouse CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+env:
+  GRADLE_OPTS: "-Dorg.gradle.console=plain -Dorg.gradle.caching=true -Dkotlin.caching.enabled=true"
+
+jobs:
+  lighthouse-ci:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # 0 indicates all history for all branches and tags.
+          fetch-depth: 0
+      - uses: Liber-UFPE/spring-gradle-build-action@v2
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 18 # lts version
+          check-latest: true
+      - name: Install Lighthouse CI
+        run: npm install -g @lhci/cli
+      - name: Run Lighthouse CI
+        run: lhci autorun
+        env:
+          PROJECT_TOKEN: ${{ vars.LHCI_PROJECT_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.LHCI_GITHUB_TOKEN }}
+          BASIC_AUTH_USERNAME: ${{ secrets.LHCI_BASIC_AUTH_USERNAME }}
+          BASIC_AUTH_PASSWORD: ${{ secrets.LHCI_BASIC_AUTH_PASSWORD }}

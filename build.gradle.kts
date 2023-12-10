@@ -1,10 +1,13 @@
 import com.adarshr.gradle.testlogger.theme.ThemeType
 import com.bmuschko.gradle.docker.tasks.image.DockerBuildImage
+import com.bmuschko.gradle.docker.tasks.image.Dockerfile
+import com.bmuschko.gradle.vagrant.tasks.VagrantUp
 import com.github.benmanes.gradle.versions.updates.DependencyUpdatesTask
 import io.github.vacxe.buildtimetracker.reporters.markdown.MarkdownConfiguration
 import io.micronaut.gradle.docker.MicronautDockerfile
 import io.micronaut.gradle.docker.NativeImageDockerfile
 import java.lang.System.getenv
+import java.nio.file.Files
 import java.time.Duration
 import java.util.Optional
 import kotlin.jvm.optionals.getOrElse
@@ -12,6 +15,7 @@ import kotlin.jvm.optionals.getOrElse
 plugins {
     kotlin("jvm") version "1.9.21"
     kotlin("plugin.allopen") version "1.9.21"
+    kotlin("plugin.serialization") version "1.9.21"
     id("com.google.devtools.ksp") version "1.9.21-1.0.16"
     id("com.github.johnrengelman.shadow") version "8.1.1"
     id("io.micronaut.application") version "4.2.1"
@@ -31,6 +35,9 @@ plugins {
     // Task graph utility
     // https://github.com/dorongold/gradle-task-tree
     id("com.dorongold.task-tree") version "2.1.1"
+    // Manages Vagrant boxes:
+    // https://plugins.gradle.org/plugin/com.bmuschko.vagrant
+    id("com.bmuschko.vagrant") version "3.0.0"
     // Easily add new test sets
     // https://github.com/unbroken-dome/gradle-testsets-plugin
     id("org.unbroken-dome.test-sets") version "4.1.0"
@@ -47,11 +54,14 @@ plugins {
 
 val runningOnCI: Boolean = getenv().getOrDefault("CI", "false").toBoolean()
 
-val javaVersion: Int = 21
+val javaVersion: Int = 17
 
 val kotlinVersion: String = properties["kotlinVersion"] as String
-val micronautVersion: String = properties["micronautVersion"] as String
 val jteVersion: String = properties["jteVersion"] as String
+val exposedVersion: String = properties["exposedVersion"] as String
+val luceneVersion: String = properties["luceneVersion"] as String
+val flexmarkVersion: String = properties["flexmarkVersion"] as String
+val kotestVersion: String = properties["kotestVersion"] as String
 
 version = "0.1"
 group = "br.ufpe.liber"
@@ -86,6 +96,14 @@ testSets {
 }
 val accessibilityTestImplementation: Configuration = configurations["accessibilityTestImplementation"]
 
+koverReport {
+    filters {
+        excludes {
+            classes("br.ufpe.liber.model.Database*", "br.ufpe.liber.Sitemaps")
+        }
+    }
+}
+
 fun registry(): Optional<String> = Optional.ofNullable(getenv("REGISTRY")).map { it.lowercase() }
 fun imageName(): Optional<String> = Optional.ofNullable(getenv("IMAGE_NAME")).map { it.lowercase() }
 fun imageNames(): List<String> {
@@ -102,6 +120,7 @@ tasks.withType<MicronautDockerfile> {
     // but seems better maintained and with no vulnerabilities reported.
     baseImage.set("amazoncorretto:$javaVersion")
     environmentVariable("MICRONAUT_ENVIRONMENTS", "docker")
+    healthcheck(Dockerfile.Healthcheck("curl -I -f http://localhost:8080/ || exit 1"))
 }
 tasks.withType<NativeImageDockerfile> {
     // Oracle's images provide access to G1 GC and other features.
@@ -111,6 +130,7 @@ tasks.withType<NativeImageDockerfile> {
     // https://www.graalvm.org/latest/reference-manual/native-image/guides/build-static-executables/
     baseImage("gcr.io/distroless/cc-debian12")
     environmentVariable("MICRONAUT_ENVIRONMENTS", "docker")
+    healthcheck(Dockerfile.Healthcheck("curl -I -f http://localhost:8080/ || exit 1"))
 }
 tasks.register("dockerImageNameNative") {
     doFirst {
@@ -134,8 +154,11 @@ graalvmNative {
         named("main") {
             fallback.set(false)
             richOutput.set(true)
-            buildArgs.addAll("--verbose", "-march=native", "--gc=G1")
+            buildArgs.addAll("--verbose", "-march=native")
             jvmArgs.add("-XX:MaxRAMPercentage=100")
+            if (javaVersion == 21) {
+                buildArgs.addAll("--gc=G1")
+            }
             if (runningOnCI) {
                 // A little extra verbose on CI to prevent jobs being killed
                 // due to the lack of output (since native-image creation can
@@ -217,6 +240,42 @@ buildTimeTracker {
     )
 }
 
+val vagrantBoxDir: File = layout.buildDirectory.dir("vagrant").get().asFile
+val jarsDir: File = File(vagrantBoxDir, "build/libs")
+val scriptsDir: File = File(vagrantBoxDir, "scripts")
+
+tasks.register("createVagrantDirs") {
+    doLast {
+        Files.createDirectories(jarsDir.toPath())
+        Files.createDirectories(scriptsDir.toPath())
+    }
+}
+
+tasks.register<Copy>("copyAppJar") {
+    from(layout.buildDirectory.dir("libs"))
+    include("*.jar")
+    into(jarsDir)
+    dependsOn(tasks.named("createVagrantDirs"))
+    dependsOn(tasks.named("runnerJar"))
+}
+
+tasks.register<Copy>("copyVagrantScripts") {
+    from(layout.projectDirectory.dir("scripts"))
+    into(scriptsDir)
+}
+
+tasks.named<VagrantUp>("vagrantUp") {
+    boxDir = vagrantBoxDir
+    dependsOn(tasks.named("copyAppJar"), tasks.named("copyVagrantScripts"))
+}
+
+tasks.register<JavaExec>("generateSitemaps") {
+    group = "Execution"
+    description = "Generate Sitemap.xml"
+    classpath = sourceSets.main.get().runtimeClasspath
+    mainClass = "br.ufpe.liber.Sitemaps"
+}
+
 // Install pre-commit git hooks to run ktlint and detekt
 // https://docs.gradle.org/current/userguide/working_with_files.html#sec:copying_single_file_example
 tasks.register<Copy>("installGitHooks") {
@@ -253,12 +312,36 @@ dependencies {
 
     implementation(kotlin("reflect", kotlinVersion))
     implementation(kotlin("stdlib-jdk8", kotlinVersion))
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.2")
 
     // jte dependencies
     jteGenerate("gg.jte:jte-models:$jteVersion")
     jteGenerate("gg.jte:jte-native-resources:$jteVersion")
     implementation("gg.jte:jte:$jteVersion")
     implementation("gg.jte:jte-kotlin:$jteVersion")
+
+    // Exposed
+    // https://github.com/JetBrains/Exposed
+    implementation("org.jetbrains.exposed:exposed-core:$exposedVersion")
+    implementation("org.jetbrains.exposed:exposed-dao:$exposedVersion")
+    // https://mvnrepository.com/artifact/com.mysql/mysql-connector-j
+    runtimeOnly("com.mysql:mysql-connector-j:8.2.0")
+
+    // Lucene
+    implementation("org.apache.lucene:lucene-core:$luceneVersion")
+    implementation("org.apache.lucene:lucene-analysis-common:$luceneVersion")
+    implementation("org.apache.lucene:lucene-queryparser:$luceneVersion")
+    implementation("org.apache.lucene:lucene-highlighter:$luceneVersion")
+
+    // Markdown
+    implementation("com.vladsch.flexmark:flexmark-ext-footnotes:$flexmarkVersion")
+
+    // Content sanitizer
+    implementation("org.owasp.antisamy:antisamy:1.7.4")
+    implementation("org.owasp.encoder:encoder:1.2.3")
+
+    // Kotest latest version
+    testImplementation(platform("io.kotest:kotest-bom:$kotestVersion"))
 
     // Accessibility Tests
     accessibilityTestImplementation("org.seleniumhq.selenium:selenium-java:4.16.1")

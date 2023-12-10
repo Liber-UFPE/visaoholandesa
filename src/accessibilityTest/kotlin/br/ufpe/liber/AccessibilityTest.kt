@@ -1,9 +1,12 @@
 package br.ufpe.liber
 
+import br.ufpe.liber.model.BookRepository
+import br.ufpe.liber.search.Indexer
 import com.deque.html.axecore.selenium.AxeBuilder
 import io.kotest.core.spec.style.BehaviorSpec
 import io.kotest.data.forAll
 import io.kotest.data.row
+import io.kotest.matchers.collections.shouldHaveSize
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.string.shouldNotContain
 import io.micronaut.context.ApplicationContext
@@ -15,6 +18,7 @@ import io.micronaut.test.extensions.kotest5.annotation.MicronautTest
 import io.micronaut.web.router.Router
 import org.openqa.selenium.chrome.ChromeDriver
 import org.openqa.selenium.chrome.ChromeOptions
+import org.openqa.selenium.logging.LogType
 
 @MicronautTest
 class AccessibilityTest(
@@ -29,6 +33,7 @@ class AccessibilityTest(
             .addArguments("--headless"),
     )
 
+    val booksRepository = context.getBean<BookRepository>()
     val parameterlessRoutes = context.getBean<Router>()
         .uriRoutes()
         // filter in only routes that DO NOT require a parameter
@@ -43,8 +48,9 @@ class AccessibilityTest(
         .toList()
 
     beforeSpec {
-        // For possible initializations since the application will
-        // be tested from the users perspective.
+        // Force its initialization to force index creation so
+        // that the search pages can be checked.
+        context.getBean<Indexer>()
     }
 
     // Called once per Spec, after all tests have completed for that spec.
@@ -58,6 +64,7 @@ class AccessibilityTest(
         driver.get(url(path))
         driver.title shouldNotContain "404"
         driver.title shouldNotContain "500"
+        driver.manage().logs().get(LogType.BROWSER) shouldHaveSize 0
         val results = axeBuilder.analyze(driver)
         results.violations shouldBe listOf()
     }
@@ -69,6 +76,33 @@ class AccessibilityTest(
                 then("$path passes accessibility tests") {
                     checkAccessibility(path)
                 }
+            }
+        }
+
+        `when`("navigating books") {
+            val firstBook = booksRepository.listAll().first()
+            val firstPage = firstBook.pages.first()
+
+            then("/obras should pass accessibility tests") {
+                checkAccessibility("/obras")
+            }
+
+            then("/obra/${firstBook.id} should pass accessibility checks") {
+                checkAccessibility("/obra/${firstBook.id}")
+            }
+
+            then("/obra/${firstBook.id}/pagina/${firstPage.id} should pass accessibility checks") {
+                checkAccessibility("/obra/${firstBook.id}/pagina/${firstPage.id}")
+            }
+        }
+
+        `when`("searching") {
+            then("/advanced-search should pass the accessibility tests") {
+                checkAccessibility("/advanced-search")
+            }
+
+            then("/search should pass the accessibility test") {
+                checkAccessibility("/search?query=recife")
             }
         }
     }

@@ -1,165 +1,103 @@
-<!-- markdownlint-disable MD013 -->
-
-# Project Starter
+ # Visão Holandesa
 
 ![CI Workflow](https://github.com/Liber-UFPE/visaoholandesa/actions/workflows/build.yml/badge.svg?branch=main)
-![Main Workflow](https://github.com/Liber-UFPE/visaoholandesa/actions/workflows/main.yml/badge.svg?branch=main)
 
-This is a project starter template. There are a few things you need to do after creating your repository using this template:
+A Visão Holandesa do Brasil é um projeto que disponibiliza gratuitamente as obras mais significativas produzidas pelos holandeses sobre o Brasil.
 
-- [ ] Edit `src/main/resources/public/stylesheets/main.css` as needed (different colors, fonts, etc.)
-- [ ] Edit `src/main/resources/public/javascript/main.js` as needed
-- [ ] Edit `src/main/jte/layout.kte` as necessary to support your project's navigation
+## Executar localmente
 
-## Adding a new page
-
-To add a new page, you need to edit a few files:
-
-### 1. View
-
-Add a new template such as `src/main/jte/my-new-page.kte` that uses the project layout:
-
-```html
-@template.layout(title = "Page title", content = @`
-    @template.sections.top(title = "Main top section title", subtext = @`
-        <h1>Main top section content</h1>
-        <p>It is <abbr title="HyperText Markup Language">HTML</abbr>.</p>
-    `)
-    @template.sections.main(content = @`
-        <div class="row mb-2">
-            <p>Secondary section HTML</p>
-        </div>
-    `)
-`)
-```
-
-### 2. Controller / Route
-
-Such as `src/main/kotlin/br/ufpe/liber/controllers/IndexController.kt`, or another one if necessary:
-
-```kotlin
-@Get("/my-new-page")
-fun index() = ok(templates.myNewPage()) // `myNewPage` is generated automatically
-```
-
-### 3. Layout changes
-
-If this adds to your project's navigation, you can new links to the `navbar` in the `src/main/jte/layout.kte` file:
-
-```diff
-        <li class="nav-item">
-            <a class="nav-link btn btn-outline-success" href="/" role="button">Index</a>
-        </li>
-+       <li class="nav-item">
-+           <a class="nav-link btn btn-outline-success" href="/my-new-page" role="button">My New Page</a>
-+       </li>
-    </ul>
-    <form class="d-flex" role="search">
-        <input class="form-control me-2" type="search" placeholder="Busca" aria-label="Search">
-
-```
-
-### 4. Tests
-
-Add some tests for your new page / route.
-
-## Run locally
-
-To run the project locally, open a terminal and execute:
+Para executar o projeto localmente, abra um terminal e execute:
 
 ```shell
 ./gradlew run
 ```
 
-If you want to reload the application for every code change, run [Gradle in _continuous_ mode](https://docs.micronaut.io/latest/guide/#gradleReload):
+A aplicação ficará acessível em <http://localhost:8080/>.
+
+Se você quiser recarregar a aplicação a cada alteração de código, execute [o Gradle em modo contínuo](https://docs.micronaut.io/latest/latest/#gradleReload):
 
 ```shell
 ./gradlew run -t
 ```
 
-## Requirements
+## Simular ambiente de produção
 
-1. Java 21 (easier to install with [SDKMAN](https://sdkman.io/))
-2. [Docker Desktop](https://www.docker.com/products/docker-desktop/) (if you want to test docker images)
-3. [Ktlint CLI](https://pinterest.github.io/ktlint/1.0.0/install/cli/) (if you want to run code inspections locally)
-4. [Gradle](https://gradle.org/install/#with-a-package-manager) (if you don't want to use the `./gradlew` script)
-5. [chromedriver](https://chromedriver.chromium.org/downloads) (if you want to run browser tests)
+O aplicativo é executado usando o [nginx](https://nginx.org/) como proxy, em uma máquina com o [Rocky Linux](https://rockylinux.org/). Para simular este ambiente, você pode usar o [Vagrant](https://www.vagrantup.com/), que irá configurar todos os detalhes usando um único comando:
 
-## Technical aspects
+```shell
+./gradlew clean vagrantUp
+```
 
-The project is developed using Micronaut Framework, [Gradle](https://gradle.org/), and [Kotlin](https://kotlinlang.org/).
+O servidor nginx ficará acessível em <http://localhost:9080/>, e a aplicação em <http://localhost:9080/visaoholandesa>.
 
-### Micronaut Documentation
+Para acessar a VM via SSH, execute:
 
-- [User Guide](https://docs.micronaut.io/4.1.3/guide/index.html)
-- [API Reference](https://docs.micronaut.io/4.1.3/api/index.html)
-- [Configuration Reference](https://docs.micronaut.io/4.1.3/guide/configurationreference.html)
-- [Micronaut Guides](https://guides.micronaut.io/index.html)
+```shell
+vagrant ssh
+```
+
+### Destruir / Reiniciar a VM Vagrant
+
+Se a VM estiver executando, execute o seguinte comando para destruí-lo:
+
+```shell
+vagrant destroy --graceful --force
+```
+
+## Requisitos
+
+1. Java 17+ (mais fácil de instalar com [SDKMAN](https://sdkman.io/))
+2. [Docker Desktop](https://www.docker.com/products/docker-desktop/) (se você quiser testar as imagens Docker)
+3. [Ktlint CLI](https://pinterest.github.io/ktlint/1.0.0/install/cli/) (se você quiser executar inspeções de código localmente)
+4. [Gradle](https://gradle.org/install/-with-a-package-manager) (se você não quiser usar o script `./gradlew`)
+5. [Vagrant](https://www.vagrantup.com/) (se você quiser rodar o projeto usando uma VM)
+
+
+## Aspectos técnicos
+
+O projeto é desenvolvido usando Micronaut Framework, [Gradle](https://gradle.org/), e [Kotlin](https://kotlinlang.org/).
+
+### Documentação de Micronaut
+
+- [Guia do usuário](https://docs.micronaut.io/4.1.3/guida/index.html)
+- [API Referência](https://docs.micronaut.io/4.1.3/api/index.html)
+- [Referência de Configuração](https://docs.micronaut.io/4.1.3/guide/configurationreference.html)
+- [Guias sobre o Micronaut](https://guides.micronaut.io/index.html)
 
 ### Template Engine
 
-It uses JTE/KTE as the template engine.
+O projeto usa JTE / KTE como template engine.
 
-- [JTE Website](https://jte.gg/)
-- [Micronaut JTE Views documentation](https://micronaut-projects.github.io/micronaut-views/latest/guide/#jte)
+- [Web Website](https://jte.gg/)
+- [Documentação do JTE](https://regthub.com/casid/jte/blob/main/DOCUMENTATION.md)
+- [Tutorial JTE](https://javalin.io/tutorials/jte)
 
 ### CI & CD
 
-The project uses [GitHub Actions](https://docs.github.com/en/actions) to run tests, package a new version, and deploy it to [Railway.app](https://railway.app/) (experimental).
+O projeto usa [GitHub Actions](https://docs.github.com/en/actions) para executar testes, empacotar uma nova versão, e criar uma versão para cada merge/push feito para o branch `main`.
 
-### Tests & Code Coverage
+### Testes e Cobertura de Código
 
-We use [Kotest](https://kotest.io/) as the test framework, and [Kover](https://github.com/Kotlin/kotlinx-kover) as the Code Coverage tool. See also [Micronaut Kotest integration docs](https://micronaut-projects.github.io/micronaut-test/latest/guide/#kotest5).
+Usamos [Kotest](https://kotest.io/) como estrutura de teste, e [Kover](https://github.com/Kotlin/kotlinx-kover) como a ferramenta Cobertura de Código. Ver também[Micronaut Kotest integrações docs](https://micronaut-projects.github.io/micronaut-test/latest/latest/guide/?kotest5).
 
-### Code Inspections
+### Inspeções de código
 
-For every merge/push, and also for pull requests, there are GitHub Actions to run [ktlint](https://github.com/pinterest/ktlint) and [detekt](https://github.com/detekt/detekt). There is also an (experimental) integration with [DeepSource](https://deepsource.com/).
+Para cada merge/push, e também para pull requests, existem ações do GitHub para executar [ktlint](https://github.com/pinterest/ktlint) e [detekt](https://github.com/detekt).
 
-Ktlint is configured to use `intellij_idea` code style so that it won't conflict with code formatting action in IDEA.
+O Ktlint está configurado para usar o estilo de código `intellij_idea` para que ele não entre em conflito com a ação de formatação de código da IntelliJ IDEA.
 
-### Project Directory Layout
+### Layout de Diretório de Projetos
 
-Project follow the default [Maven Standard Directory Layout](https://maven.apache.org/guides/introduction/introduction-to-the-standard-directory-layout.html) for Kotlin projects. The main folders are:
+O projeto segue o padrão [Maven Standard Directory Layout](https://maven.apache.org/guides/introduction/introduction-to-the-standard-directory-layout.html) para projetos Kotlin. As pastas principais são:
 
-| Directory                   | Description                                          |
-|:----------------------------|:-----------------------------------------------------|
-| `src/main`                  | Root folder for application code                     |
-| `src/main/jte`              | JTE template folder                                  |
-| `src/main/kotlin`           | Application Kotlin code                              |
-| `src/main/resources`        | Configurations and other resources                   |
-| `src/main/resources/public` | Web assets such as images, javascript, and css files |
-| `src/test`                  | Root folder for test code                            |
-| `src/accessibilityTest`     | Root folder for accessibility test code              |
-| `.github`                   | Root folder for GitHub configurations                |
-| `.github/workflows`         | GitHub Actions configuration                         |
-
-## Micronaut 4.2.0 Documentation
-
-- [User Guide](https://docs.micronaut.io/4.2.0/guide/index.html)
-- [API Reference](https://docs.micronaut.io/4.2.0/api/index.html)
-- [Configuration Reference](https://docs.micronaut.io/4.2.0/guide/configurationreference.html)
-- [Micronaut Guides](https://guides.micronaut.io/index.html)
-
----
-
-- [Shadow Gradle Plugin](https://plugins.gradle.org/plugin/com.github.johnrengelman.shadow)
-- [Micronaut Gradle Plugin documentation](https://micronaut-projects.github.io/micronaut-gradle-plugin/latest/)
-- [GraalVM Gradle Plugin documentation](https://graalvm.github.io/native-build-tools/latest/gradle-plugin.html)
-
-## Feature serialization-jackson documentation
-
-- [Micronaut Serialization Jackson Core documentation](https://micronaut-projects.github.io/micronaut-serialization/latest/guide/)
-
-## Feature ksp documentation
-
-- [Micronaut Kotlin Symbol Processing (KSP) documentation](https://docs.micronaut.io/latest/guide/#kotlin)
-- [https://kotlinlang.org/docs/ksp-overview.html](https://kotlinlang.org/docs/ksp-overview.html)
-
-## Feature kotest documentation
-
-- [Micronaut Test Kotest5 documentation](https://micronaut-projects.github.io/micronaut-test/latest/guide/#kotest5)
-- [https://kotest.io/](https://kotest.io/)
-
-## Feature micronaut-aot documentation
-
-- [Micronaut AOT documentation](https://micronaut-projects.github.io/micronaut-aot/latest/guide/)
+| Diretório                   | Descrição                                          |
+|:----------------------------|:---------------------------------------------------|
+| `src/main`                  | Pasta raiz para código de aplicação                |
+| `src/main/jte`              | Pasta de templates JTE                             |
+| `src/main/kotlin`           | Código Kotlin da aplicação                         |
+| `src/main/resources`        | Configurações e outros recursos                    |
+| `src/main/resources/public` | Web assets como imagens, javascript e arquivos css |
+| `src/test`                  | Pasta raiz para código de teste                    |
+| `scripts`                   | Pasta com scripts para deploy usando o Vagrant     |
+| `github`                    | Pasta raiz para configurações do GitHub            |
+| `.github/workflows`         | GitHub Ações configuração                          |

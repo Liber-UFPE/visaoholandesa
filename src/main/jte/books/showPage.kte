@@ -1,0 +1,36 @@
+@import br.ufpe.liber.views.LinksHelper.linkTo
+@import br.ufpe.liber.views.Markdown
+
+@param book: br.ufpe.liber.model.Book
+@param page: br.ufpe.liber.model.Page
+@param query: java.util.Optional<String> = java.util.Optional.empty()
+
+@template.partials.main(content = @`
+    <div class="row mb-2">
+        <p class="display-6">Página ${page.number}</p>
+        <hr />
+        <div class="col page-contents">
+            ${Markdown.toHtml(page.text)}
+        </div>
+    </div>
+    !{val previousPage = book.previousPage(page.id)}
+    !{val nextPage = book.nextPage(page.id)}
+    <div class="row mb-2">
+        <div class="col">
+            @if(previousPage.isPresent)
+                <a hx-get="${linkTo("/obra/${book.id}/pagina/${previousPage.get().id}")}"
+                   hx-target="#content" hx-swap="outerHTML show:top" hx-push-url="true"
+                   class="btn btn-lg btn-outline-success">Anterior</a>
+            @else
+                <button class="btn btn-lg btn-outline-success" disabled>Anterior</button>
+            @endif
+            @if(nextPage.isPresent)
+                <a hx-get="${linkTo("/obra/${book.id}/pagina/${nextPage.get().id}")}"
+                   hx-target="#content" hx-swap="outerHTML show:top" hx-push-url="true"
+                   class="btn btn-lg btn-outline-success">Próxima</a>
+            @else
+                <button class="btn btn-lg btn-outline-success" disabled>Próxima</button>
+            @endif
+        </div>
+    </div>
+`)

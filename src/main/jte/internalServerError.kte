@@ -4,6 +4,6 @@
 @template.layout(title = "500 - Erro Interno", content = @`
     @template.partials.top(
         title = "Ooops, houve um erro interno",
-        subtext = @`Erro ao processar a página que você tentou accessar: ${path}. Erro: ${message}`
+        subtext = @`Erro ao processar a página que você tentou accessar: <code>${path}</code>. Erro: <code>${message}</code>`
     )
 `)

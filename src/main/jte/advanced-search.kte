@@ -1,0 +1,89 @@
+@import br.ufpe.liber.views.LinksHelper.linkTo
+
+@template.layout(title = "Busca Avançada", content = @`
+    @template.partials.top(title = "Busca Avançada")
+    @template.partials.main(content = @`
+        <div class="row">
+            <div class="col-sm-8">
+                <form hx-get="${linkTo("/advanced-search")}"
+                      hx-target="#content" hx-swap="outerHTML show:top" hx-push-url="true"
+                      method="GET" role="search">
+                    <input type="hidden" name="advanced-search" value="true" />
+                    <div class="row">
+                        <div class="col-sm-2">
+                            <strong class="fs-4 fw-medium align-middle">Critérios:</strong>
+                        </div>
+                        <div class="col-sm-10">
+                            <div class="form-floating mb-3">
+                                <input name="allWords" type="text" class="form-control" id="all-words" placeholder="">
+                                <label for="all-words">Contenha <strong>todas</strong> essas palavras</label>
+                            </div>
+                            <div class="form-floating mb-3">
+                                <input name="oneOfWords" type="text" class="form-control" id="at-least-one" placeholder="">
+                                <label for="at-least-one">Ao menos <strong>uma</strong> dessas palavras</label>
+                            </div>
+                            <div class="form-floating mb-3">
+                                <input name="exactPhrase" type="text" class="form-control" id="exact-phrase" placeholder="">
+                                <label for="exact-phrase">Contenha a frase <strong>exata</strong></label>
+                            </div>
+                            <div class="form-floating mb-3">
+                                <input name="notWords" type="text" class="form-control" id="do-not-include-words" placeholder="">
+                                <label for="do-not-include-words"><strong>Não contenha</strong> essas palavras</label>
+                            </div>
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <button type="submit" class="btn btn-success btn-lg">Buscar</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="col-sm-4 search-tips">
+                <span class="fs-4 fw-medium">Como funciona</span>
+                <p class="lead">A busca avançada combina os campos do formulário para gerar um resultado mais preciso.</p>
+                <dl>
+                    <dt class="fs-5 fw-medium">Algumas dicas</dt>
+                    <dd>Evite usar a mesma palavra em mais de um campo. Por exemplo, uma busca que acidentalmente inclua a palavra "recife" no campo de <em>"Contenha todas as palavras"</em> e também no campo de <em>"Não contenha as palavras"</em> pode não retornar resultado algum.</dd>
+                    <dt class="fs-5 fw-medium">Sintaxe da Busca</dt>
+                    <dd>A busca é traduzida para a sintaxe que pode ser usada no campo de busca simples também. Para mais detalhes, veja a <a href="https://lucene.apache.org/core/9_8_0/queryparser/org/apache/lucene/queryparser/classic/package-summary.html#package.description" target="_blank" aria-label="documentação, em Inglês, dos operadores que podem ser usados na busca - nova janela">documentação, em Inglês, dos operadores que podem ser usados na busca</a>.</dd>
+                </dl>
+            </div>
+        </div>
+    `)`, metadata = @`
+    <meta property="og:title" content="Busca Avançada - Visão Holandesa">
+    <meta property="og:type" content="website">
+    <meta property="og:description" content="Busca avançada do projeto Visão Holandesa.">
+    <meta property="og:locale" content="pt-BR">
+    <meta property="og:site_name" content="Laboratório Liber">
+
+    <meta name="description" content="Busca avançada do projeto Visão Holandesa." />
+    <script type="application/ld+json">
+        {
+            "@context": "https://schema.org",
+            "@type": "WebPage",
+            "name": "Busca Avançada - Visão Holandesa",
+            "publisher": {
+                "@type": "ResearchOrganization",
+                "name": "Laboratório Liber",
+                "url": "https://www.liber.ufpe.br"
+            },
+            "potentialAction": {
+                "@type": "SearchAction",
+                "target": {
+                    "@type": "EntryPoint",
+                    "description": "Página com resultados da busca",
+                    "query": "required",
+                    "httpMethod": "GET",
+                    "urlTemplate": "$unsafe{linkTo("/search?&query={query}")}",
+                    "actionPlatform": [
+                        "https://schema.org/DesktopWebPlatform",
+                        "https://schema.org/AndroidPlatform",
+                        "https://schema.org/IOSPlatform"
+                    ]
+                }
+            }
+        }
+    </script>
+`)
