@@ -111,17 +111,16 @@ tasks {
 
         val fileToMinify = file("src/main/resources/public/javascripts/main.js")
         val outputDir = layout.buildDirectory.dir("resources/main/public/javascripts").get()
-        val metafile = outputDir.file("meta-js.json")
+
+        inputs.file(fileToMinify)
 
         command = "esbuild"
         args = listOf(
             "$fileToMinify",
-            "--bundle",
             "--minify",
             "--entry-names=[name].[hash]",
             "--outdir=$outputDir",
             "--allow-overwrite",
-            "--metafile=$metafile",
             "--log-level=$esbuildLoglevel",
         )
 
@@ -137,7 +136,8 @@ tasks {
 
         val fileToMinify = file("src/main/resources/public/stylesheets/main.css")
         val outputDir = layout.buildDirectory.dir("resources/main/public/stylesheets").get()
-        val metafile = outputDir.file("meta-css.json")
+
+        inputs.file(fileToMinify)
 
         command = "esbuild"
         args = listOf(
@@ -147,7 +147,6 @@ tasks {
             "--entry-names=[name].[hash]",
             "--outdir=$outputDir",
             "--allow-overwrite",
-            "--metafile=$metafile",
             "--log-level=$esbuildLoglevel",
         )
 
@@ -162,6 +161,11 @@ tasks {
         dependsOn(esbuildMinifyJs)
 
         val dirToCompress = layout.buildDirectory.dir("resources/main/public/javascripts").get()
+        inputs.files(
+            fileTree(dirToCompress).matching {
+                include("*.*.js")
+            },
+        )
 
         command = "gzipper"
         args = listOf(
@@ -186,6 +190,11 @@ tasks {
         dependsOn(esbuildMinifyCss)
 
         val dirToCompress = layout.buildDirectory.dir("resources/main/public/stylesheets").get()
+        inputs.files(
+            fileTree(dirToCompress).matching {
+                include("*.*.css")
+            },
+        )
 
         command = "gzipper"
         args = listOf(
@@ -208,9 +217,17 @@ tasks {
 
     val esbuildContentHashingImages by registering(NpxTask::class) {
         dependsOn("npmInstall")
-        val imagesGlob = "src/main/resources/public/images/**/*.*"
+        val imagesDir = file("src/main/resources/public/images")
+        val imagesGlob = "$imagesDir/**/*.*"
         val outputDir = layout.buildDirectory.dir("resources/main/public/images").get()
-        val metafile = outputDir.file("meta-js.json")
+
+        inputs.files(
+            fileTree(imagesDir).matching {
+                include(".jpg")
+                include(".png")
+            },
+        )
+
         val loaders = listOf(
             "--loader:.webp=copy",
             "--loader:.jpg=copy",
@@ -222,13 +239,17 @@ tasks {
         args = loaders + listOf(
             "--entry-names=[dir]/[name].[hash]",
             "--outdir=$outputDir",
-            "--metafile=$metafile",
             "--log-level=$esbuildLoglevel",
             "--allow-overwrite",
             imagesGlob,
         )
 
-        outputs.files(fileTree(outputDir))
+        outputs.files(
+            fileTree(outputDir).matching {
+                include("*.*.jpg")
+                include("*.*.png")
+            },
+        )
     }
 
     val convertImagesToWebp by registering(NpxTask::class) {
@@ -236,6 +257,13 @@ tasks {
 
         val imagesDir = layout.buildDirectory.dir("resources/main/public/images").get()
         val outputDir = layout.buildDirectory.dir("resources/main/public/images").get()
+
+        inputs.files(
+            fileTree(imagesDir).matching {
+                include("*.*.jpg")
+                include("*.*.png")
+            },
+        )
 
         command = "sharp"
         args = listOf(
