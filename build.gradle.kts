@@ -281,6 +281,10 @@ tasks.configureEach {
 /* ------------------------------ */
 /* End: Node/assets configuration */
 /* ------------------------------ */
+
+/* ------------------------- */
+/* Start: Test configuration */
+/* ------------------------- */
 tasks.named<Test>("test") {
     useJUnitPlatform()
     // See https://kotest.io/docs/extensions/system_extensions.html#system-environment
@@ -304,7 +308,13 @@ koverReport {
         }
     }
 }
+/* ----------------------- */
+/* End: Test configuration */
+/* ----------------------- */
 
+/* --------------------------- */
+/* Start: Docker configuration */
+/* --------------------------- */
 fun registry(): Optional<String> = Optional.ofNullable(getenv("REGISTRY")).map { it.lowercase() }
 fun imageName(): Optional<String> = Optional.ofNullable(getenv("IMAGE_NAME")).map { it.lowercase() }
 fun imageNames(): List<String> {
@@ -347,6 +357,9 @@ tasks.register("dockerImageNameNative") {
     }
 }
 tasks.register("dockerImageName") { dependsOn("dockerImageNameNative") } // This is how Gradle add aliases.
+/* ------------------------- */
+/* End: Docker configuration */
+/* ------------------------- */
 
 // See https://graalvm.github.io/native-build-tools/latest/gradle-plugin.html
 graalvmNative {
@@ -399,6 +412,9 @@ micronaut {
     }
 }
 
+/* ------------------------ */
+/* Start: jte configuration */
+/* ------------------------ */
 jte {
     sourceDirectory.set(file("src/main/jte").toPath())
     targetDirectory.set(layout.buildDirectory.dir("jte-classes").get().asFile.toPath())
@@ -422,6 +438,9 @@ tasks.named<Jar>("jar") {
         include("**/.*.class")
     }
 }
+/* ---------------------- */
+/* End: jte configuration */
+/* ---------------------- */
 
 testlogger {
     theme = ThemeType.MOCHA
@@ -441,6 +460,9 @@ buildTimeTracker {
     )
 }
 
+/* ---------------------------- */
+/* Start: Vagrant configuration */
+/* ---------------------------- */
 val vagrantBoxDir: File = layout.buildDirectory.dir("vagrant").get().asFile
 val jarsDir: File = File(vagrantBoxDir, "build/libs")
 val scriptsDir: File = File(vagrantBoxDir, "scripts")
@@ -469,6 +491,9 @@ tasks.named<VagrantUp>("vagrantUp") {
     boxDir = vagrantBoxDir
     dependsOn(tasks.named("copyAppJar"), tasks.named("copyVagrantScripts"))
 }
+/* -------------------------- */
+/* End: Vagrant configuration */
+/* -------------------------- */
 
 tasks.register<JavaExec>("generateSitemaps") {
     group = "Execution"
