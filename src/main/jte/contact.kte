@@ -50,10 +50,7 @@
                 <p><a href="${LinksHelper.Liber.link("?page_id=123362")}">Formulário de Contato</a></p>
             </div>
             <div class="col-md-6">
-                <picture>
-                    <source srcset="${linkTo("/public/images/Liber.webp")}" type="image/webp">
-                    <img src="${linkTo("/public/images/Liber.png")}" alt="Liber" width="480" height="180" />
-                </picture>
+                @template.assets.picture(path = "/images/Liber.png", prefix = "/static", alt = "Laboratório Liber", width = 480, height = 180)
             </div>
         </div>
     `)`, metadata = @`
