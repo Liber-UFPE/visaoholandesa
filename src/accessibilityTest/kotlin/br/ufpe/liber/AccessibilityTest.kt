@@ -1,5 +1,6 @@
 package br.ufpe.liber
 
+import br.ufpe.liber.assets.AssetsResolver
 import br.ufpe.liber.model.BookRepository
 import br.ufpe.liber.search.Indexer
 import com.deque.html.axecore.selenium.AxeBuilder
@@ -51,6 +52,9 @@ class AccessibilityTest(
         // Force its initialization to force index creation so
         // that the search pages can be checked.
         context.getBean<Indexer>()
+        // Force its initialization to have the static instance
+        // ready for the views.
+        context.getBean<AssetsResolver>()
     }
 
     // Called once per Spec, after all tests have completed for that spec.
