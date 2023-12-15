@@ -1,5 +1,6 @@
 package br.ufpe.liber.views
 
+import io.micronaut.core.util.StringUtils
 import java.util.Optional
 
 object LinksHelper {
@@ -20,15 +21,5 @@ object LinksHelper {
     @JvmStatic
     fun baseUrl(): String = Optional.ofNullable(System.getenv("VISAOHOLANDESA_PATH")).orElse("/")
 
-    fun linkTo(path: String): String {
-        val baseUrl = baseUrl()
-        if (path.isBlank()) return baseUrl
-        return if (baseUrl == "/") {
-            if (path.startsWith("/")) path else "/$path"
-        } else if (baseUrl.endsWith("/")) {
-            if (path.startsWith("/")) "$baseUrl${path.substring(1)}" else "$baseUrl$path"
-        } else {
-            if (path.startsWith("/")) "$baseUrl$path" else "$baseUrl/$path"
-        }
-    }
+    fun linkTo(path: String): String = StringUtils.prependUri(baseUrl(), path)
 }

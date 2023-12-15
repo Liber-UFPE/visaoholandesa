@@ -45,7 +45,7 @@ class LinksHelperTest : BehaviorSpec({
                     row("some-path", "/base/some-path"),
                     row("/some-path/", "/base/some-path/"),
                     row("some-path/", "/base/some-path/"),
-                    row("/", "/base/"),
+                    row("/", "/base"),
                     row("", "/base"),
                 ) { path, expectedResult ->
                     then("generate correct link for $path") {
