@@ -35,6 +35,9 @@ jobs:
   compile:
     name: Build / compile
     runs-on: ubuntu-latest
+    needs:
+      - detekt
+      - ktlint
     steps:
       - uses: actions/checkout@v4
       - name: Set up Gradle and Java
@@ -48,13 +51,27 @@ jobs:
       - name: Gradle Tasks Summary
         run: cat build/reports/build-times.md >> $GITHUB_STEP_SUMMARY
 
+  accessibility-test:
+    name: Tests / Accessibility
+    runs-on: ubuntu-latest
+    # Since this job is experimental
+    continue-on-error: true
+    needs:
+      - compile
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Gradle and Java
+        uses: ./.github/gradle-action
+      - name: Run Accessibility Tests
+        run: ./gradlew accessibilityTest
+      - name: Gradle Tasks Summary
+        run: cat build/reports/build-times.md >> $GITHUB_STEP_SUMMARY
+
   test:
     name: Tests / test
     runs-on: ubuntu-latest
     needs:
       - compile
-      - detekt
-      - ktlint
     steps:
       - uses: actions/checkout@v4
       - name: Set up Gradle and Java
