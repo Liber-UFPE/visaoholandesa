@@ -1,0 +1,22 @@
+@import br.ufpe.liber.views.CSPHelper
+@import br.ufpe.liber.views.LinksHelper.linkTo
+@import br.ufpe.liber.assets.AssetsViewHelpers.at
+
+@param path: String
+@param prefix: String
+
+@param async: Boolean = false
+@param defer: Boolean = false
+
+!{val maybeAsset = at(path)}
+!{val nonce = CSPHelper.nonce() }
+
+@if(maybeAsset.isPresent)
+    !{val asset = maybeAsset.get()}
+    <script src="${linkTo(asset.fullpath(prefix))}"
+            nonce="${nonce}"
+            integrity="${asset.integrity}"
+            crossorigin="anonymous"
+            async="${async}"
+            defer="${defer}"></script>
+@endif

@@ -1,0 +1,16 @@
+@import br.ufpe.liber.views.CSPHelper
+@import br.ufpe.liber.views.LinksHelper.linkTo
+@import br.ufpe.liber.assets.AssetsViewHelpers.at
+
+@param path: String
+@param prefix: String
+
+!{val maybeAsset = at(path)}
+
+@if(maybeAsset.isPresent)
+    !{val asset = maybeAsset.get()}
+    <link href="${linkTo(asset.fullpath(prefix))}"
+          rel="stylesheet"
+          integrity="${asset.integrity}"
+          crossorigin="anonymous"/>
+@endif

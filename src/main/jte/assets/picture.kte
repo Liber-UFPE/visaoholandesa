@@ -1,0 +1,18 @@
+@import br.ufpe.liber.views.LinksHelper.linkTo
+@import br.ufpe.liber.assets.AssetsViewHelpers.at
+
+@param path: String
+@param prefix: String
+@param alt: String
+@param width: Int
+@param height: Int
+
+!{val maybeAsset = at(path)}
+
+@if(maybeAsset.isPresent)
+    !{val asset = maybeAsset.get()}
+    <picture>
+        <source srcset="${linkTo(asset.variant("webp", prefix))}" type="image/webp">
+        <img src="${linkTo(asset.fullpath(prefix))}" alt="${alt}" width="${width}" height="${height}">
+    </picture>
+@endif

@@ -22,10 +22,7 @@
                         </a>
                     </div>
                     <div class="col-auto d-none d-lg-block">
-                        <picture>
-                            <source srcset="${linkTo("/public/images/marcos-galindo.webp")}" type="image/webp">
-                            <img src="${linkTo("/public/images/marcos-galindo.jpg")}" alt="Marcos Galindo" height="327" width="327" />
-                        </picture>
+                        @template.assets.picture(path = "/images/marcos-galindo.jpg", prefix = "/static", alt = "Marcos Galindo", width = 327, height = 327)
                     </div>
                 </div>
             </div>
@@ -47,10 +44,7 @@
                         </a>
                     </div>
                     <div class="col-auto d-none d-lg-block">
-                        <picture>
-                            <source srcset="${linkTo("/public/images/ney-dantas.webp")}" type="image/webp">
-                            <img src="${linkTo("/public/images/ney-dantas.jpg")}" alt="Ney Dantas" width="327" height="327" />
-                        </picture>
+                        @template.assets.picture(path = "/images/ney-dantas.jpg", prefix = "/static", alt = "Ney Dantas", width = 327, height = 327)
                     </div>
                 </div>
             </div>
@@ -72,10 +66,7 @@
                         </a>
                     </div>
                     <div class="col-auto d-none d-lg-block">
-                        <picture>
-                            <source srcset="${linkTo("/public/images/majory.webp")}" type="image/webp">
-                            <img src="${linkTo("/public/images/majory.jpg")}" alt="Májory Miranda" height="327" width="327" />
-                        </picture>
+                        @template.assets.picture(path = "/images/majory.jpg", prefix = "/static", alt = "Májory Miranda", width = 327, height = 327)
                     </div>
                 </div>
             </div>
@@ -96,10 +87,7 @@
                         </a>
                     </div>
                     <div class="col-auto d-none d-lg-block">
-                        <picture>
-                            <source srcset="${linkTo("/public/images/marcos-pereira.webp")}" type="image/webp">
-                            <img src="${linkTo("/public/images/marcos-pereira.jpg")}" alt="Marcos Pereira" width="327" height="327" />
-                        </picture>
+                        @template.assets.picture(path = "/images/marcos-pereira.jpg", prefix = "/static", alt = "Marcos Pereira", width = 327, height = 327)
                     </div>
                 </div>
             </div>
@@ -118,10 +106,7 @@
                         </a>
                     </div>
                     <div class="col-auto d-none d-lg-block">
-                        <picture>
-                            <source srcset="${linkTo("/public/images/rebeca.webp")}" type="image/webp">
-                            <img src="${linkTo("/public/images/rebeca.jpg")}" alt="Rebeca Sá" height="327" width="327" />
-                        </picture>
+                        @template.assets.picture(path = "/images/rebeca.jpg", prefix = "/static", alt = "Rebeca Sá", width = 327, height = 327)
                     </div>
                 </div>
             </div>
