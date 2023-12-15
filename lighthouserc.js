@@ -21,13 +21,11 @@ module.exports = {
         assert: {
             preset: "lighthouse:no-pwa",
             assertions: {
+                // TODO: try to solve these later
                 "heading-order": "off",
                 "bf-cache": "off",
                 "unused-css-rules": "off",
-                "unused-javascript": "off",
-                "unminified-javascript": "off",
                 "image-size-responsive": "off",
-                // TODO: try to solve these later
                 "render-blocking-resources": "off",
                 "first-contentful-paint": "off",
                 "largest-contentful-paint": "off",
