@@ -127,7 +127,7 @@ tasks {
 
         outputs.files(
             fileTree(outputDir).matching {
-                include("*.js")
+                include("*.*.js")
             },
         )
     }
@@ -153,7 +153,7 @@ tasks {
 
         outputs.files(
             fileTree(outputDir).matching {
-                include("*.css")
+                include("*.*.css")
             },
         )
     }
