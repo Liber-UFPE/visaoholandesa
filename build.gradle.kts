@@ -273,7 +273,7 @@ tasks {
     }
 }
 tasks.configureEach {
-    if (name == "kspTestKotlin" || name == "run") {
+    if (listOf("kspAccessibilityTestKotlin", "kspTestKotlin", "run").contains(name)) {
         mustRunAfter("assetsPipeline")
     }
 }
