@@ -50,6 +50,9 @@ plugins {
     // To manage docker images
     // https://github.com/bmuschko/gradle-docker-plugin
     id("com.bmuschko.docker-remote-api") version "9.4.0"
+    // To run npm/node/js tasks
+    // https://github.com/node-gradle/gradle-node-plugin
+    id("com.github.node-gradle.node") version "7.0.1"
 }
 
 val runningOnCI: Boolean = getenv().getOrDefault("CI", "false").toBoolean()
