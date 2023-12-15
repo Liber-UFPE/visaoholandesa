@@ -3,6 +3,7 @@ import com.bmuschko.gradle.docker.tasks.image.DockerBuildImage
 import com.bmuschko.gradle.docker.tasks.image.Dockerfile
 import com.bmuschko.gradle.vagrant.tasks.VagrantUp
 import com.github.benmanes.gradle.versions.updates.DependencyUpdatesTask
+import com.github.gradle.node.npm.task.NpxTask
 import io.github.vacxe.buildtimetracker.reporters.markdown.MarkdownConfiguration
 import io.micronaut.gradle.docker.MicronautDockerfile
 import io.micronaut.gradle.docker.NativeImageDockerfile
@@ -56,6 +57,7 @@ plugins {
 }
 
 val runningOnCI: Boolean = getenv().getOrDefault("CI", "false").toBoolean()
+val loglevel: String = properties.getOrDefault("org.gradle.logging.level", "LIFECYCLE") as String
 
 val javaVersion: Int = 17
 
@@ -83,6 +85,202 @@ java {
     }
 }
 
+/* -------------------------------- */
+/* Start: Node/assets configuration */
+/* -------------------------------- */
+node {
+    version = "18.19.0"
+    download = false
+}
+
+tasks {
+
+    // Gradle log levels: https://docs.gradle.org/current/userguide/logging.html
+    // esbuild log levels: https://esbuild.github.io/api/#log-level
+    val esbuildLoglevel: String = when (loglevel) {
+        "ERROR" -> "error"
+        "QUIET" -> "silent"
+        "LIFECYCLE" -> "warning" // defaults
+        "INFO" -> "info"
+        "DEBUG" -> "debug"
+        else -> "warning" // fallback to the default
+    }
+
+    val esbuildMinifyJs by registering(NpxTask::class) {
+        dependsOn("npmInstall")
+
+        val fileToMinify = file("src/main/resources/public/javascripts/main.js")
+        val outputDir = layout.buildDirectory.dir("resources/main/public/javascripts").get()
+        val metafile = outputDir.file("meta-js.json")
+
+        command = "esbuild"
+        args = listOf(
+            "$fileToMinify",
+            "--bundle",
+            "--minify",
+            "--entry-names=[name].[hash]",
+            "--outdir=$outputDir",
+            "--allow-overwrite",
+            "--metafile=$metafile",
+            "--log-level=$esbuildLoglevel",
+        )
+
+        outputs.files(
+            fileTree(outputDir).matching {
+                include("*.js")
+            },
+        )
+    }
+
+    val esbuildMinifyCss by registering(NpxTask::class) {
+        dependsOn("npmInstall")
+
+        val fileToMinify = file("src/main/resources/public/stylesheets/main.css")
+        val outputDir = layout.buildDirectory.dir("resources/main/public/stylesheets").get()
+        val metafile = outputDir.file("meta-css.json")
+
+        command = "esbuild"
+        args = listOf(
+            "$fileToMinify",
+            "--bundle",
+            "--minify",
+            "--entry-names=[name].[hash]",
+            "--outdir=$outputDir",
+            "--allow-overwrite",
+            "--metafile=$metafile",
+            "--log-level=$esbuildLoglevel",
+        )
+
+        outputs.files(
+            fileTree(outputDir).matching {
+                include("*.css")
+            },
+        )
+    }
+
+    val compressMinifiedJs by registering(NpxTask::class) {
+        dependsOn(esbuildMinifyJs)
+
+        val dirToCompress = layout.buildDirectory.dir("resources/main/public/javascripts").get()
+
+        command = "gzipper"
+        args = listOf(
+            "compress",
+            "--gzip",
+            "--gzip-level", "9",
+            "--deflate",
+            "--brotli",
+            "$dirToCompress",
+        )
+
+        outputs.files(
+            fileTree(dirToCompress).matching {
+                include("*.js.br")
+                include("*.js.gz")
+                include("*.js.zz")
+            },
+        )
+    }
+
+    val compressMinifiedCss by registering(NpxTask::class) {
+        dependsOn(esbuildMinifyCss)
+
+        val dirToCompress = layout.buildDirectory.dir("resources/main/public/stylesheets").get()
+
+        command = "gzipper"
+        args = listOf(
+            "compress",
+            "--gzip",
+            "--gzip-level", "9",
+            "--deflate",
+            "--brotli",
+            "$dirToCompress",
+        )
+
+        outputs.files(
+            fileTree(dirToCompress).matching {
+                include("*.css.br")
+                include("*.css.gz")
+                include("*.css.zz")
+            },
+        )
+    }
+
+    val esbuildContentHashingImages by registering(NpxTask::class) {
+        dependsOn("npmInstall")
+        val imagesGlob = "src/main/resources/public/images/**/*.*"
+        val outputDir = layout.buildDirectory.dir("resources/main/public/images").get()
+        val metafile = outputDir.file("meta-js.json")
+        val loaders = listOf(
+            "--loader:.webp=copy",
+            "--loader:.jpg=copy",
+            "--loader:.png=copy",
+            "--loader:.ico=copy",
+        )
+
+        command = "esbuild"
+        args = loaders + listOf(
+            "--entry-names=[dir]/[name].[hash]",
+            "--outdir=$outputDir",
+            "--metafile=$metafile",
+            "--log-level=$esbuildLoglevel",
+            "--allow-overwrite",
+            imagesGlob,
+        )
+
+        outputs.files(fileTree(outputDir))
+    }
+
+    val convertImagesToWebp by registering(NpxTask::class) {
+        dependsOn(esbuildContentHashingImages)
+
+        val imagesDir = layout.buildDirectory.dir("resources/main/public/images").get()
+        val outputDir = layout.buildDirectory.dir("resources/main/public/images").get()
+
+        command = "sharp"
+        args = listOf(
+            "--input", "${imagesDir.asFile.absolutePath}/*.jpg",
+            "--input", "${imagesDir.asFile.absolutePath}/*.png",
+            "--output", outputDir.asFile.absolutePath,
+            "--format", "webp",
+            "--quality", "90",
+        )
+
+        outputs.files(
+            fileTree(outputDir).matching {
+                include("*.webp")
+            },
+        )
+    }
+
+    val generateMetafile by registering(JavaExec::class) {
+        group = "Execution"
+        description = "Generate assets metadata file"
+        classpath = sourceSets.main.get().runtimeClasspath
+
+        mainClass = "br.ufpe.liber.tasks.GenerateAssetsMetadata"
+
+        args(layout.buildDirectory.file("resources/main/public/").get().asFile.absolutePath)
+    }
+
+    val assetsPipeline by registering {
+        dependsOn(compressMinifiedJs, compressMinifiedCss, convertImagesToWebp)
+        finalizedBy(generateMetafile)
+    }
+
+    processResources {
+        finalizedBy(assetsPipeline)
+    }
+}
+tasks.configureEach {
+    if (name == "kspTestKotlin" || name == "run") {
+        mustRunAfter("assetsPipeline")
+    }
+}
+
+/* ------------------------------ */
+/* End: Node/assets configuration */
+/* ------------------------------ */
 tasks.named<Test>("test") {
     useJUnitPlatform()
     // See https://kotest.io/docs/extensions/system_extensions.html#system-environment
@@ -349,4 +547,9 @@ dependencies {
     // Accessibility Tests
     accessibilityTestImplementation("org.seleniumhq.selenium:selenium-java:4.16.1")
     accessibilityTestImplementation("com.deque.html.axe-core:selenium:4.8.0")
+
+    implementation("commons-codec:commons-codec:1.16.0")
+    implementation("org.lz4:lz4-pure-java:1.8.0")
+    implementation("org.apache.tika:tika-core:2.9.1")
+    implementation("org.apache.tika:tika-parsers-standard-package:2.9.1")
 }
