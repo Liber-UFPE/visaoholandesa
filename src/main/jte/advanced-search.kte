@@ -5,8 +5,8 @@
     @template.partials.main(content = @`
         <div class="row">
             <div class="col-sm-8">
-                <form hx-get="${linkTo("/advanced-search")}"
-                      hx-target="#content" hx-swap="outerHTML show:top" hx-push-url="true"
+                <form action="${linkTo("/advanced-search")}"
+                      hx-boost="true" hx-target="#content" hx-swap="outerHTML show:top" hx-push-url="true"
                       method="GET" role="search">
                     <input type="hidden" name="advanced-search" value="true" />
                     <div class="row">

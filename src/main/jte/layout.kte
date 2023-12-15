@@ -47,7 +47,7 @@
 <header id="header">
     <nav class="navbar navbar-expand-lg bg-body-tertiary fixed-top">
         <div class="container">
-            <a hx-get="${linkTo("/")}" hx-target="#content" hx-swap="outerHTML show:top" hx-push-url="true" class="navbar-brand" aria-label="Visão Holandesa">
+            <a href="${linkTo("/")}" hx-boost="true" hx-target="#content" hx-swap="outerHTML show:top" hx-push-url="true" class="navbar-brand" aria-label="Visão Holandesa">
                 <button class="btn btn-success btn-lg d-inline-block align-text-top">Visão Holandesa</button>
             </a>
 
@@ -60,22 +60,22 @@
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                     <li class="nav-item">
-                        <a hx-get="${linkTo("/obras")}" hx-target="#content" hx-swap="outerHTML show:top" hx-push-url="true" class="nav-link btn btn-outline-success" role="button">Obras</a>
+                        <a href="${linkTo("/obras")}" hx-boost="true" hx-target="#content" hx-swap="outerHTML show:top" hx-push-url="true" class="nav-link btn btn-outline-success" role="button">Obras</a>
                     </li>
                     <li class="nav-item">
-                        <a hx-get="${linkTo("/contato")}" hx-target="#content" hx-swap="outerHTML show:top" hx-push-url="true" class="nav-link btn btn-outline-success" role="button">Contato</a>
+                        <a href="${linkTo("/contato")}" hx-boost="true" hx-target="#content" hx-swap="outerHTML show:top" hx-push-url="true" class="nav-link btn btn-outline-success" role="button">Contato</a>
                     </li>
                     <li class="nav-item">
-                        <a hx-get="${linkTo("/equipe")}" hx-target="#content" hx-swap="outerHTML show:top" hx-push-url="true" class="nav-link btn btn-outline-success" role="button">Equipe</a>
+                        <a href="${linkTo("/equipe")}" hx-boost="true" hx-target="#content" hx-swap="outerHTML show:top" hx-push-url="true" class="nav-link btn btn-outline-success" role="button">Equipe</a>
                     </li>
                 </ul>
-                <form hx-get="${linkTo("/search/")}"
-                      hx-target="#content" hx-swap="outerHTML show:top" hx-push-url="true"
+                <form action="${linkTo("/search/")}"
+                      hx-boost="true" hx-target="#content" hx-swap="outerHTML show:top" hx-push-url="true"
                       method="GET" class="d-flex" role="search">
                     <input name="query" class="form-control me-2" type="search" placeholder="Busca" aria-label="Search">
                     <button class="btn btn-success me-2" type="submit">Buscar</button>
-                    <a hx-get="${linkTo("/advanced-search")}"
-                       hx-target="#content" hx-swap="outerHTML show:top" hx-push-url="true"
+                    <a href="${linkTo("/advanced-search")}"
+                       hx-boost="true" hx-target="#content" hx-swap="outerHTML show:top" hx-push-url="true"
                        class="btn btn-success" title="Busca Avançada" aria-label="Busca Avançada">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-bullseye" viewBox="0 0 16 16">
                             <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>

@@ -66,7 +66,7 @@
                                 </li>
                             @endif
                         </ul>
-                        <a hx-get="${linkTo("/obra/${book.id}")}" hx-target="#content" hx-swap="outerHTML show:top" hx-push-url="true"
+                        <a href="${linkTo("/obra/${book.id}")}" hx-boost="true" hx-target="#content" hx-swap="outerHTML show:top" hx-push-url="true"
                            class="icon-link gap-1 icon-link-hover stretched-link">
                             Acessar conteúdo
                             <svg role="presentation" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-chevron-right" viewBox="0 0 16 16">
