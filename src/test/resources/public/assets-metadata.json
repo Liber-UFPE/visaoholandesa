@@ -1,0 +1,16 @@
+{
+  "/javascripts/main.js": {
+    "original": "/javascripts/main",
+    "hash": "F3OB5HRP",
+    "integrity": "/Pd462D/n3ttmlF7abz74XVtAuf0s6IdLSW5m6IbCWqDP5gde+m1t8qQ8dVcp1Kl",
+    "extension": "js",
+    "mediaType": "text/javascript"
+  },
+  "/stylesheets/main.css": {
+    "original": "/stylesheets/main",
+    "hash": "Y6PST7YS",
+    "integrity": "TyLwwdc4QXD5F9vjpmD8Y0ozuOljr1I5RBmGWjsGxK8Q34JRE+NR1TmZNHiI6rps",
+    "extension": "css",
+    "mediaType": "text/css"
+  }
+}
