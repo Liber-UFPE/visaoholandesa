@@ -269,12 +269,7 @@ tasks {
     }
 
     processResources {
-        finalizedBy(assetsPipeline)
-    }
-}
-tasks.configureEach {
-    if (listOf("kspAccessibilityTestKotlin", "kspTestKotlin", "run").contains(name)) {
-        mustRunAfter("assetsPipeline")
+        dependsOn(assetsPipeline)
     }
 }
 
