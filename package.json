@@ -1,6 +1,6 @@
 {
-  "type": "module",
   "devDependencies": {
+    "@lhci/cli": "0.12.0",
     "esbuild": "0.19.8",
     "gzipper": "^7.2.0",
     "purgecss": "5.0.0",

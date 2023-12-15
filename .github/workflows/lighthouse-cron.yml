@@ -23,9 +23,9 @@ jobs:
           node-version: 18 # lts version
           check-latest: true
       - name: Install Lighthouse CI
-        run: npm install -g @lhci/cli
+        run: npm install
       - name: Run Lighthouse CI
-        run: lhci autorun
+        run: npx lhci autorun
         env:
           PROJECT_TOKEN: ${{ vars.LHCI_PROJECT_TOKEN }}
           GITHUB_TOKEN: ${{ secrets.LHCI_GITHUB_TOKEN }}
