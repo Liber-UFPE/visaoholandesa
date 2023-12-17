@@ -3,7 +3,7 @@ import com.bmuschko.gradle.docker.tasks.image.DockerBuildImage
 import com.bmuschko.gradle.docker.tasks.image.Dockerfile
 import com.bmuschko.gradle.vagrant.tasks.VagrantUp
 import com.github.benmanes.gradle.versions.updates.DependencyUpdatesTask
-import com.github.gradle.node.npm.task.NpxTask
+import com.github.gradle.node.npm.task.NpmTask
 import io.github.vacxe.buildtimetracker.reporters.markdown.MarkdownConfiguration
 import io.micronaut.gradle.docker.MicronautDockerfile
 import io.micronaut.gradle.docker.NativeImageDockerfile
@@ -95,190 +95,10 @@ node {
 
 tasks {
 
-    // Gradle log levels: https://docs.gradle.org/current/userguide/logging.html
-    // esbuild log levels: https://esbuild.github.io/api/#log-level
-    val esbuildLoglevel: String = when (loglevel) {
-        "ERROR" -> "error"
-        "QUIET" -> "silent"
-        "LIFECYCLE" -> "warning" // defaults
-        "INFO" -> "info"
-        "DEBUG" -> "debug"
-        else -> "warning" // fallback to the default
-    }
-
-    val esbuildMinifyJs by registering(NpxTask::class) {
-        dependsOn("npmInstall")
-
-        val fileToMinify = file("src/main/resources/public/javascripts/main.js")
-        val outputDir = layout.buildDirectory.dir("resources/main/public/javascripts").get()
-
-        inputs.file(fileToMinify)
-
-        command = "esbuild"
-        args = listOf(
-            "$fileToMinify",
-            "--minify",
-            "--entry-names=[name].[hash]",
-            "--outdir=$outputDir",
-            "--allow-overwrite",
-            "--log-level=$esbuildLoglevel",
-        )
-
-        outputs.files(
-            fileTree(outputDir).matching {
-                include("*.*.js")
-            },
-        )
-    }
-
-    val esbuildMinifyCss by registering(NpxTask::class) {
-        dependsOn("npmInstall")
-
-        val fileToMinify = file("src/main/resources/public/stylesheets/main.css")
-        val outputDir = layout.buildDirectory.dir("resources/main/public/stylesheets").get()
-
-        inputs.file(fileToMinify)
-
-        command = "esbuild"
-        args = listOf(
-            "$fileToMinify",
-            "--bundle",
-            "--minify",
-            "--entry-names=[name].[hash]",
-            "--outdir=$outputDir",
-            "--allow-overwrite",
-            "--log-level=$esbuildLoglevel",
-        )
-
-        outputs.files(
-            fileTree(outputDir).matching {
-                include("*.*.css")
-            },
-        )
-    }
-
-    val compressMinifiedJs by registering(NpxTask::class) {
-        dependsOn(esbuildMinifyJs)
-
-        val dirToCompress = layout.buildDirectory.dir("resources/main/public/javascripts").get()
-        inputs.files(
-            fileTree(dirToCompress).matching {
-                include("*.*.js")
-            },
-        )
-
-        command = "gzipper"
-        args = listOf(
-            "compress",
-            "--gzip",
-            "--gzip-level", "9",
-            "--deflate",
-            "--brotli",
-            "$dirToCompress",
-        )
-
-        outputs.files(
-            fileTree(dirToCompress).matching {
-                include("*.js.br")
-                include("*.js.gz")
-                include("*.js.zz")
-            },
-        )
-    }
-
-    val compressMinifiedCss by registering(NpxTask::class) {
-        dependsOn(esbuildMinifyCss)
-
-        val dirToCompress = layout.buildDirectory.dir("resources/main/public/stylesheets").get()
-        inputs.files(
-            fileTree(dirToCompress).matching {
-                include("*.*.css")
-            },
-        )
-
-        command = "gzipper"
-        args = listOf(
-            "compress",
-            "--gzip",
-            "--gzip-level", "9",
-            "--deflate",
-            "--brotli",
-            "$dirToCompress",
-        )
-
-        outputs.files(
-            fileTree(dirToCompress).matching {
-                include("*.css.br")
-                include("*.css.gz")
-                include("*.css.zz")
-            },
-        )
-    }
-
-    val esbuildContentHashingImages by registering(NpxTask::class) {
-        dependsOn("npmInstall")
-        val imagesDir = file("src/main/resources/public/images")
-        val imagesGlob = "$imagesDir/**/*.*"
-        val outputDir = layout.buildDirectory.dir("resources/main/public/images").get()
-
-        inputs.files(
-            fileTree(imagesDir).matching {
-                include(".jpg")
-                include(".png")
-            },
-        )
-
-        val loaders = listOf(
-            "--loader:.webp=copy",
-            "--loader:.jpg=copy",
-            "--loader:.png=copy",
-            "--loader:.ico=copy",
-        )
-
-        command = "esbuild"
-        args = loaders + listOf(
-            "--entry-names=[dir]/[name].[hash]",
-            "--outdir=$outputDir",
-            "--log-level=$esbuildLoglevel",
-            "--allow-overwrite",
-            imagesGlob,
-        )
-
-        outputs.files(
-            fileTree(outputDir).matching {
-                include("*.*.jpg")
-                include("*.*.png")
-            },
-        )
-    }
-
-    val convertImagesToWebp by registering(NpxTask::class) {
-        dependsOn(esbuildContentHashingImages)
-
-        val imagesDir = layout.buildDirectory.dir("resources/main/public/images").get()
-        val outputDir = layout.buildDirectory.dir("resources/main/public/images").get()
-
-        inputs.files(
-            fileTree(imagesDir).matching {
-                include("*.*.jpg")
-                include("*.*.png")
-            },
-        )
-
-        command = "sharp"
-        args = listOf(
-            "--input", "${imagesDir.asFile.absolutePath}/*.jpg",
-            "--input", "${imagesDir.asFile.absolutePath}/*.png",
-            "--output", outputDir.asFile.absolutePath,
-            "--format", "webp",
-            "--quality", "90",
-        )
-
-        outputs.files(
-            fileTree(outputDir).matching {
-                include("*.webp")
-            },
-        )
+    val npmAssetsPipeline by registering(NpmTask::class) {
+        inputs.files(fileTree(layout.projectDirectory.dir("src/main/resources")))
+        args = listOf("run", "assetsPipeline")
+        outputs.files(fileTree(layout.buildDirectory.dir("resources/main/public")))
     }
 
     val generateMetafile by registering(JavaExec::class) {
@@ -292,7 +112,7 @@ tasks {
     }
 
     val assetsPipeline by registering {
-        dependsOn(compressMinifiedJs, compressMinifiedCss, convertImagesToWebp)
+        dependsOn(npmAssetsPipeline)
         finalizedBy(generateMetafile)
     }
 

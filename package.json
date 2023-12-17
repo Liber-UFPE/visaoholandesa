@@ -1,9 +1,13 @@
 {
+  "scripts": {
+    "assetsPipeline": "node assets-pipeline.mjs"
+  },
   "devDependencies": {
     "@lhci/cli": "0.12.0",
     "esbuild": "0.19.8",
+    "fast-glob": "3.3.2",
     "gzipper": "^7.2.0",
     "purgecss": "5.0.0",
-    "sharp-cli": "4.2.0"
+    "sharp": "0.33.0"
   }
 }
