@@ -96,6 +96,7 @@ node {
 tasks {
 
     val npmAssetsPipeline by registering(NpmTask::class) {
+        dependsOn("npmInstall")
         inputs.files(fileTree(layout.projectDirectory.dir("src/main/resources")))
         args = listOf("run", "assetsPipeline")
         outputs.files(fileTree(layout.buildDirectory.dir("resources/main/public")))
