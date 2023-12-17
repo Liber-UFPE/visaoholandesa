@@ -8,6 +8,6 @@
     "fast-glob": "3.3.2",
     "gzipper": "^7.2.0",
     "purgecss": "5.0.0",
-    "sharp": "0.33.0"
+    "sharp": "^0.33.0"
   }
 }
