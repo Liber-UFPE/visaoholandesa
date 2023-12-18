@@ -12,8 +12,8 @@ import java.io.File
 import java.util.Optional
 
 class AssetsResolverTest : BehaviorSpec({
-    given("AssetsHashResolver") {
-        `when`(".hashed") {
+    given("AssetsResolver") {
+        `when`("#at") {
             val resourceResolver: ResourceResolver = mockk()
             every { resourceResolver.getResourceAsStream("classpath:public/assets-metadata.json") } answers {
                 Optional.of(File("src/test/resources/public/assets-metadata.json").inputStream())
@@ -23,11 +23,11 @@ class AssetsResolverTest : BehaviorSpec({
 
             then("should return hashed version of asset") {
                 forAll(
-                    row("/javascripts/main.js", "/javascripts/main", "F3OB5HRP", "js", "text/javascript"),
+                    row("/javascripts/main.js", "/javascripts/main", "34UGRNNI", "js", "application/javascript"),
                     row("/stylesheets/main.css", "/stylesheets/main", "Y6PST7YS", "css", "text/css"),
                 ) { requested, original, expected, extension, mediaType ->
                     assetsResolver.at(requested) shouldBePresent { result ->
-                        result.original shouldBe original
+                        result.basename shouldBe original
                         result.hash shouldBe expected
                         result.extension shouldBe extension
                         result.mediaType shouldBe mediaType

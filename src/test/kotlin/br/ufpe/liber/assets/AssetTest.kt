@@ -1,12 +1,27 @@
 package br.ufpe.liber.assets
 
 import io.kotest.core.spec.style.BehaviorSpec
+import io.kotest.data.forAll
+import io.kotest.data.row
 import io.kotest.matchers.shouldBe
 import io.micronaut.http.MediaType
+import java.util.Optional
 
 class AssetTest : BehaviorSpec({
     given("Asset") {
-        val asset = Asset("/javascripts/main", "K68FJD75", "123456", "js", "text/javascript")
+        val brotli = Encoding("br", "br", 0)
+        val gzip = Encoding("gzip", "gz", 1)
+        val deflate = Encoding("deflate", "zz", 2)
+        val asset = Asset(
+            basename = "/javascripts/main",
+            source = "/javascripts/main.js",
+            filename = "/javascripts/main.K68FJD75.js",
+            hash = "K68FJD75",
+            integrity = "sha384-qWyHoR/uZ7x+UjVssG6ex4WUplfdMrwZMRmqQDXnn6uwCmlQUJkwhdifK4iY0EnX",
+            extension = "js",
+            mediaType = "text/javascript",
+            encodings = listOf(brotli, gzip, deflate),
+        )
 
         `when`("#mediaType") {
             then("should return an MediaType object") {
@@ -41,6 +56,19 @@ class AssetTest : BehaviorSpec({
 
             then("should return with new extension without prefix") {
                 asset.variant("ts") shouldBe "javascripts/main.K68FJD75.ts"
+            }
+        }
+
+        `when`("#preferredEncodedResource") {
+            forAll(
+                row("gzip, deflate, br", Optional.of(brotli)),
+                row("gzip, deflate", Optional.of(gzip)),
+                row("deflate", Optional.of(deflate)),
+                row("", Optional.empty()),
+            ) { acceptEncoding, expectedResource ->
+                then("should find the encoded resource") {
+                    asset.preferredEncodedResource(acceptEncoding) shouldBe expectedResource
+                }
             }
         }
     }
