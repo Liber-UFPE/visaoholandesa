@@ -40,11 +40,16 @@
     ${metadata}
 </head>
 
-<body>
+<body hx-indicator="#request-progress-bar">
 
 <%-- Only renders the `navigation` section if NOT a htmx request (first page load, for example) --%>
 @if(notHtmxRequest())
 <header id="header">
+    <div id="request-progress-bar" class="container-fluid fixed-top">
+        <div class="progress" role="progressbar" aria-valuemin="0" aria-valuemax="100">
+            <div class="progress-bar progress-bar-striped progress-bar-animated bg-success" style="width: 100%"></div>
+        </div>
+    </div>
     <nav class="navbar navbar-expand-lg bg-body-tertiary fixed-top">
         <div class="container">
             <a href="${linkTo("/")}" hx-boost="true" hx-target="#content" hx-swap="outerHTML show:top" hx-push-url="true" class="navbar-brand" aria-label="Visão Holandesa">

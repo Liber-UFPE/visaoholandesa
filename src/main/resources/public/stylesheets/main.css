@@ -110,3 +110,22 @@ body {
 .search-results .display-6 {
     line-height: 1.5;
 }
+
+/*
+htmx progress bar. See https://htmx.org/docs/#indicators
+*/
+#request-progress-bar {
+    display: none; /* starts hidden */
+    z-index: 1050;
+    padding-left: 0;
+    padding-right: 0;
+}
+
+#request-progress-bar .progress {
+    height: 5px;
+    border-radius: 0;
+}
+
+#request-progress-bar.htmx-request {
+    display: inline;
+}
