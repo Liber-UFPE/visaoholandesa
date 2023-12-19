@@ -55,6 +55,9 @@ plugins {
     // To run npm/node/js tasks
     // https://github.com/node-gradle/gradle-node-plugin
     id("com.github.node-gradle.node") version "7.0.1"
+    // SonarQube/SonarCloud plugin
+    // https://github.com/SonarSource/sonar-scanner-gradle
+    id("org.sonarqube") version "4.4.1.3373"
 }
 
 val runningOnCI: Boolean = getenv().getOrDefault("CI", "false").toBoolean()
@@ -83,6 +86,14 @@ application {
 java {
     toolchain {
         languageVersion = JavaLanguageVersion.of(javaVersion)
+    }
+}
+
+sonar {
+    properties {
+        property("sonar.projectKey", "Liber-UFPE_visaoholandesa")
+        property("sonar.organization", "liber-ufpe")
+        property("sonar.host.url", "https://sonarcloud.io")
     }
 }
 
