@@ -4,6 +4,7 @@ import com.bmuschko.gradle.docker.tasks.image.Dockerfile
 import com.bmuschko.gradle.vagrant.tasks.VagrantUp
 import com.github.benmanes.gradle.versions.updates.DependencyUpdatesTask
 import com.github.gradle.node.npm.task.NpmTask
+import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import io.github.vacxe.buildtimetracker.reporters.markdown.MarkdownConfiguration
 import io.micronaut.gradle.docker.MicronautDockerfile
 import io.micronaut.gradle.docker.NativeImageDockerfile
@@ -282,6 +283,13 @@ tasks.named<Jar>("jar") {
         include("**/.*.class")
     }
 }
+
+tasks.withType<ShadowJar>().configureEach {
+    // See Gradle docs:
+    // https://docs.gradle.org/8.5/dsl/org.gradle.api.tasks.bundling.Zip.html#org.gradle.api.tasks.bundling.Zip:zip64
+    isZip64 = true
+}
+
 /* ---------------------- */
 /* End: jte configuration */
 /* ---------------------- */
