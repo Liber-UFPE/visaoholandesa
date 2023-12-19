@@ -98,7 +98,7 @@ jobs:
           output-to: "step-summary"
           only-summary: "true"
       - name: Generate Kover XML report
-        run: gradle koverMergedXmlReport
+        run: gradle koverXmlReport
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v3
         env:
