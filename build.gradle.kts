@@ -20,8 +20,8 @@ plugins {
     id("com.google.devtools.ksp") version "1.9.21-1.0.16"
     id("com.github.johnrengelman.shadow") version "8.1.1"
     id("io.micronaut.application") version "4.2.1"
-    id("gg.jte.gradle") version "3.1.6"
     id("io.micronaut.aot") version "4.2.1"
+    id("gg.jte.gradle") version "3.1.6"
     // Apply GraalVM Native Image plugin. Micronaut already adds it, but
     // adding it explicitly allows to control which version is used.
     id("org.graalvm.buildtools.native") version "0.9.28"
@@ -377,7 +377,10 @@ dependencies {
 
     // Creates a dependency provider for graal (org.graalvm.nativeimage:svm)
     compileOnly(mn.graal.asProvider())
-    runtimeOnly(mn.logback.classic)
+    // Later use the catalog. For now, it will declare the dependency
+    // manually to avoid CVE-2023-45960:
+    // runtimeOnly(mn.logback.classic)
+    implementation("ch.qos.logback:logback-core:1.4.14")
     runtimeOnly(mn.jackson.module.kotlin)
 
     implementation(kotlin("reflect", kotlinVersion))
