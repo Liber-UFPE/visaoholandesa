@@ -156,6 +156,9 @@ jobs:
   create-release:
     name: Creates a GitHub Release
     runs-on: ubuntu-latest
+    concurrency:
+      group: "create-releases"
+      cancel-in-progress: true
     needs:
       - check-if-prod
       - build-docker
