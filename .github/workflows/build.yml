@@ -97,6 +97,14 @@ jobs:
           reporter: java-junit
           output-to: "step-summary"
           only-summary: "true"
+      - name: Generate Kover XML report
+        run: gradle koverMergedXmlReport
+      - name: Upload coverage reports to Codecov
+        uses: codecov/codecov-action@v3
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+        with:
+          verbose: true
 
   build-docker:
     name: Package / Docker / build
