@@ -12,6 +12,7 @@ concurrency:
 env:
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository }}
+  GRADLE_OPTS: "-Dorg.gradle.console=plain -Dorg.gradle.caching=true -Dsonar.gradle.skipCompile=true"
 
 jobs:
   build-docker-native:
