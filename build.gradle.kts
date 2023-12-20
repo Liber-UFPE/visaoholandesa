@@ -181,7 +181,7 @@ val accessibilityTestImplementation: Configuration = configurations["accessibili
 koverReport {
     filters {
         excludes {
-            classes("br.ufpe.liber.tasks.*")
+            classes("br.ufpe.liber.tasks.*", "br.ufpe.liber.*.*Generated")
         }
     }
 }
