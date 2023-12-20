@@ -95,7 +95,31 @@ sonar {
         property("sonar.organization", "liber-ufpe")
         property("sonar.host.url", "https://sonarcloud.io")
         property("sonar.junit.reportPaths", "build/test-results/test/*.xml")
+
+        // https://docs.sonarsource.com/sonarcloud/enriching/test-coverage/test-coverage-parameters/#javakotlinscalajvm
         property("sonar.coverage.jacoco.xmlReportPaths", "build/reports/kover/report.xml")
+
+        // https://docs.sonarsource.com/sonarcloud/enriching/external-analyzer-reports/#kotlin
+        property("sonar.kotlin.detekt.reportPaths", "build/reports/detekt/detekt.xml")
+
+        // https://docs.sonarsource.com/sonarcloud/advanced-setup/languages/kotlin/#specifying-the-kotlin-source-code-version
+        property("sonar.kotlin.source.version", "1.9")
+
+        property(
+            "sonar.sources",
+            sourceSets.main.get().allSource.srcDirs.filterNot {
+                // Exclude generated files
+                it.absolutePath.startsWith(layout.buildDirectory.asFile.get().absolutePath)
+            },
+        )
+
+        property(
+            "sonar.tests",
+            sourceSets.test.get().allSource.srcDirs.filterNot {
+                // Exclude generated files
+                it.absolutePath.startsWith(layout.buildDirectory.asFile.get().absolutePath)
+            },
+        )
     }
 }
 
