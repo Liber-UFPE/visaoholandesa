@@ -8,6 +8,7 @@ import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import io.github.vacxe.buildtimetracker.reporters.markdown.MarkdownConfiguration
 import io.micronaut.gradle.docker.MicronautDockerfile
 import io.micronaut.gradle.docker.NativeImageDockerfile
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import java.lang.System.getenv
 import java.nio.file.Files
 import java.time.Duration
@@ -164,7 +165,7 @@ tasks {
         group = "Assets"
         description = "Generate assets metadata file"
 
-        classpath = sourceSets.main.get().runtimeClasspath
+        classpath = assetsImplementation.plus(sourceSets.main.get().runtimeClasspath)
         mainClass = "br.ufpe.liber.tasks.GenerateAssetsMetadata"
         args(layout.buildDirectory.file("resources/main/public/").get().asFile.absolutePath)
     }
@@ -448,6 +449,17 @@ tasks.named<DependencyUpdatesTask>("dependencyUpdates") {
     }
 }
 
+val assetsImplementation by configurations.register("assetsImplementation")
+
+// LATER: This is hacky and there is probably a better way to do it.
+// We don't want to pollute the generate jars with dependencies that
+// only used for tasks, hence the `assetsImplementation` configuration.
+// But `assetsImplementation` dependencies need to be part of compile/run
+// for the task.
+tasks.named<KotlinCompile>("compileKotlin") {
+    libraries = assetsImplementation.plus(libraries)
+}
+
 dependencies {
     ksp(mn.micronaut.http.validation)
     ksp(mn.micronaut.serde.processor)
@@ -467,11 +479,6 @@ dependencies {
     implementation(kotlin("stdlib-jdk8", kotlinVersion))
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.2")
 
-    // Exposed
-    // https://github.com/JetBrains/Exposed
-    implementation("org.jetbrains.exposed:exposed-core:$exposedVersion")
-    implementation("org.jetbrains.exposed:exposed-dao:$exposedVersion")
-
     // Lucene
     implementation("org.apache.lucene:lucene-core:$luceneVersion")
     implementation("org.apache.lucene:lucene-analysis-common:$luceneVersion")
@@ -485,11 +492,6 @@ dependencies {
     implementation("org.owasp.antisamy:antisamy:1.7.4")
     implementation("org.owasp.encoder:encoder:1.2.3")
 
-    implementation("commons-codec:commons-codec:1.16.0")
-    implementation("org.lz4:lz4-pure-java:1.8.0")
-    implementation("org.apache.tika:tika-core:2.9.1")
-    implementation("org.apache.tika:tika-parsers-standard-package:2.9.1")
-
     // jte dependencies
     implementation("gg.jte:jte:$jteVersion")
     implementation("gg.jte:jte-kotlin:$jteVersion")
@@ -501,7 +503,12 @@ dependencies {
     compileOnly(mn.graal.asProvider())
     compileOnly(mn.micronaut.http.client)
 
-    runtimeOnly("com.mysql:mysql-connector-j:8.2.0")
+    // Exposed
+    // https://github.com/JetBrains/Exposed
+    compileOnly("org.jetbrains.exposed:exposed-core:$exposedVersion")
+    compileOnly("org.jetbrains.exposed:exposed-dao:$exposedVersion")
+
+    // runtimeOnly("com.mysql:mysql-connector-j:8.2.0")
     runtimeOnly(mn.jackson.module.kotlin)
 
     // Kotest latest version
@@ -511,4 +518,10 @@ dependencies {
     // Accessibility Tests
     accessibilityTestImplementation("org.seleniumhq.selenium:selenium-java:4.16.1")
     accessibilityTestImplementation("com.deque.html.axe-core:selenium:4.8.0")
+
+    // Assets pipeline
+    assetsImplementation("commons-codec:commons-codec:1.16.0")
+    assetsImplementation("org.lz4:lz4-pure-java:1.8.0")
+    assetsImplementation("org.apache.tika:tika-core:2.9.1")
+    assetsImplementation("org.apache.tika:tika-parsers-standard-package:2.9.1")
 }
