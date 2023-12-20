@@ -85,7 +85,15 @@ jobs:
       - name: Set up Gradle and Java
         uses: ./.github/gradle-action
       - name: Run tests
+        run: ./gradlew test
+      - name: Generate Kover Reports
         run: ./gradlew koverHtmlReport koverXmlReport -x accessibilityTest
+      - name: Generate Detekt Report
+        run: ./gradlew detekt
+      - name: Check folders
+        run: |
+          tree build/test-results
+          tree build/reports
       - name: Run SonarCloud Analysis
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -110,8 +118,6 @@ jobs:
           reporter: java-junit
           output-to: "step-summary"
           only-summary: "true"
-      - name: Generate Kover XML report
-        run: ./gradlew koverXmlReport
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v3
         env:
