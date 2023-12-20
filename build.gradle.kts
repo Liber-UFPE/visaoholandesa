@@ -94,6 +94,8 @@ sonar {
         property("sonar.projectKey", "Liber-UFPE_visaoholandesa")
         property("sonar.organization", "liber-ufpe")
         property("sonar.host.url", "https://sonarcloud.io")
+        property("sonar.junit.reportPaths", "build/test-results/test/*.xml")
+        property("sonar.jacoco.reportPaths", "build/reports/kover/report.xml")
     }
 }
 
