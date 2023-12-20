@@ -46,8 +46,8 @@ jobs:
           # Allows this job to write to the cache every time it runs
           gradle-cache-read-only: false
       - name: Start Gradle Daemon
-        run: gradle --info
-      - run: gradle testClasses
+        run: ./gradlew --info
+      - run: ./gradlew testClasses
       - name: Gradle Tasks Summary
         run: cat build/reports/build-times.md >> $GITHUB_STEP_SUMMARY
 
@@ -85,12 +85,12 @@ jobs:
       - name: Set up Gradle and Java
         uses: ./.github/gradle-action
       - name: Run tests
-        run: gradle koverHtmlReport koverXmlReport -x accessibilityTest
+        run: ./gradlew koverHtmlReport koverXmlReport -x accessibilityTest
       - name: Run SonarCloud Analysis
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        run: gradle sonar
+        run: ./gradlew sonar
       - name: Gradle Tasks Summary
         run: cat build/reports/build-times.md >> $GITHUB_STEP_SUMMARY
       - name: Setup Pandoc
@@ -111,7 +111,7 @@ jobs:
           output-to: "step-summary"
           only-summary: "true"
       - name: Generate Kover XML report
-        run: gradle koverXmlReport
+        run: ./gradlew koverXmlReport
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v3
         env:
@@ -136,7 +136,7 @@ jobs:
       - name: Docker / Set up Buildx
         uses: docker/setup-buildx-action@v3
       - name: Docker / Create Image
-        run: gradle dockerBuild
+        run: ./gradlew dockerBuild
       - name: Gradle Tasks Summary
         run: cat build/reports/build-times.md >> $GITHUB_STEP_SUMMARY
       - name: Docker / List images
