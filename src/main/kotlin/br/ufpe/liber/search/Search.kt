@@ -57,12 +57,12 @@ class Search(
 
         val searchResults = topDocs.scoreDocs.slice(pagingStart..pagingEnd).map { scoreDoc ->
             val document = storedFields.document(scoreDoc.doc)
-            val pageContents = document.get(PageMetadata.TEXT)
+            val pageContents = document[PageMetadata.TEXT]
 
-            val fields = termVectors.get(scoreDoc.doc)
-            val hightlightedContent = textHighlighter.highlightContent(highlighter, pageContents, fields)
+            val fields = termVectors[scoreDoc.doc]
+            val highlightedContent = textHighlighter.highlightContent(highlighter, pageContents, fields)
 
-            SearchResult(document, hightlightedContent)
+            SearchResult(document, highlightedContent)
         }
 
         return SearchResults(topDocs.totalHits.value.toInt(), searchResults, page + 1)
@@ -73,32 +73,32 @@ class Search(
 data class SearchResult(
     val book: Book,
     val page: Page,
-    val hightlightedContent: Content,
+    val highlightedContent: Content,
 ) {
-    constructor(doc: Document, hightlightedContent: Content) : this(
+    constructor(doc: Document, highlightedContent: Content) : this(
         Book(
-            id = doc.get(BookMetadata.ID).toLong(),
-            title = doc.get(BookMetadata.TITLE),
-            alternative = doc.get(BookMetadata.ALTERNATIVE),
-            creator = doc.get(BookMetadata.CREATOR),
-            publisher = doc.get(BookMetadata.PUBLISHER),
-            date = doc.get(BookMetadata.DATE),
-            local = doc.get(BookMetadata.LOCAL),
-            collection = doc.get(BookMetadata.COLLECTION),
-            language = doc.get(BookMetadata.LANGUAGE),
-            contributor = doc.get(BookMetadata.CONTRIBUTOR),
-            subject = doc.get(BookMetadata.SUBJECT),
-            description = doc.get(BookMetadata.DESCRIPTION),
-            rights = doc.get(BookMetadata.RIGHTS),
-            source = doc.get(BookMetadata.SOURCE),
-            text = doc.get(BookMetadata.TEXT),
+            id = doc[BookMetadata.ID].toLong(),
+            title = doc[BookMetadata.TITLE],
+            alternative = doc[BookMetadata.ALTERNATIVE],
+            creator = doc[BookMetadata.CREATOR],
+            publisher = doc[BookMetadata.PUBLISHER],
+            date = doc[BookMetadata.DATE],
+            local = doc[BookMetadata.LOCAL],
+            collection = doc[BookMetadata.COLLECTION],
+            language = doc[BookMetadata.LANGUAGE],
+            contributor = doc[BookMetadata.CONTRIBUTOR],
+            subject = doc[BookMetadata.SUBJECT],
+            description = doc[BookMetadata.DESCRIPTION],
+            rights = doc[BookMetadata.RIGHTS],
+            source = doc[BookMetadata.SOURCE],
+            text = doc[BookMetadata.TEXT],
         ),
         Page(
-            id = doc.get(PageMetadata.ID).toLong(),
-            number = doc.get(PageMetadata.NUMBER).toLong(),
-            text = doc.get(PageMetadata.TEXT),
+            id = doc[PageMetadata.ID].toLong(),
+            number = doc[PageMetadata.NUMBER].toLong(),
+            text = doc[PageMetadata.TEXT],
         ),
-        hightlightedContent,
+        highlightedContent,
     )
 }
 

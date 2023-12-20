@@ -18,9 +18,8 @@ import kotlin.math.max
 @Produces(MediaType.TEXT_HTML)
 class SearchController(private val search: Search, private val templates: Templates) : KteController {
     @Get("/search")
-    fun search(@QueryValue query: Optional<String>, @QueryValue page: Optional<Int>): HttpResponse<KteWriteable> {
-        return runSearch(query.orElse(""), page)
-    }
+    fun search(@QueryValue query: Optional<String>, @QueryValue page: Optional<Int>): HttpResponse<KteWriteable> =
+        runSearch(query.orElse(""), page)
 
     @Get("/advanced-search")
     fun advancedSearch(
@@ -36,15 +35,12 @@ class SearchController(private val search: Search, private val templates: Templa
             exactPhrase = exactPhrase.orElse(""),
             notWords = notWords.orElse(""),
         )
-        if (composer.isEmpty()) {
-            return ok(templates.advancedSearch())
-        }
-        return runSearch(composer.query, page)
+        return if (composer.isEmpty()) ok(templates.advancedSearch()) else runSearch(composer.query, page)
     }
 
-    private fun runSearch(query: String, page: Optional<Int>): HttpResponse<KteWriteable> {
-        if (query.isBlank()) return ok(templates.search(query, SearchResults.empty()))
-
+    private fun runSearch(query: String, page: Optional<Int>): HttpResponse<KteWriteable> = if (query.isBlank()) {
+        ok(templates.search(query, SearchResults.empty()))
+    } else {
         // For users, we show 1-based pages, but internally we handle it as 0-based.
         // Therefore, we need to subtract `1`. We `max` it with zero to avoid negative
         // values here.
@@ -54,6 +50,6 @@ class SearchController(private val search: Search, private val templates: Templa
         } catch (ex: ParseException) {
             SearchResults.empty()
         }
-        return ok(templates.search(query, searchResults))
+        ok(templates.search(query, searchResults))
     }
 }

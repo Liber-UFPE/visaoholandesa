@@ -10,7 +10,7 @@ import io.micronaut.http.annotation.Header
 import io.micronaut.http.server.types.files.StreamedFile
 import java.time.LocalDateTime
 import java.time.ZoneId
-import java.time.ZoneOffset
+import java.time.ZoneOffset.UTC
 import java.time.format.DateTimeFormatter
 import java.util.Locale
 import java.util.concurrent.TimeUnit
@@ -54,7 +54,5 @@ class AssetsController(
             .orElse(HttpResponse.notFound())
     }
 
-    private fun oneYearFromNow(): String {
-        return LocalDateTime.now(ZoneOffset.UTC).plusYears(1).format(Cache.HTTP_DATE_FORMATTER)
-    }
+    private fun oneYearFromNow(): String = LocalDateTime.now(UTC).plusYears(1).format(Cache.HTTP_DATE_FORMATTER)
 }

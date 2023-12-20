@@ -28,7 +28,7 @@
                                         <small class="text-body-secondary">Ano: ${result.book.date}</small>
                                     @endif
                                 </div>
-                                <p class="mb-1 lead">...${result.hightlightedContent}...</p>
+                                <p class="mb-1 lead">...${result.highlightedContent}...</p>
                                 <span class="text-body-secondary">Clique para accessar o conteúdo da página.</span>
                             </a>
                         @endfor

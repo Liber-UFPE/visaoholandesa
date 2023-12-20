@@ -4,9 +4,7 @@ data class Page(val number: Int, val label: String = "") {
 
     val hidden: Boolean = (label == Pagination.HIDDEN_SLOTS)
 
-    override fun toString(): String {
-        return label.ifBlank { number.toString() }
-    }
+    override fun toString(): String = label.ifBlank { number.toString() }
 }
 
 class Pagination(

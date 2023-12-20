@@ -17,10 +17,7 @@ import org.apache.lucene.search.highlight.TokenSources
 
 @Singleton
 class TextHighlighter(private val analyzer: Analyzer, private val contentSanitizer: ContentSanitizer) {
-    private fun query(query: String): Query {
-        val queryParser = QueryParser(PageMetadata.TEXT, analyzer)
-        return queryParser.parse(query)
-    }
+    private fun query(query: String): Query = QueryParser(PageMetadata.TEXT, analyzer).parse(query)
 
     fun highlighter(
         query: Query,
