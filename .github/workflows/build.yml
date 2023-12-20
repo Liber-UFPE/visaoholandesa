@@ -32,25 +32,6 @@ jobs:
       - name: Detekt Summary
         run: cat build/reports/detekt/detekt.md >> $GITHUB_STEP_SUMMARY
 
-  sonar:
-    name: SonarCloud Code Analysis
-    runs-on: "ubuntu-latest"
-    steps:
-      - uses: actions/checkout@v4
-      - name: Cache SonarCloud packages
-        uses: actions/cache@v3
-        with:
-          path: ~/.sonar/cache
-          key: ${{ runner.os }}-sonar
-          restore-keys: ${{ runner.os }}-sonar
-      - name: Set up Gradle and Java
-        uses: ./.github/gradle-action
-      - name: Run SonarCloud Analysis
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        run: gradle build sonar --info
-
   compile:
     name: Build / compile
     runs-on: ubuntu-latest
@@ -93,10 +74,21 @@ jobs:
       - compile
     steps:
       - uses: actions/checkout@v4
+      - name: Cache SonarCloud packages
+        uses: actions/cache@v3
+        with:
+          path: ~/.sonar/cache
+          key: ${{ runner.os }}-sonar
+          restore-keys: ${{ runner.os }}-sonar
       - name: Set up Gradle and Java
         uses: ./.github/gradle-action
       - name: Run tests
-        run: gradle koverHtmlReport -x accessibilityTest
+        run: gradle koverHtmlReport koverXmlReport -x accessibilityTest
+      - name: Run SonarCloud Analysis
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        run: gradle sonar
       - name: Gradle Tasks Summary
         run: cat build/reports/build-times.md >> $GITHUB_STEP_SUMMARY
       - name: Setup Pandoc
