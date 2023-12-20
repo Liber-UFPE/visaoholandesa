@@ -122,12 +122,15 @@ sonar {
         property(
             "sonar.tests",
             sourceSets
+                // Include any source set that contains test in its name.
+                // For example, "test", "integrationTest", etc.
                 .filter { sourceSet -> sourceSet.name.contains("test", ignoreCase = true) }
                 .flatMap { sourceSet ->
                     sourceSet
                         .allSource
                         .srcDirs
                         .filterNot { dir ->
+                            // Exclude generated files
                             dir.absolutePath.startsWith(layout.buildDirectory.asFile.get().absolutePath)
                         }
                         .filter(File::exists)
