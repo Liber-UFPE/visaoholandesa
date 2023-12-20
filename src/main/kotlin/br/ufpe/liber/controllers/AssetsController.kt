@@ -34,17 +34,24 @@ class AssetsController(
         return assetsResolver
             .fromHashed("/$path")
             .flatMap { asset ->
-                asset.preferredEncodedResource(encoding).flatMap { availableEncoding ->
-                    resourceResolver.getResourceAsStream(asset.classpath(availableEncoding.extension))
-                        .map { inputStream ->
-                            HttpResponse.ok(StreamedFile(inputStream, asset.mediaType()))
-                                .contentEncoding(availableEncoding.http)
-                        }
-                }.or {
-                    resourceResolver.getResourceAsStream(asset.classpath()).map { inputStream ->
-                        HttpResponse.ok(StreamedFile(inputStream, asset.mediaType()))
+                asset
+                    .preferredEncodedResource(encoding)
+                    .flatMap { availableEncoding ->
+                        resourceResolver
+                            .getResourceAsStream(asset.classpath(availableEncoding.extension))
+                            .map { inputStream ->
+                                HttpResponse
+                                    .ok(StreamedFile(inputStream, asset.mediaType()))
+                                    .contentEncoding(availableEncoding.http)
+                            }
                     }
-                }
+                    .or {
+                        resourceResolver
+                            .getResourceAsStream(asset.classpath())
+                            .map { inputStream ->
+                                HttpResponse.ok(StreamedFile(inputStream, asset.mediaType()))
+                            }
+                    }
             }
             .map { response ->
                 response
