@@ -107,10 +107,16 @@ sonar {
 
         property(
             "sonar.sources",
-            sourceSets.main.get().allSource.srcDirs.filterNot {
-                // Exclude generated files
-                it.absolutePath.startsWith(layout.buildDirectory.asFile.get().absolutePath)
-            },
+            sourceSets
+                .main
+                .get()
+                .allSource
+                .srcDirs
+                .filterNot {
+                    // Exclude generated files
+                    it.absolutePath.startsWith(layout.buildDirectory.asFile.get().absolutePath)
+                }
+                .filter(File::exists),
         )
 
         property(
@@ -118,9 +124,13 @@ sonar {
             sourceSets
                 .filter { sourceSet -> sourceSet.name.contains("test", ignoreCase = true) }
                 .flatMap { sourceSet ->
-                    sourceSet.allSource.srcDirs.filterNot { dir ->
-                        dir.absolutePath.startsWith(layout.buildDirectory.asFile.get().absolutePath)
-                    }
+                    sourceSet
+                        .allSource
+                        .srcDirs
+                        .filterNot { dir ->
+                            dir.absolutePath.startsWith(layout.buildDirectory.asFile.get().absolutePath)
+                        }
+                        .filter(File::exists)
                 },
         )
     }
