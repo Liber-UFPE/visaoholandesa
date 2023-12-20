@@ -410,39 +410,26 @@ tasks.named<DependencyUpdatesTask>("dependencyUpdates") {
 dependencies {
     ksp(mn.micronaut.http.validation)
     ksp(mn.micronaut.serde.processor)
+
     implementation(mn.micronaut.aop)
     implementation(mn.micronaut.kotlin.runtime)
     implementation(mn.micronaut.kotlin.extension.functions)
     implementation(mn.micronaut.serde.jackson)
     implementation(mn.micronaut.views.jte)
     implementation(mn.micronaut.management)
-    compileOnly(mn.micronaut.http.client)
-    testImplementation(mn.micronaut.http.client)
 
-    // Creates a dependency provider for graal (org.graalvm.nativeimage:svm)
-    compileOnly(mn.graal.asProvider())
     // Later use the catalog. For now, it will declare the dependency
     // manually to avoid CVE-2023-45960:
     // runtimeOnly(mn.logback.classic)
     implementation("ch.qos.logback:logback-core:1.4.14")
-    runtimeOnly(mn.jackson.module.kotlin)
-
     implementation(kotlin("reflect", kotlinVersion))
     implementation(kotlin("stdlib-jdk8", kotlinVersion))
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.2")
-
-    // jte dependencies
-    jteGenerate("gg.jte:jte-models:$jteVersion")
-    jteGenerate("gg.jte:jte-native-resources:$jteVersion")
-    implementation("gg.jte:jte:$jteVersion")
-    implementation("gg.jte:jte-kotlin:$jteVersion")
 
     // Exposed
     // https://github.com/JetBrains/Exposed
     implementation("org.jetbrains.exposed:exposed-core:$exposedVersion")
     implementation("org.jetbrains.exposed:exposed-dao:$exposedVersion")
-    // https://mvnrepository.com/artifact/com.mysql/mysql-connector-j
-    runtimeOnly("com.mysql:mysql-connector-j:8.2.0")
 
     // Lucene
     implementation("org.apache.lucene:lucene-core:$luceneVersion")
@@ -457,15 +444,30 @@ dependencies {
     implementation("org.owasp.antisamy:antisamy:1.7.4")
     implementation("org.owasp.encoder:encoder:1.2.3")
 
-    // Kotest latest version
-    testImplementation(platform("io.kotest:kotest-bom:$kotestVersion"))
-
-    // Accessibility Tests
-    accessibilityTestImplementation("org.seleniumhq.selenium:selenium-java:4.16.1")
-    accessibilityTestImplementation("com.deque.html.axe-core:selenium:4.8.0")
-
     implementation("commons-codec:commons-codec:1.16.0")
     implementation("org.lz4:lz4-pure-java:1.8.0")
     implementation("org.apache.tika:tika-core:2.9.1")
     implementation("org.apache.tika:tika-parsers-standard-package:2.9.1")
+
+    // jte dependencies
+    implementation("gg.jte:jte:$jteVersion")
+    implementation("gg.jte:jte-kotlin:$jteVersion")
+
+    jteGenerate("gg.jte:jte-models:$jteVersion")
+    jteGenerate("gg.jte:jte-native-resources:$jteVersion")
+
+    // Creates a dependency provider for graal (org.graalvm.nativeimage:svm)
+    compileOnly(mn.graal.asProvider())
+    compileOnly(mn.micronaut.http.client)
+
+    runtimeOnly("com.mysql:mysql-connector-j:8.2.0")
+    runtimeOnly(mn.jackson.module.kotlin)
+
+    // Kotest latest version
+    testImplementation(platform("io.kotest:kotest-bom:$kotestVersion"))
+    testImplementation(mn.micronaut.http.client)
+
+    // Accessibility Tests
+    accessibilityTestImplementation("org.seleniumhq.selenium:selenium-java:4.16.1")
+    accessibilityTestImplementation("com.deque.html.axe-core:selenium:4.8.0")
 }
