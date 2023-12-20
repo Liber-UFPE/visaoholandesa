@@ -29,16 +29,14 @@ internal class TemplatesFactory {
     private val logger = LoggerFactory.getLogger(TemplatesFactory::class.java)
 
     @Singleton
-    fun createTemplate(environment: Environment): Templates {
-        return if (devEnvironment(environment)) {
-            logger.info("Hot reloading jte templates")
-            val codeResolver = DirectoryCodeResolver(Paths.get("src/main/jte"))
-            val templateEngine = TemplateEngine.create(codeResolver, ContentType.Html)
-            DynamicTemplates(templateEngine)
-        } else {
-            logger.info("Use pre-compiled templates")
-            StaticTemplates()
-        }
+    fun createTemplate(environment: Environment): Templates = if (devEnvironment(environment)) {
+        logger.info("Hot reloading jte templates")
+        val codeResolver = DirectoryCodeResolver(Paths.get("src/main/jte"))
+        val templateEngine = TemplateEngine.create(codeResolver, ContentType.Html)
+        DynamicTemplates(templateEngine)
+    } else {
+        logger.info("Use pre-compiled templates")
+        StaticTemplates()
     }
 
     private fun devEnvironment(env: Environment): Boolean = env.activeNames.contains(Environment.DEVELOPMENT)

@@ -14,12 +14,10 @@ import io.micronaut.http.server.util.HttpHostResolver
 class SeoController(private val resourceResolver: ResourceResolver, private val hostResolver: HttpHostResolver) {
     @Get("/sitemap.xml")
     @Produces(MediaType.TEXT_XML)
-    fun sitemap(): HttpResponse<StreamedFile> {
-        return resourceResolver
-            .getResourceAsStream("classpath:public/sitemap.xml")
-            .map { HttpResponse.ok(StreamedFile(it, MediaType.TEXT_XML_TYPE)) }
-            .orElse(HttpResponse.notFound())
-    }
+    fun sitemap(): HttpResponse<StreamedFile> = resourceResolver
+        .getResourceAsStream("classpath:public/sitemap.xml")
+        .map { HttpResponse.ok(StreamedFile(it, MediaType.TEXT_XML_TYPE)) }
+        .orElse(HttpResponse.notFound())
 
     @Get("/robots.txt")
     @Produces(MediaType.TEXT_PLAIN)
