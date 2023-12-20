@@ -209,7 +209,7 @@ val accessibilityTestImplementation: Configuration = configurations["accessibili
 koverReport {
     filters {
         excludes {
-            classes("br.ufpe.liber.model.Database*", "br.ufpe.liber.Sitemaps")
+            classes("br.ufpe.liber.tasks.*")
         }
     }
 }
@@ -426,7 +426,7 @@ tasks.register<JavaExec>("generateSitemaps") {
     group = "Application"
     description = "Generate Sitemap.xml"
     classpath = sourceSets.main.get().runtimeClasspath
-    mainClass = "br.ufpe.liber.Sitemaps"
+    mainClass = "br.ufpe.liber.tasks.Sitemaps"
 }
 
 // Install pre-commit git hooks to run ktlint and detekt

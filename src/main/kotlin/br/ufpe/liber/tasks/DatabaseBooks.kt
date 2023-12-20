@@ -1,5 +1,7 @@
-package br.ufpe.liber.model
+package br.ufpe.liber.tasks
 
+import br.ufpe.liber.model.Book
+import br.ufpe.liber.model.Page
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import org.jetbrains.exposed.dao.LongEntity
