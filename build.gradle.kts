@@ -138,6 +138,13 @@ sonar {
                         .filter(File::exists)
                 },
         )
+
+        // See docs here:
+        // https://docs.sonarsource.com/sonarqube/latest/project-administration/analysis-scope/#code-coverage-exclusion
+        property(
+            "sonar.coverage.exclusions",
+            listOf("**/*Generated*", "**/tasks/*.*"),
+        )
     }
 }
 
