@@ -108,6 +108,9 @@ node {
 tasks {
 
     val npmAssetsPipeline by registering(NpmTask::class) {
+        group = "Assets"
+        description = "Executes assets pipeline using npm"
+
         dependsOn("npmInstall")
         inputs.files(fileTree(layout.projectDirectory.dir("src/main/resources")))
         args = listOf("run", "assetsPipeline")
@@ -115,16 +118,18 @@ tasks {
     }
 
     val generateMetafile by registering(JavaExec::class) {
-        group = "Execution"
+        group = "Assets"
         description = "Generate assets metadata file"
+
         classpath = sourceSets.main.get().runtimeClasspath
-
         mainClass = "br.ufpe.liber.tasks.GenerateAssetsMetadata"
-
         args(layout.buildDirectory.file("resources/main/public/").get().asFile.absolutePath)
     }
 
     val assetsPipeline by registering {
+        group = "Assets"
+        description = "Executes the complete assets pipeline including manifest generation"
+
         dependsOn(npmAssetsPipeline)
         finalizedBy(generateMetafile)
     }
@@ -200,6 +205,8 @@ tasks.withType<NativeImageDockerfile> {
     healthcheck(Dockerfile.Healthcheck("curl -I -f http://localhost:8080/ || exit 1"))
 }
 tasks.register("dockerImageNameNative") {
+    group = "help"
+    description = "Shows the name of the Docker image"
     doFirst {
         val images = tasks.named<DockerBuildImage>("dockerBuildNative").get().images.get()
         val maybeRegistry = registry()
@@ -212,7 +219,11 @@ tasks.register("dockerImageNameNative") {
         println(imageName?.replace(":latest", ""))
     }
 }
-tasks.register("dockerImageName") { dependsOn("dockerImageNameNative") } // This is how Gradle add aliases.
+tasks.register("dockerImageName") { // This is how Gradle add aliases.
+    group = "help"
+    description = "Shows the name of the Docker image"
+    dependsOn("dockerImageNameNative")
+}
 /* ------------------------- */
 /* End: Docker configuration */
 /* ------------------------- */
@@ -331,6 +342,9 @@ val jarsDir: File = File(vagrantBoxDir, "build/libs")
 val scriptsDir: File = File(vagrantBoxDir, "scripts")
 
 tasks.register("createVagrantDirs") {
+    group = "Vagrant"
+    description = "Create directories required by vagrantUp task"
+
     doLast {
         Files.createDirectories(jarsDir.toPath())
         Files.createDirectories(scriptsDir.toPath())
@@ -338,6 +352,9 @@ tasks.register("createVagrantDirs") {
 }
 
 tasks.register<Copy>("copyAppJar") {
+    group = "Vagrant"
+    description = "Copy application jar to Vagrant directories"
+
     from(layout.buildDirectory.dir("libs"))
     include("*.jar")
     into(jarsDir)
@@ -346,6 +363,9 @@ tasks.register<Copy>("copyAppJar") {
 }
 
 tasks.register<Copy>("copyVagrantScripts") {
+    group = "Vagrant"
+    description = "Copy application configurations to Vagrant directories"
+
     from(layout.projectDirectory.dir("scripts"))
     into(scriptsDir)
 }
@@ -359,7 +379,7 @@ tasks.named<VagrantUp>("vagrantUp") {
 /* -------------------------- */
 
 tasks.register<JavaExec>("generateSitemaps") {
-    group = "Execution"
+    group = "Application"
     description = "Generate Sitemap.xml"
     classpath = sourceSets.main.get().runtimeClasspath
     mainClass = "br.ufpe.liber.Sitemaps"
@@ -368,6 +388,9 @@ tasks.register<JavaExec>("generateSitemaps") {
 // Install pre-commit git hooks to run ktlint and detekt
 // https://docs.gradle.org/current/userguide/working_with_files.html#sec:copying_single_file_example
 tasks.register<Copy>("installGitHooks") {
+    group = "Project Setup"
+    description = "Install pre-commit git hooks"
+
     from(layout.projectDirectory.file("scripts/pre-commit"))
     into(layout.projectDirectory.dir(".git/hooks/"))
 }
