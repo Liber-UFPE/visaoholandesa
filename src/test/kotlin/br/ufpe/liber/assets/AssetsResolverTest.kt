@@ -13,13 +13,14 @@ import java.util.Optional
 
 class AssetsResolverTest : BehaviorSpec({
     given("AssetsResolver") {
-        `when`("#at") {
-            val resourceResolver: ResourceResolver = mockk()
-            every { resourceResolver.getResourceAsStream("classpath:public/assets-metadata.json") } answers {
-                Optional.of(File("src/test/resources/public/assets-metadata.json").inputStream())
-            }
+        val resourceResolver: ResourceResolver = mockk()
+        every { resourceResolver.getResourceAsStream("classpath:public/assets-metadata.json") } answers {
+            Optional.of(File("src/test/resources/public/assets-metadata.json").inputStream())
+        }
 
-            val assetsResolver = AssetsResolver(resourceResolver)
+        val assetsResolver = AssetsResolver(resourceResolver)
+
+        `when`("#at") {
 
             then("should return hashed version of asset") {
                 forAll(
@@ -37,6 +38,32 @@ class AssetsResolverTest : BehaviorSpec({
 
             then("should return empty when there is not hashed version") {
                 assetsResolver.at("/javascripts/not-there.js") shouldBe Optional.empty()
+            }
+        }
+
+        `when`("#fromHashed") {
+            then("should find using hashed name") {
+                forAll(
+                    row(
+                        "/javascripts/main.34UGRNNI.js",
+                        "/javascripts/main",
+                        "34UGRNNI",
+                        "js",
+                        "application/javascript",
+                    ),
+                    row("/stylesheets/main.Y6PST7YS.css", "/stylesheets/main", "Y6PST7YS", "css", "text/css"),
+                ) { requested, original, expected, extension, mediaType ->
+                    assetsResolver.fromHashed(requested) shouldBePresent { result ->
+                        result.basename shouldBe original
+                        result.hash shouldBe expected
+                        result.extension shouldBe extension
+                        result.mediaType shouldBe mediaType
+                    }
+                }
+            }
+
+            then("should return empty when hashed filename does not exists") {
+                assetsResolver.at("/javascripts/not-there.Y6PST7YS.js") shouldBe Optional.empty()
             }
         }
     }
