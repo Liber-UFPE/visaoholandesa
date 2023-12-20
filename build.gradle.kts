@@ -107,9 +107,37 @@ sonar {
         // https://docs.sonarsource.com/sonarcloud/advanced-setup/languages/kotlin/#specifying-the-kotlin-source-code-version
         property("sonar.kotlin.source.version", "1.9")
 
-        property("sonar.sources", "src/main")
-        property("sonar.tests", listOf("src/test", "src/accessibilityTest"))
-        property("sonar.exclusions", listOf("src/main/resources/**/*.sql", "src/main/resources/**/*.xml"))
+        property(
+            "sonar.sources",
+            sourceSets
+                .main
+                .get()
+                .allSource
+                .srcDirs
+                .filterNot {
+                    // Exclude generated files
+                    it.absolutePath.startsWith(layout.buildDirectory.asFile.get().absolutePath)
+                }
+                .filter(File::exists),
+        )
+
+        property(
+            "sonar.tests",
+            sourceSets
+                // Include any source set that contains test in its name.
+                // For example, "test", "integrationTest", etc.
+                .filter { sourceSet -> sourceSet.name.contains("test", ignoreCase = true) }
+                .flatMap { sourceSet ->
+                    sourceSet
+                        .allSource
+                        .srcDirs
+                        .filterNot { dir ->
+                            // Exclude generated files
+                            dir.absolutePath.startsWith(layout.buildDirectory.asFile.get().absolutePath)
+                        }
+                        .filter(File::exists)
+                },
+        )
     }
 }
 
