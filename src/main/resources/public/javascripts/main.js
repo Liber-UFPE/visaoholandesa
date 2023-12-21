@@ -1,3 +1,5 @@
+import {Collapse} from "bootstrap";
+
 function setupFootnotesAnimationEvent() {
     const pageContents = document.querySelector(".page-contents");
     if (pageContents) {
@@ -29,6 +31,14 @@ function delayHidingHtmxProgressBarWhenTooFast() {
     }
 }
 
+function setupCollapsableComponents() {
+    const collapseElementList = document.querySelectorAll('.collapse');
+    [...collapseElementList].forEach(collapseEl =>
+        collapseEl.addEventListener("click", () => new Collapse(collapseEl))
+    );
+}
+
+window.addEventListener("load", setupCollapsableComponents);
 window.addEventListener("load", setupFootnotesAnimationEvent);
 
 // https://htmx.org/events/#htmx:load
