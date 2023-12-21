@@ -56,6 +56,8 @@ async function compress(dir) {
 async function minify(entryPoint, outputDir) {
     return await esbuild.build({
         entryPoints: [entryPoint],
+        bundle: true,
+        legalComments: "none",
         minify: true,
         entryNames: "[name].[hash]",
         outdir: outputDir,
