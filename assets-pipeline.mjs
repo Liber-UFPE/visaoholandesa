@@ -26,7 +26,8 @@ async function compileBootstrap() {
     const bootstrapOutputFile = `${stylesOutputDir}/bootstrap.css`
     const result = sass.compile(bootstrapFile, {
         style: "compressed",
-        loadPaths: ["node_modules"]
+        loadPaths: ["node_modules"],
+        verbose: true,
     });
 
     return await postcss([
@@ -46,11 +47,20 @@ function writeCss(destination, content) {
         if (err) {
             throw err;
         }
+        console.info(`Writing compiled CSS to ${destination} (content size = ${content.length})`)
     });
 }
 
 async function compress(dir) {
-    return await new Compress(dir, dir, {gzip: true, brotli: true, deflate: true}).run();
+    const compressOptions = {
+        brotli: true,
+        deflate: true,
+        deflateLevel: 9,
+        gzip: true,
+        gzipLevel: 9,
+        verbose: true,
+    }
+    return await new Compress(dir, dir, compressOptions).run();
 }
 
 async function minify(entryPoint, outputDir) {
@@ -62,6 +72,7 @@ async function minify(entryPoint, outputDir) {
         entryNames: "[name].[hash]",
         outdir: outputDir,
         allowOverwrite: true,
+        logLevel: "info",
     }).then(() => compress(outputDir));
 }
 
@@ -76,7 +87,8 @@ async function copyImages(sourceDir, outputDir) {
             ".png": "copy",
             ".ico": "copy",
         },
-        allowOverwrite: true
+        allowOverwrite: true,
+        logLevel: "info",
     });
 }
 
