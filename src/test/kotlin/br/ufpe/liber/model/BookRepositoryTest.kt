@@ -9,9 +9,8 @@ import java.util.Optional
 
 @MicronautTest
 class BookRepositoryTest(private val bookRepository: BookRepository) : BehaviorSpec({
-
     given("BookRepository") {
-        `when`(".listAll") {
+        `when`("#listAll") {
             then("should return all the books") {
                 val books = bookRepository.listAll()
                 books.size shouldBe 14
@@ -19,7 +18,13 @@ class BookRepositoryTest(private val bookRepository: BookRepository) : BehaviorS
             }
         }
 
-        `when`(".get") {
+        `when`("#hasBooks") {
+            then("should return true when there are books") {
+                bookRepository.hasBooks() shouldBe true
+            }
+        }
+
+        `when`("#get") {
             then("should return book when found") {
                 bookRepository.get(1) shouldBePresent { book ->
                     book.id shouldBe 1L

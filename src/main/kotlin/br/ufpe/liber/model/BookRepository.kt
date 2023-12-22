@@ -20,7 +20,7 @@ import java.util.TreeMap
 import java.util.concurrent.ExecutorService
 
 @Singleton
-class BookRepository(private val resourceResolver: ResourceResolver) {
+class BookRepository(resourceResolver: ResourceResolver) {
 
     companion object {
         val logger: Logger = LoggerFactory.getLogger(BookRepository::class.java)
@@ -41,6 +41,7 @@ class BookRepository(private val resourceResolver: ResourceResolver) {
     }
 
     fun listAll(): List<Book> = books.values.toList()
+    fun hasBooks(): Boolean = books.isNotEmpty()
     fun get(id: Long): Optional<Book> = Optional.ofNullable(books[id])
 }
 
@@ -50,15 +51,15 @@ class BookRepositoryHealthIndicator(
     @Named(TaskExecutors.BLOCKING) private val executorService: ExecutorService,
 ) : HealthIndicator {
     companion object {
-        private val UP = HealthStatus(HealthStatus.NAME_UP, "Books Repository is operational", true, null)
-        private val DOWN = HealthStatus(HealthStatus.NAME_DOWN, "Books Repository is NOT operational", false, null)
+        val UP = HealthStatus(HealthStatus.NAME_UP, "Books Repository is operational", true, null)
+        val DOWN = HealthStatus(HealthStatus.NAME_DOWN, "Books Repository is NOT operational", false, null)
     }
 
     override fun getResult(): Publisher<HealthResult> = AsyncSingleResultPublisher(executorService, ::getHealthResult)
 
     private fun getHealthResult(): HealthResult {
         val builder = HealthResult.builder("repository")
-        return if (bookRepository.listAll().isNotEmpty()) {
+        return if (bookRepository.hasBooks()) {
             builder.status(UP).build()
         } else {
             builder.status(DOWN).build()

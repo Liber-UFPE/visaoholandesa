@@ -522,6 +522,9 @@ dependencies {
     testImplementation(platform("io.kotest:kotest-bom:$kotestVersion"))
     testImplementation(mn.micronaut.http.client)
 
+    // To test health indicators
+    testImplementation(mn.reactor.test)
+
     // Accessibility Tests
     accessibilityTestImplementation("org.seleniumhq.selenium:selenium-java:4.16.1")
     accessibilityTestImplementation("com.deque.html.axe-core:selenium:4.8.0")
