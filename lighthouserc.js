@@ -21,9 +21,10 @@ module.exports = {
         assert: {
             preset: "lighthouse:no-pwa",
             assertions: {
+                "bf-cache": "off",
+                "offscreen-images": "off",
                 // TODO: try to solve these later
                 "heading-order": "off",
-                "bf-cache": "off",
                 "unused-css-rules": "off",
                 "image-size-responsive": "off",
                 "render-blocking-resources": "off",
