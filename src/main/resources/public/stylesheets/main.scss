@@ -55,7 +55,7 @@ $bg-base-color: #198754;
 $bg-dark-color: color.adjust($bg-base-color, $lightness: -10%);
 $bg-darker-color: color.adjust($bg-dark-color, $lightness: -5%);
 $highlight-color: #F1B980;
-$default-font-family: roboto, sans-serif;
+$default-font-family: "Avenir", "Montserrat", "Corbel", 'URW Gothic', source-sans-pro, system-ui, sans-serif;
 
 #header .nav-link {
     margin-top: 5px;
