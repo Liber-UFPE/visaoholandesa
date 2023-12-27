@@ -45,19 +45,16 @@
 
 // Utilities
 @import "bootstrap/scss/utilities/api";
+
 // scss-docs-end import-stack
 
-:root {
-    /* Colors */
-    --vh-white-rgb: 255, 255, 255;
-    --vh-dark-green: #198754;
-    --vh-darker-green: rgba(0, 92, 69, 1);
-    --vh-text-opacity: 1;
-    --vh-highlight-rgb: 241, 185, 128;
-    /* Fonts */
-    --font-family: Roboto, sans-serif;
-    --vh-diagonal-angle: 2deg;
-}
+$bg-dark-text-color: #FFFFFF;
+$bg-base-color: #198754;
+$bg-dark-color: darken($bg-base-color, 10%);
+$bg-darker-color: darken($bg-dark-color, 5%);
+$highlight-color: #F1B980;
+
+$default-font-family: roboto, sans-serif;
 
 #header .nav-link {
     margin-top: 5px;
@@ -73,20 +70,21 @@
 }
 
 body {
-    font-family: var(--font-family);
+    font-family: $default-font-family;
 }
 
 .bg-dark {
-    color: rgba(var(--vh-white-rgb), var(--vh-text-opacity));
-    background-image: linear-gradient(0deg, var(--vh-darker-green), var(--vh-darker-green));
+    color: $bg-dark-text-color;
+    background-image: linear-gradient(90deg, $bg-dark-color, $bg-darker-color);
 }
 
 .bg-dark .display-6 {
-    color: rgba(var(--vh-white-rgb), .8);
+    color: $bg-dark-text-color;
+    opacity: 0.8;
 }
 
 .text-highlight {
-    color: rgba(var(--vh-highlight-rgb), 1);
+    color: $highlight-color;
 }
 
 .primary-content {
@@ -95,7 +93,7 @@ body {
 }
 
 #footer .nav-link {
-    color: rgba(var(--vh-white-rgb), var(--vh-text-opacity));
+    color: $bg-dark-text-color;
 }
 
 #footer .nav-link .align-middle:hover {
@@ -116,12 +114,12 @@ body {
 
 .blink-yellow {
     animation-duration: 1.5s;
-    animation-name: blinkYellow;
+    animation-name: blink-yellow-animation;
     animation-iteration-count: 2;
 }
 
-@keyframes blinkYellow {
-    from {
+@keyframes blink-yellow-animation {
+    0% {
         background-color: inherit;
     }
 
@@ -129,7 +127,7 @@ body {
         background-color: khaki;
     }
 
-    to {
+    100% {
         background-color: inherit;
     }
 }
