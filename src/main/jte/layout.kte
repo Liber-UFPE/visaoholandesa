@@ -17,16 +17,11 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="google-site-verification" content="lAucrunLv2Pcy2awf5Zlo1DtQmEk2X3Dwyo57E-sorw" />
-        <link rel="preconnect" href="https://fonts.googleapis.com/" />
-        <link rel="preconnect" href="https://fonts.gstatic.com/" />
         <link rel="preconnect" href="https://unpkg.com/" />
-
         <link rel="icon" type="image/x-icon" href="${linkTo("/public/images/favicon.ico")}" />
 
         <script src="https://unpkg.com/htmx.org@1.9.9"
                 integrity="sha384-QFjmbokDn2DjBjq+fM+8LUIVrAgqcNW2s0PjAxHETgRn9l4fvX31ZxDxvwQnyMOX" crossorigin="anonymous"></script>
-
-        <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
 
         @template.assets.stylesheet(path = "/stylesheets/main.css", prefix = "/static")
     @endif
