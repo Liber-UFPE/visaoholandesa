@@ -3,11 +3,10 @@ import {Compress} from "gzipper";
 import sharp from "sharp";
 import fg from "fast-glob";
 import path from "path";
-import * as sass from "sass";
+import {sassPlugin} from "esbuild-sass-plugin";
 import autoprefixer from "autoprefixer";
 import postcss from "postcss";
 import purgecss from "@fullhuman/postcss-purgecss"
-import fs from "fs";
 
 const resourcesFolder = "src/main/resources";
 const resourcesBuildFolder = "build/resources/main"
@@ -19,36 +18,33 @@ const stylesDir = `${resourcesFolder}/public/stylesheets`
 const stylesOutputDir = `${resourcesBuildFolder}/public/stylesheets`
 
 // References:
-// - https://sass-lang.com/dart-sass/#java-script-library
-// - https://sass-lang.com/documentation/js-api/
-async function compileBootstrap() {
-    const bootstrapFile = `${resourcesFolder}/public/scss/bootstrap.scss`
-    const bootstrapOutputFile = `${stylesOutputDir}/bootstrap.css`
-    const result = sass.compile(bootstrapFile, {
-        style: "compressed",
-        loadPaths: ["node_modules"],
-        verbose: true,
-    });
+// - https://esbuild.github.io/plugins/
+// - https://www.npmjs.com/package/esbuild-sass-plugin
+async function bundleBootstrap() {
+    const bootstrapFile = `${resourcesFolder}/public/scss/bootstrap.scss`;
+    const outputDir = stylesOutputDir;
 
-    return await postcss([
-        autoprefixer,
-        purgecss({content: ["./src/**/*.kte", `${resourcesFolder}/**/*.js`]})
-    ]).process(result.css, {from: undefined, map: false}).then(result => {
-        result.warnings().forEach(warn => {
-            console.warn(warn.toString())
-        })
-        writeCss(bootstrapOutputFile, result.css);
-    }).then(() => bootstrapOutputFile);
-}
-
-function writeCss(destination, content) {
-    fs.mkdirSync(path.dirname(destination), {recursive: true})
-    fs.writeFile(destination, content, (err) => {
-        if (err) {
-            throw err;
-        }
-        console.info(`Writing compiled CSS to ${destination} (content size = ${content.length})`)
-    });
+    return await esbuild.build({
+        entryPoints: [bootstrapFile],
+        bundle: true,
+        legalComments: "none",
+        minify: true,
+        entryNames: "[name].[hash]",
+        outdir: outputDir,
+        allowOverwrite: true,
+        logLevel: "info",
+        plugins: [
+            sassPlugin({
+                async transform(source, resolveDir) {
+                    const {css} = await postcss([
+                        autoprefixer,
+                        purgecss({content: ["./src/**/*.kte", `${resourcesFolder}/**/*.js`]})
+                    ]).process(source)
+                    return css
+                }
+            })
+        ],
+    }).then(() => compress(outputDir));
 }
 
 async function compress(dir) {
@@ -116,8 +112,7 @@ async function convertToWebp(imagesDir) {
     });
 }
 
-await compileBootstrap()
-    .then((bootstrapCompiledCss) => minify(bootstrapCompiledCss, stylesOutputDir))
+await bundleBootstrap()
     .then(() => minifyJS())
     .then(() => minifyCSS())
     .then(() => copyImages(imagesDir, imagesOutputDir))
