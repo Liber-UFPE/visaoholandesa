@@ -52,7 +52,7 @@ esbuild.build({
         deflateLevel: 9,
         gzip: true,
         gzipLevel: 9,
-        exclude: ["jpeg", "jpg", "png", "ico"],
+        exclude: ["jpeg", "jpg", "png", "ico", "webp"],
     };
     return new Compress(assetsBuildFolder, assetsBuildFolder, compressOptions).run();
 }).then(() => {
