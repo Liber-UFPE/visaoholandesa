@@ -28,7 +28,6 @@
 
         <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
 
-        @template.assets.stylesheet(path = "/stylesheets/bootstrap.css", prefix = "/static")
         @template.assets.stylesheet(path = "/stylesheets/main.css", prefix = "/static")
     @endif
 
