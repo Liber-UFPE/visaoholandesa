@@ -32,12 +32,24 @@ jobs:
       - name: Detekt Summary
         run: cat build/reports/detekt/detekt.md >> $GITHUB_STEP_SUMMARY
 
+  stylelint:
+    name: Code Analysis / stylelint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/gradle-action
+      - name: npm install
+        run: npm install
+      - name: run stylelint
+        run: npx stylelint src/main/**/*.scss
+
   compile:
     name: Build / compile
     runs-on: ubuntu-latest
     needs:
       - detekt
       - ktlint
+      - stylelint
     steps:
       - uses: actions/checkout@v4
       - name: Set up Gradle and Java
