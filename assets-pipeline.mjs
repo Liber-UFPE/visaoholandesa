@@ -6,18 +6,17 @@ import path from "path";
 import {sassPlugin} from "esbuild-sass-plugin";
 import autoprefixer from "autoprefixer";
 import postcss from "postcss";
-import purgecss from "@fullhuman/postcss-purgecss"
+import purgecss from "@fullhuman/postcss-purgecss";
 
-const assetsFolder = "src/main/resources/public"
-const assetsBuildFolder = "build/resources/main/public"
+const assetsFolder = "src/main/resources/public";
+const assetsBuildFolder = "build/resources/main/public";
 
-const imagesDir = `${assetsFolder}/images`
-const javascriptsDir = `${assetsFolder}/javascripts`
-const stylesDir = `${assetsFolder}/stylesheets`
+const imagesDir = `${assetsFolder}/images`;
+const javascriptsDir = `${assetsFolder}/javascripts`;
+const stylesDir = `${assetsFolder}/stylesheets`;
 
 esbuild.build({
     entryPoints: [
-        `${assetsFolder}/scss/bootstrap.scss`,
         `${stylesDir}/main.scss`,
         `${javascriptsDir}/main.js`,
         `${imagesDir}/**/*.*`,
@@ -41,8 +40,8 @@ esbuild.build({
                 const {css} = await postcss([
                     autoprefixer,
                     purgecss({content: ["./src/**/*.kte", `${assetsFolder}/**/*.js`]})
-                ]).process(source, {from: undefined, map: false})
-                return css
+                ]).process(source, {from: undefined, map: false});
+                return css;
             }
         })
     ],
@@ -62,8 +61,8 @@ esbuild.build({
         .then(images =>
             images.map(image => {
                 const imagePath = path.parse(image);
-                const outputImage = `${imagePath.dir}/${imagePath.name}.webp`
-                return sharp(image).toFormat("webp").toFile(outputImage)
+                const outputImage = `${imagePath.dir}/${imagePath.name}.webp`;
+                return sharp(image).toFormat("webp").toFile(outputImage);
             })
         );
 });
