@@ -18,7 +18,7 @@ const stylesDir = `${assetsFolder}/stylesheets`
 esbuild.build({
     entryPoints: [
         `${assetsFolder}/scss/bootstrap.scss`,
-        `${stylesDir}/main.css`,
+        `${stylesDir}/main.scss`,
         `${javascriptsDir}/main.js`,
         `${imagesDir}/**/*.*`,
     ],
