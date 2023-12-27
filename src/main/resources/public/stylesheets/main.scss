@@ -1,3 +1,5 @@
+@use 'sass:color';
+
 // scss-docs-start import-stack
 // Configuration
 @import "bootstrap/scss/functions";
@@ -48,12 +50,11 @@
 
 // scss-docs-end import-stack
 
-$bg-dark-text-color: #FFFFFF;
+$bg-dark-text-color: #FFF;
 $bg-base-color: #198754;
-$bg-dark-color: darken($bg-base-color, 10%);
-$bg-darker-color: darken($bg-dark-color, 5%);
+$bg-dark-color: color.adjust($bg-base-color, $lightness: -10%);
+$bg-darker-color: color.adjust($bg-dark-color, $lightness: -5%);
 $highlight-color: #F1B980;
-
 $default-font-family: roboto, sans-serif;
 
 #header .nav-link {
