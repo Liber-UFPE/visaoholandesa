@@ -11,6 +11,7 @@
     "autoprefixer": "10.4.16",
     "esbuild": "0.19.8",
     "esbuild-sass-plugin": "^2.16.1",
+    "eslint": "^8.56.0",
     "fast-glob": "3.3.2",
     "gzipper": "^7.2.0",
     "postcss": "8.4.32",
