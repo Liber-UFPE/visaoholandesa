@@ -50,7 +50,7 @@
     <nav class="navbar navbar-expand-lg bg-body-tertiary fixed-top">
         <div class="container">
             <a href="${linkTo("/")}" hx-boost="true" hx-target="#content" hx-swap="outerHTML show:top" hx-push-url="true" class="navbar-brand" aria-label="Visão Holandesa">
-                <button class="btn btn-success btn-lg d-inline-block align-text-top">Visão Holandesa</button>
+                <button class="btn btn-success btn-lg d-inline-block align-text-top fs-4">Visão Holandesa</button>
             </a>
 
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse"

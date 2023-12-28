@@ -8,7 +8,7 @@
     )
 
     @template.partials.main(content = @`
-        <div class="row mb-2">
+        <div class="row mb-2 contact-page">
             <div class="col-md-4 offset-2">
                 <p class="fs-5 fw-medium">
                     <svg role="none" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-geo-alt" viewBox="0 0 16 16">

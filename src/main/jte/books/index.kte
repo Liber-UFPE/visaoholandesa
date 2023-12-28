@@ -4,7 +4,7 @@
 
 @template.layout(title = "Obras", content = @`
     @template.partials.top(
-        title = "As ${books.size} obras do projeto Visão Holandesa",
+        title = "As ${books.size} obras disponibilizadas",
         subtext = @`O projeto Visão Holandesa do Brasil disponibiliza <span class="text-highlight">obras raras</span> produzidas pelos neerlandeses a respeito do Brasil durante a ocupação colonial.`
     )
 
@@ -20,7 +20,7 @@
                             <strong>Publicador por:</strong> ${book.publisher} <br />
                             <strong>Coleção:</strong> ${book.collection}
                         </p>
-                        <p class="card-text mb-auto lead">
+                        <p class="card-text mb-auto">
                             ${book.description ?: book.alternative}
                         </p>
                         <ul class="list-group list-group-horizontal book-metadata">
