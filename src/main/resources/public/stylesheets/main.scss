@@ -57,17 +57,21 @@ $bg-darker-color: color.adjust($bg-dark-color, $lightness: -5%);
 $highlight-color: #F1B980;
 $default-font-family: "Avenir", "Montserrat", "Corbel", 'URW Gothic', source-sans-pro, system-ui, sans-serif;
 
-#header .nav-link {
-    margin-top: 5px;
-    margin-right: 5px;
-}
+#header {
+    .nav-link {
+        $margin-size: 5px;
 
-#header .nav-link.show {
-    color: white;
-}
+        margin-top: $margin-size;
+        margin-right: $margin-size;
 
-#header .nav-link:hover {
-    color: white;
+        &:hover {
+            color: white;
+        }
+    }
+
+    .nav-link.show {
+        color: white;
+    }
 }
 
 body {
@@ -77,11 +81,11 @@ body {
 .bg-dark {
     color: $bg-dark-text-color;
     background-image: linear-gradient(90deg, $bg-dark-color, $bg-darker-color);
-}
 
-.bg-dark .display-6 {
-    color: $bg-dark-text-color;
-    opacity: 0.8;
+    .display-6 {
+        color: $bg-dark-text-color;
+        opacity: 0.8;
+    }
 }
 
 .text-highlight {
@@ -93,12 +97,14 @@ body {
     padding-bottom: 5rem;
 }
 
-#footer .nav-link {
-    color: $bg-dark-text-color;
-}
+#footer {
+    .nav-link {
+        color: $bg-dark-text-color;
 
-#footer .nav-link .align-middle:hover {
-    text-decoration: underline;
+        .align-middle:hover {
+            text-decoration: underline;
+        }
+    }
 }
 
 .page-contents {
@@ -106,17 +112,19 @@ body {
     font-weight: 400;
     line-height: 2rem;
     padding: 2rem 5rem;
-}
 
-.page-contents .footnotes li {
-    padding: 10px;
-    border-radius: 5px;
+    .footnotes li {
+        padding: 10px;
+        border-radius: 5px;
+    }
 }
 
 .blink-yellow {
-    animation-duration: 1.5s;
-    animation-name: blink-yellow-animation;
-    animation-iteration-count: 2;
+    animation: {
+        duration: 1.5s;
+        name: blink-yellow-animation;
+        iteration-count: 2;
+    };
 }
 
 @keyframes blink-yellow-animation {
@@ -137,8 +145,16 @@ body {
     padding: 2rem;
 }
 
-.book-card:hover {
-    cursor: pointer;
+.contact-page {
+    font-size: 18px;
+}
+
+.book-card {
+    font-size: 18px;
+
+    &:hover {
+        cursor: pointer;
+    }
 }
 
 .book-metadata.list-group-horizontal {
@@ -151,12 +167,14 @@ body {
     padding-left: 0;
 }
 
-.search-results .list-group-item-action:hover {
-    cursor: pointer;
-}
+.search-results {
+    .list-group-item-action:hover {
+        cursor: pointer;
+    }
 
-.search-results .display-6 {
-    line-height: 1.5;
+    .display-6 {
+        line-height: 1.5;
+    }
 }
 
 /*
