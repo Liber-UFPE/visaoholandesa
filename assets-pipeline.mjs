@@ -1,4 +1,4 @@
-import * as esbuild from "esbuild"
+import * as esbuild from "esbuild";
 import {Compress} from "gzipper";
 import sharp from "sharp";
 import fg from "fast-glob";
@@ -36,7 +36,7 @@ esbuild.build({
     },
     plugins: [
         sassPlugin({
-            async transform(source, _resolveDir) {
+            async transform(source) {
                 const {css} = await postcss([
                     autoprefixer,
                     purgecss({content: ["./src/**/*.kte", `${assetsFolder}/**/*.js`]})
