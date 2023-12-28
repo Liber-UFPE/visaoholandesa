@@ -145,6 +145,11 @@ sonar {
             "sonar.coverage.exclusions",
             listOf("**/*Generated*", "**/tasks/*.*"),
         )
+
+        property(
+            "sonar.exclusions",
+            listOf("src/**/*.sql", "src/main/**/sitemap.xml", "src/main/**/tasks/*.*"),
+        )
     }
 }
 
