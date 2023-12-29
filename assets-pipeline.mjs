@@ -11,22 +11,58 @@ import purgecss from "@fullhuman/postcss-purgecss";
 const assetsFolder = "src/main/resources/public";
 const assetsBuildFolder = "build/resources/main/public";
 
-const imagesDir = `${assetsFolder}/images`;
-const javascriptsDir = `${assetsFolder}/javascripts`;
-const stylesDir = `${assetsFolder}/stylesheets`;
+const compressPlugin = {
+    name: "compress",
+    setup(build) {
+        build.onEnd(() => {
+            const assetsBuildFolder = build.initialOptions.outdir;
+            const verbose = build.initialOptions.logLevel === "verbose" || build.initialOptions.logLevel === "debug";
 
-esbuild.build({
+            const compressOptions = {
+                brotli: true,
+                deflate: true,
+                deflateLevel: 9,
+                gzip: true,
+                gzipLevel: 9,
+                exclude: ["jpeg", "jpg", "png", "webp"],
+                verbose: verbose,
+            };
+
+            new Compress(assetsBuildFolder, assetsBuildFolder, compressOptions).run();
+        });
+    },
+};
+
+const webpPlugin = {
+    name: "webp",
+    setup(build) {
+        build.onEnd(() => {
+            const assetsBuildFolder = build.initialOptions.outdir;
+            fg.async([`${assetsBuildFolder}/**/*.{png,jpg}`], {caseSensitiveMatch: false, dot: true})
+                .then(images =>
+                    images.map(image => {
+                        const imagePath = path.parse(image);
+                        const outputImage = `${imagePath.dir}/${imagePath.name}.webp`;
+                        return sharp(image).toFormat("webp").toFile(outputImage);
+                    })
+                );
+        });
+    }
+};
+
+await esbuild.build({
     entryPoints: [
-        `${stylesDir}/main.scss`,
-        `${javascriptsDir}/main.js`,
-        `${imagesDir}/**/*.*`,
+        `${assetsFolder}/stylesheets/main.scss`,
+        `${assetsFolder}/javascripts/main.js`,
+        `${assetsFolder}/images/**/*.*`,
     ],
     bundle: true,
-    legalComments: "none",
     minify: true,
+    allowOverwrite: true,
+    metafile: true,
+    legalComments: "none",
     entryNames: "[dir]/[name].[hash]",
     outdir: assetsBuildFolder,
-    allowOverwrite: true,
     logLevel: "info",
     loader: {
         ".webp": "copy",
@@ -43,26 +79,8 @@ esbuild.build({
                 ]).process(source, {from: undefined, map: false});
                 return css;
             }
-        })
+        }),
+        compressPlugin,
+        webpPlugin,
     ],
-}).then(() => {
-    const compressOptions = {
-        brotli: true,
-        deflate: true,
-        deflateLevel: 9,
-        gzip: true,
-        gzipLevel: 9,
-        exclude: ["jpeg", "jpg", "png", "ico", "webp"],
-    };
-    return new Compress(assetsBuildFolder, assetsBuildFolder, compressOptions).run();
-}).then(() => {
-    return fg
-        .async([`${assetsBuildFolder}/**/*.{png,jpg}`], {caseSensitiveMatch: false, dot: true})
-        .then(images =>
-            images.map(image => {
-                const imagePath = path.parse(image);
-                const outputImage = `${imagePath.dir}/${imagePath.name}.webp`;
-                return sharp(image).toFormat("webp").toFile(outputImage);
-            })
-        );
 });
