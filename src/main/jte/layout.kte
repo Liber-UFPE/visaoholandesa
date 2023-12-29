@@ -20,9 +20,6 @@
         <link rel="preconnect" href="https://unpkg.com/" />
         <link rel="icon" type="image/x-icon" href="${linkTo("/public/images/favicon.ico")}" />
 
-        <script src="https://unpkg.com/htmx.org@1.9.10/dist/htmx.min.js"
-                integrity="sha384-D1Kt99CQMDuVetoL1lrYwg5t+9QdHe7NLX/SoJYkXDFfX37iInKRy5xLSi8nO7UC" crossorigin="anonymous"></script>
-
         @template.assets.stylesheet(path = "/stylesheets/main.css", prefix = "/static")
     @endif
 
@@ -193,6 +190,9 @@
         </div>
     </div>
 </footer>
+
+<script src="https://unpkg.com/htmx.org@1.9.10/dist/htmx.min.js"
+        integrity="sha384-D1Kt99CQMDuVetoL1lrYwg5t+9QdHe7NLX/SoJYkXDFfX37iInKRy5xLSi8nO7UC" crossorigin="anonymous"></script>
 
 @template.assets.javascript(path = "/javascripts/main.js", prefix = "/static", defer = true)
 
