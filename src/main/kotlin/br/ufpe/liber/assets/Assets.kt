@@ -25,10 +25,8 @@ class AssetsResolver(resourceResolver: ResourceResolver) {
     init {
         resourceResolver.getResourceAsStream("classpath:public/assets-metadata.json").ifPresent { inputStream ->
             val json = inputStream.bufferedReader().use(BufferedReader::readText)
-            val fromJson: Map<String, Asset> = Json.decodeFromString(json)
-            assets.putAll(fromJson)
-
-            fromJson.forEach { (_, asset) ->
+            Json.decodeFromString<List<Asset>>(json).forEach { asset: Asset ->
+                assets[asset.source] = asset
                 assetsWithHashedVersionAsKeys[asset.filename] = asset
             }
         }
