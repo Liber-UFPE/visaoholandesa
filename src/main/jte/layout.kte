@@ -2,6 +2,7 @@
 @import br.ufpe.liber.views.LinksHelper
 @import br.ufpe.liber.views.LinksHelper.linkTo
 @import br.ufpe.liber.views.ViewsHelper.notHtmxRequest
+@import br.ufpe.liber.assets.AssetsViewHelpers.at
 
 @param title: String
 @param content: gg.jte.Content
@@ -18,7 +19,16 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="google-site-verification" content="lAucrunLv2Pcy2awf5Zlo1DtQmEk2X3Dwyo57E-sorw" />
         <link rel="preconnect" href="https://unpkg.com/" />
-        <link rel="icon" type="image/x-icon" href="${linkTo("/public/images/favicon.ico")}" />
+
+        !{val faviconAssetOpt = at("/images/favicon.ico")}
+        @if(faviconAssetOpt.isPresent)
+            !{val faviconAsset = faviconAssetOpt.get()}
+            <link href="${linkTo(faviconAsset.fullpath("/static"))}"
+                  rel="icon"
+                  type="image/x-icon"
+                  integrity="${faviconAsset.integrity}"
+                  crossorigin="anonymous" />
+        @endif
 
         @template.assets.stylesheet(path = "/stylesheets/main.css", prefix = "/static")
     @endif
@@ -96,8 +106,8 @@
 
 <%-- Only renders the `footer` section if NOT a htmx request (first page load, for example) --%>
 @if(notHtmxRequest())
-<footer id="footer" class="bg-dark">
-    <div class="bg-dark container">
+<footer id="footer" class="position-relative overflow-hidden bg-dark">
+    <div class="container">
         <div class="row row-cols-1 row-cols-sm-2 row-cols-md-5 py-5">
             <div class="col mb-3">
                 <a href="${LinksHelper.Liber.SITE}" class="d-flex align-items-center mb-3 link-body-emphasis text-decoration-none">
