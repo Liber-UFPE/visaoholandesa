@@ -1,5 +1,5 @@
-{
-  "/javascripts/main.js": {
+[
+  {
     "basename": "/javascripts/main",
     "source": "/javascripts/main.js",
     "filename": "/javascripts/main.34UGRNNI.js",
@@ -25,7 +25,7 @@
       }
     ]
   },
-  "/stylesheets/main.css": {
+  {
     "basename": "/stylesheets/main",
     "source": "/stylesheets/main.css",
     "filename": "/stylesheets/main.Y6PST7YS.css",
@@ -51,4 +51,4 @@
       }
     ]
   }
-}
+]

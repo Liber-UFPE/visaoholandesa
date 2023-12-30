@@ -43,7 +43,7 @@ object GenerateAssetsMetadata {
         val assetsParentDir = File(args.first())
         val metafile = File(assetsParentDir, "assets-metadata.json")
 
-        val metadata: MutableMap<String, Asset> = mutableMapOf()
+        val metadata: MutableList<Asset> = mutableListOf()
         val regex = "(?<filename>[A-Za-z/-]+).(?<hash>[A-Z0-9]{8}).(?<extension>[a-z]+)".toPattern()
 
         val digest = DigestUtils.getSha384Digest()
@@ -70,15 +70,17 @@ object GenerateAssetsMetadata {
 
                     val source = "$basename.$extension"
 
-                    metadata[source] = Asset(
-                        basename,
-                        source,
-                        assetPath,
-                        hash,
-                        integrity,
-                        extension,
-                        mediaType.toString(),
-                        findEncodings(file).sorted(),
+                    metadata.add(
+                        Asset(
+                            basename,
+                            source,
+                            assetPath,
+                            hash,
+                            integrity,
+                            extension,
+                            mediaType.toString(),
+                            findEncodings(file).sorted(),
+                        ),
                     )
                 }
             }
