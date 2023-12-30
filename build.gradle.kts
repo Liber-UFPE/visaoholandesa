@@ -539,4 +539,5 @@ dependencies {
     assetsImplementation("org.lz4:lz4-pure-java:1.8.0")
     assetsImplementation("org.apache.tika:tika-core:2.9.1")
     assetsImplementation("org.apache.tika:tika-parsers-standard-package:2.9.1")
+    assetsImplementation("org.apache.logging.log4j:log4j-core:2.22.1")
 }
