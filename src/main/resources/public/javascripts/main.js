@@ -10,10 +10,10 @@ function setupFootnotesAnimationEvent() {
                     const noteId = note.href.split("#")[1];
                     const noteElement = document.getElementById(noteId);
                     if (noteElement) {
-                        noteElement.classList.add("blink-yellow");
+                        noteElement.classList.add("highlight-note");
                         // Remove the class after sometime so that the same footnote
                         // will blink when user clicks it a second time.
-                        setTimeout(() => noteElement.classList.remove("blink-yellow"), 3000);
+                        setTimeout(() => noteElement.classList.remove("highlight-note"), 3000);
                     }
                 });
             });
