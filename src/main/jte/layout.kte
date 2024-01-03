@@ -19,6 +19,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="google-site-verification" content="lAucrunLv2Pcy2awf5Zlo1DtQmEk2X3Dwyo57E-sorw" />
         <link rel="preconnect" href="https://unpkg.com/" />
+        <link rel="preconnect" href="https://app.posthog.com/" />
 
         !{val faviconAssetOpt = at("/images/favicon.ico")}
         @if(faviconAssetOpt.isPresent)
