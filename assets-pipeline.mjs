@@ -75,7 +75,12 @@ await esbuild.build({
             async transform(source) {
                 const {css} = await postcss([
                     autoprefixer,
-                    purgecss({content: ["./src/**/*.kte", `${assetsFolder}/**/*.js`]})
+                    purgecss({
+                        content: ["./src/**/*.kte", `${assetsFolder}/**/*.js`],
+                        safelist: {
+                            deep: [/footnotes$/]
+                        }
+                    })
                 ]).process(source, {from: undefined, map: false});
                 return css;
             }
