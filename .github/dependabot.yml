@@ -22,3 +22,10 @@ updates:
       interval: "weekly"
     commit-message:
       prefix: "[github-actions]"
+  - package-ecosystem: "npm"
+    directory: "/"
+    rebase-strategy: auto
+    schedule:
+      interval: "daily"
+    commit-message:
+      prefix: "[npm]"
