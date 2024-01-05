@@ -17,11 +17,8 @@ class BookTest(private val resourceResolver: ResourceResolver) : BehaviorSpec({
 
         val book: Book =
             resourceResolver
-                .getResourceAsStream("classpath:data/json/book-1.json")
-                .map { inputStream ->
-                    val json = inputStream.bufferedReader().use(BufferedReader::readText)
-                    Json.decodeFromString<Book>(json)
-                }
+                .getResource("classpath:data/json/book-1.json")
+                .map { url -> Json.decodeFromString<Book>(url.readText()) }
                 .get()
 
         `when`("decoding the model") {
