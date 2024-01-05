@@ -11,7 +11,7 @@ class ContentSanitizer(resourceResolver: ResourceResolver) {
 
     init {
         val policy = resourceResolver
-            .getResourceAsStream("classpath:antisamy-liber.xml")
+            .getResource("classpath:antisamy-liber.xml")
             .map(Policy::getInstance)
             .orElse(Policy.getInstance())
 

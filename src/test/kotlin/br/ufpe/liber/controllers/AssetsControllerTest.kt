@@ -19,8 +19,8 @@ import java.util.Optional
 class AssetsControllerTest : BehaviorSpec({
     given("#asset") {
         val resourceResolver: ResourceResolver = mockk()
-        every { resourceResolver.getResourceAsStream("classpath:public/assets-metadata.json") } answers {
-            Optional.of(File("src/test/resources/public/assets-metadata.json").inputStream())
+        every { resourceResolver.getResource("classpath:public/assets-metadata.json") } answers {
+            Optional.of(File("src/test/resources/public/assets-metadata.json").toURI().toURL())
         }
 
         // mock assets and its encoded versions (br, gzip, etc.)

@@ -4,14 +4,16 @@ import br.ufpe.liber.EagerInProduction
 import io.micronaut.core.io.ResourceResolver
 import io.micronaut.http.MediaType
 import jakarta.inject.Singleton
+import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
 import kotlinx.serialization.json.Json
-import java.io.BufferedReader
+import kotlinx.serialization.json.decodeToSequence
 import java.util.NavigableMap
 import java.util.Optional
 import java.util.TreeMap
 
+@OptIn(ExperimentalSerializationApi::class)
 @Singleton
 @EagerInProduction
 class AssetsResolver(resourceResolver: ResourceResolver) {
@@ -23,9 +25,8 @@ class AssetsResolver(resourceResolver: ResourceResolver) {
     }
 
     init {
-        resourceResolver.getResourceAsStream("classpath:public/assets-metadata.json").ifPresent { inputStream ->
-            val json = inputStream.bufferedReader().use(BufferedReader::readText)
-            Json.decodeFromString<List<Asset>>(json).forEach { asset: Asset ->
+        resourceResolver.getResource("classpath:public/assets-metadata.json").ifPresent { url ->
+            Json.decodeToSequence<Asset>(url.openStream()).forEach { asset: Asset ->
                 assets[asset.source] = asset
                 assetsWithHashedVersionAsKeys[asset.filename] = asset
             }

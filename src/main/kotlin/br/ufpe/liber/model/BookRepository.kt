@@ -9,7 +9,9 @@ import io.micronaut.management.health.indicator.HealthResult
 import io.micronaut.scheduling.TaskExecutors
 import jakarta.inject.Named
 import jakarta.inject.Singleton
+import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.decodeFromStream
 import org.reactivestreams.Publisher
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -19,6 +21,7 @@ import java.util.Optional
 import java.util.TreeMap
 import java.util.concurrent.ExecutorService
 
+@OptIn(ExperimentalSerializationApi::class)
 @Singleton
 class BookRepository(resourceResolver: ResourceResolver) {
 
@@ -31,9 +34,8 @@ class BookRepository(resourceResolver: ResourceResolver) {
     init {
         @Suppress("detekt:MagicNumber")
         for (bookId in 1..14) {
-            resourceResolver.getResourceAsStream("classpath:data/json/book-$bookId.json").ifPresent { inputStream ->
-                val json = inputStream.bufferedReader().use(BufferedReader::readText)
-                val book: Book = Json.decodeFromString(json)
+            resourceResolver.getResource("classpath:data/json/book-$bookId.json").ifPresent { url ->
+                val book: Book = Json.decodeFromStream(url.openStream())
                 logger.info("Book $bookId fully loaded from data/json/book-$bookId.json file")
                 books[book.id] = book
             }
