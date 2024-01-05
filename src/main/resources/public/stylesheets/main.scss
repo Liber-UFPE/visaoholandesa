@@ -146,11 +146,11 @@ body {
 }
 
 .contact-page {
-    font-size: 18px;
+    font-size: 1.125rem;
 }
 
-.book-card {
-    font-size: 18px;
+.book-card, .staff-card {
+    font-size: 1.125rem;
 
     &:hover {
         cursor: pointer;

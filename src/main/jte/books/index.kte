@@ -14,7 +14,7 @@
             <div class="col-md-12 book-card">
                 <div class="row g-0 border rounded overflow-hidden flex-md-row mb-4 shadow-sm h-md-250 position-relative">
                     <div class="col p-4 d-flex flex-column position-static">
-                        <strong class="d-inline-block mb-2 text-primary-emphasis text-uppercase">${book.text}</strong>
+                        <strong class="d-inline-block mb-2 text-primary-emphasis">${book.text}</strong>
                         <p class="fs-3 fw-medium mb-0"><span class="text-capitalize">${book.title}</span> <small class="text-body-secondary">por ${book.creator}</small></p>
                         <p class="text-body-secondary">
                             <strong>Publicador por:</strong> ${book.publisher} <br />
