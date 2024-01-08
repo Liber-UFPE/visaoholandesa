@@ -8,8 +8,7 @@ import io.kotest.matchers.string.shouldStartWith
 import io.micronaut.core.io.ResourceResolver
 import io.micronaut.test.extensions.kotest5.annotation.MicronautTest
 import kotlinx.serialization.json.Json
-import java.io.BufferedReader
-import java.util.*
+import java.util.Optional
 
 @MicronautTest
 class BookTest(private val resourceResolver: ResourceResolver) : BehaviorSpec({
