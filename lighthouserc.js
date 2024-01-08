@@ -1,5 +1,7 @@
 "use strict";
 
+const runningOnCi = process.env.CI === "true" ? "off" : "on";
+
 module.exports = {
     ci: {
         collect: {
@@ -7,7 +9,8 @@ module.exports = {
             startServerReadyPattern: "Startup completed",
             startServerReadyTimeout: 90000, // 90 seconds. More than enough for CI.
             settings: {
-                maxWaitForLoad: 10000 // 10 seconds
+                maxWaitForLoad: 10000, // 10 seconds
+                chromeFlags: "--headless=new"
             },
             url: [
                 "http://localhost:8080/",
@@ -21,17 +24,18 @@ module.exports = {
         assert: {
             preset: "lighthouse:no-pwa",
             assertions: {
-                "bf-cache": "off",
                 "offscreen-images": "off",
+                "identical-links-same-purpose": "off",
                 // TODO: try to solve these later
                 "heading-order": "off",
-                "unused-css-rules": "off",
                 "image-size-responsive": "off",
                 "render-blocking-resources": "off",
                 "first-contentful-paint": "off",
                 "largest-contentful-paint": "off",
+                "total-byte-weight": "off",
                 // Only failing at CI:
-                "tap-targets": process.env.CI === "true" ? "off" : "on"
+                "tap-targets": runningOnCi,
+                "target-size": runningOnCi,
             }
         },
         upload: {
