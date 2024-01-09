@@ -1,6 +1,6 @@
 {
   "engines": {
-    "node": "18"
+    "node": ">=18 <=20"
   },
   "scripts": {
     "assetsPipeline": "node assets-pipeline.mjs"
