@@ -101,6 +101,28 @@ jobs:
       - name: Gradle Tasks Summary
         run: cat build/reports/build-times.md >> $GITHUB_STEP_SUMMARY
 
+  esbuild-check:
+    name: Test / Assets / pipeline
+    runs-on: ubuntu-latest
+    needs:
+      - compile
+    strategy:
+      matrix:
+        node-version: [18, 20]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: "npm"
+      - run: node --version
+      - run: npm install
+      - name: Run assets pipeline
+        run: |
+          rm -rf ./build
+          node assets-pipeline.mjs
+          tree ./build
+
   test:
     name: Tests / test
     runs-on: ubuntu-latest
