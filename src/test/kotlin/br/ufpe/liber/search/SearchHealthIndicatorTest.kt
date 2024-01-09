@@ -41,7 +41,7 @@ class SearchHealthIndicatorTest : BehaviorSpec({
 
         `when`("when search is NOT working") {
             val search: Search = mockk()
-            every { search.search("recife") } throws(RuntimeException())
+            every { search.search("recife") } throws (RuntimeException())
 
             val executorService = Executors.newSingleThreadExecutor()
             val searchHealthIndicator = SearchHealthIndicator(search, executorService)
