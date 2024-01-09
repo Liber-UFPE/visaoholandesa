@@ -8,7 +8,6 @@ import io.micronaut.http.MediaType
 import java.io.Writer
 
 interface KteController {
-
     companion object {
         // Micronaut does not set the charset for responses. So it is now done
         // manually here. For more details, see:

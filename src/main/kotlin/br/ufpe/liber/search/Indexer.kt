@@ -22,7 +22,6 @@ class Indexer(
     private val directory: Directory,
     private val analyzer: Analyzer,
 ) {
-
     companion object {
         val logger: Logger = LoggerFactory.getLogger(Indexer::class.java)
     }
@@ -43,9 +42,7 @@ class Indexer(
     }
 
     private fun safeAddField(name: String, value: String?, document: Document) {
-        if (value != null) {
-            document.add(StoredField(name, value))
-        }
+        value?.let { document.add(StoredField(name, it)) }
     }
 
     init {

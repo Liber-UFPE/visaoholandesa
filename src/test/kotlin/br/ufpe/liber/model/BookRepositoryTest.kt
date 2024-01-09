@@ -33,7 +33,7 @@ class BookRepositoryTest(private val bookRepository: BookRepository) : BehaviorS
             }
 
             then("should return empty when book not found") {
-                bookRepository.get(1000) shouldBe Optional.empty()
+                bookRepository.get(1_000) shouldBe Optional.empty()
             }
         }
     }

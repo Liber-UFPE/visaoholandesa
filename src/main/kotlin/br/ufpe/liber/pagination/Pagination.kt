@@ -1,7 +1,6 @@
 package br.ufpe.liber.pagination
 
 data class Page(val number: Int, val label: String = "") {
-
     val hidden: Boolean = (label == Pagination.HIDDEN_SLOTS)
 
     override fun toString(): String = label.ifBlank { number.toString() }
@@ -11,7 +10,6 @@ class Pagination(
     val current: Int = FIRST,
     val total: Int,
 ) {
-
     companion object {
         const val FIRST = 1
         const val SLOTS_TO_SHOW = 10
@@ -33,10 +31,14 @@ class Pagination(
             SLOTS_TO_SHOW - 1 - BEFORE_CURRENT_IN_THE_MIDDLE - USED_SLOTS_AT_THE_END
     }
 
-    @Suppress("detekt:ReturnCount")
+    @Suppress("detekt:ReturnCount", "TOO_LONG_FUNCTION")
     fun listPages(): List<Page> {
-        if (total == 0) return emptyList()
-        if (total <= SLOTS_TO_SHOW) return (current..total).map { Page(it) }
+        if (total == 0) {
+            return emptyList()
+        }
+        if (total <= SLOTS_TO_SHOW) {
+            return (current..total).map { Page(it) }
+        }
 
         // Check if it is the first page or if the distance to first is very small
         val closeToFirst = (current - FIRST) <= 2
@@ -54,7 +56,7 @@ class Pagination(
         // Check if it is close to the end
         val closeToEnd = (total - current) < (SLOTS_TO_SHOW - 1)
         if (closeToEnd) {
-            // Create the result with and "..." page at the very beggining
+            // Create the result with and "..." page at the very beginning
             val result = mutableListOf(Page(0, HIDDEN_SLOTS))
             val startOfRange = total - (SLOTS_TO_SHOW - 2) // -2 because the ranges are inclusive
             for (page in (startOfRange..total)) {
@@ -63,7 +65,7 @@ class Pagination(
             return result.toList()
         }
 
-        // Create the result with and "..." page at the very beggining
+        // Create the result with and "..." page at the very beginning
         val result = mutableListOf(Page(0, HIDDEN_SLOTS))
         // We show the immediate page before current, and a few subsequent pages
         val start = current - BEFORE_CURRENT_IN_THE_MIDDLE

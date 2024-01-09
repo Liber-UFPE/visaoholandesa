@@ -21,7 +21,6 @@ class AssetsResolverTest : BehaviorSpec({
         val assetsResolver = AssetsResolver(resourceResolver)
 
         `when`("#at") {
-
             then("should return hashed version of asset") {
                 forAll(
                     row("/javascripts/main.js", "/javascripts/main", "34UGRNNI", "js", "application/javascript"),

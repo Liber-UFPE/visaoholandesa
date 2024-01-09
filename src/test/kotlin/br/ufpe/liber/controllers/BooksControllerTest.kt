@@ -22,7 +22,6 @@ class BooksControllerTest(
     private val context: ApplicationContext,
     private val bookRepository: BookRepository,
 ) : BehaviorSpec({
-
     val client = context.createBean<HttpClient>(
         server.url,
         DefaultHttpClientConfiguration().apply { isExceptionOnErrorStatus = false },

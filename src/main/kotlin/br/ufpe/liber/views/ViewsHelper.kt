@@ -6,7 +6,6 @@ import io.micronaut.http.context.ServerRequestContext
 import java.util.Optional
 
 object ViewsHelper {
-
     const val HX_TARGET_HEADER: String = "HX-Target"
     const val HX_REQUEST_HEADER: String = "HX-Request"
 

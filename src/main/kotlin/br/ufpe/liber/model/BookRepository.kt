@@ -23,7 +23,6 @@ import java.util.concurrent.ExecutorService
 @OptIn(ExperimentalSerializationApi::class)
 @Singleton
 class BookRepository(resourceResolver: ResourceResolver) {
-
     companion object {
         val logger: Logger = LoggerFactory.getLogger(BookRepository::class.java)
     }
@@ -31,7 +30,7 @@ class BookRepository(resourceResolver: ResourceResolver) {
     private val books: NavigableMap<Long, Book> = TreeMap()
 
     init {
-        @Suppress("detekt:MagicNumber")
+        @Suppress("detekt:MagicNumber", "MAGIC_NUMBER")
         for (bookId in 1..14) {
             resourceResolver.getResource("classpath:data/json/book-$bookId.json").ifPresent { url ->
                 val book: Book = Json.decodeFromStream(url.openStream())

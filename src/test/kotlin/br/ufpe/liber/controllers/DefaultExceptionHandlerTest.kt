@@ -13,7 +13,6 @@ import io.mockk.mockk
 import java.net.URI
 
 class DefaultExceptionHandlerTest : BehaviorSpec({
-
     val exceptionHandler = DefaultExceptionHandler(StaticTemplates())
 
     given("Default ExceptionHandler") {

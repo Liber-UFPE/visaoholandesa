@@ -13,7 +13,6 @@ import org.apache.tika.mime.MediaType
 import java.io.File
 
 object GenerateAssetsMetadata {
-
     private val tika: TikaConfig = TikaConfig()
 
     @Suppress("detekt:ForbiddenComment")
