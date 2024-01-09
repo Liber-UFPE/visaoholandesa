@@ -59,6 +59,9 @@ plugins {
     // SonarQube/SonarCloud plugin
     // https://github.com/SonarSource/sonar-scanner-gradle
     id("org.sonarqube") version "4.4.1.3373"
+    // Add diktat
+    // https://github.com/marcospereira/diktat
+    id("com.saveourtool.diktat") version "2.0.0"
 }
 
 val runningOnCI: Boolean = getenv().getOrDefault("CI", "false").toBoolean()
@@ -150,6 +153,13 @@ sonar {
             "sonar.exclusions",
             listOf("src/**/*.sql", "src/main/**/sitemap.xml", "src/main/**/tasks/*.*"),
         )
+    }
+}
+
+diktat {
+    inputs {
+        include("src/**/*.kt")
+        exclude("src/accessibilityTest/**/*.kt")
     }
 }
 

@@ -6,13 +6,21 @@
     disabledChapters: ""
     srcDirectories: "main"
     testDirs: "test"
+- name: FUNCTION_BOOLEAN_PREFIX
+  enabled: false
 - name: HEADER_MISSING_IN_NON_SINGLE_CLASS_FILE
   enabled: false
-- name: MISSING_KDOC_TOP_LEVEL
+- name: KDOC_NO_CONSTRUCTOR_PROPERTY
+  enabled: false
+- name: MISSING_KDOC_CLASS_ELEMENTS
+  enabled: false
+- name: MISSING_KDOC_CLASS_ELEMENTS
   enabled: false
 - name: MISSING_KDOC_ON_FUNCTION
   enabled: false
-- name: MISSING_KDOC_CLASS_ELEMENTS
+- name: MISSING_KDOC_TOP_LEVEL
+  enabled: false
+- name: WRONG_ORDER_IN_CLASS_LIKE_STRUCTURES
   enabled: false
 - name: TRAILING_COMMA
   enabled: true
