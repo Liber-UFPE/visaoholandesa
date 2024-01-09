@@ -159,6 +159,7 @@ sonar {
 diktat {
     inputs {
         include("src/**/*.kt")
+        exclude("src/main/kotlin/br/ufpe/liber/tasks/**/*.kt")
         exclude("src/accessibilityTest/**/*.kt")
     }
 }

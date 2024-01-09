@@ -26,3 +26,23 @@
   enabled: true
   configuration:
     valueArgument: true
+
+# These either don't make sense for the project or conflict with ktlint.
+- name: FILE_NAME_INCORRECT
+  enabled: false
+- name: FILE_UNORDERED_IMPORTS
+  enabled: false
+- name: GENERIC_VARIABLE_WRONG_DECLARATION
+  enabled: false
+- name: OBJECT_NAME_INCORRECT
+  enabled: false
+- name: TYPE_ALIAS
+  enabled: false
+- name: VARIABLE_NAME_INCORRECT_FORMAT
+  enabled: false
+- name: WRONG_INDENTATION
+  enabled: false
+- name: WRONG_NEWLINES
+  enabled: false
+- name: WRONG_OVERLOADING_FUNCTION_ARGUMENTS
+  enabled: false
