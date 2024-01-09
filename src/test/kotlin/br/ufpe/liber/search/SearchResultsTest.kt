@@ -6,7 +6,6 @@ import io.kotest.data.row
 import io.kotest.matchers.shouldBe
 
 class SearchResultsTest : BehaviorSpec({
-
     given("SearchResults") {
         `when`(".empty()") {
             then("hits should be zero") { SearchResults.empty().hits shouldBe 0 }
@@ -22,7 +21,7 @@ class SearchResultsTest : BehaviorSpec({
                 row(10, 1),
                 row(22, 3),
                 row(831, 84),
-                row(1234, 124),
+                row(1_234, 124),
             ) { hits, expectedPages ->
                 then("$hits hits should result in $expectedPages pages") {
                     SearchResults(hits).totalPages shouldBe expectedPages

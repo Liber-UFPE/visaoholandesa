@@ -17,7 +17,6 @@ class SeoControllerTest(
     private val server: EmbeddedServer,
     private val context: ApplicationContext,
 ) : BehaviorSpec({
-
     val client = context.createBean<HttpClient>(server.url).toBlocking()
 
     given("#sitemap") {

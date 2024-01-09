@@ -6,7 +6,6 @@ import io.kotest.data.row
 import io.kotest.matchers.shouldBe
 
 class PaginationTest : BehaviorSpec({
-
     given("Page") {
         `when`(".toString()") {
             then("show label if not blank") {

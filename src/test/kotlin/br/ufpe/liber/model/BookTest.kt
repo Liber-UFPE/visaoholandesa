@@ -13,7 +13,6 @@ import java.util.Optional
 @MicronautTest
 class BookTest(private val resourceResolver: ResourceResolver) : BehaviorSpec({
     given("Book loaded from JSON") {
-
         val book: Book =
             resourceResolver
                 .getResource("classpath:data/json/book-1.json")

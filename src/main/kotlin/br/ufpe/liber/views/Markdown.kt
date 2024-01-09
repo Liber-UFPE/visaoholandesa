@@ -8,7 +8,6 @@ import com.vladsch.flexmark.util.misc.Extension
 import gg.jte.html.HtmlContent
 
 object Markdown {
-
     private val options = MutableDataSet().set(Parser.EXTENSIONS, listOf<Extension>(FootnoteExtension.create()))
     private val parser = Parser.builder(options).build()
     private val renderer = HtmlRenderer.builder(options).build()

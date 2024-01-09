@@ -30,10 +30,9 @@ class Search(
     private val analyzer: Analyzer,
     private val textHighlighter: TextHighlighter,
 ) {
-
     companion object {
         const val RESULTS_PER_PAGE: Int = 10
-        const val MAX_HITS_THRESHOLD: Int = 5000
+        const val MAX_HITS_THRESHOLD: Int = 5_000
     }
 
     @Suppress("detekt:MemberNameEqualsClassName")
@@ -50,7 +49,9 @@ class Search(
         indexSearcher.search(query, collector)
         val topDocs = collector.topDocs()
 
-        if (topDocs.totalHits.value == 0L) return SearchResults.empty()
+        if (topDocs.totalHits.value == 0L) {
+            return SearchResults.empty()
+        }
 
         val pagingStart: Int = max(page, 0) * RESULTS_PER_PAGE
         val pagingEnd: Int = min(pagingStart + RESULTS_PER_PAGE, topDocs.totalHits.value.toInt() - 1)
@@ -113,10 +114,8 @@ data class SearchResults(
     }
 
     val totalPages: Int = ceil(hits.toDouble() / Search.RESULTS_PER_PAGE).toInt()
-
     val isFirstPage: Boolean = currentPage == Pagination.FIRST
     val isLastPage: Boolean = currentPage == totalPages
-
     val pages = Pagination(currentPage, totalPages).listPages()
 }
 

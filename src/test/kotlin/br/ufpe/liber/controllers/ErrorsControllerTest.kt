@@ -10,7 +10,6 @@ import io.mockk.every
 import io.mockk.mockk
 
 class ErrorsControllerTest : BehaviorSpec({
-
     val errorsController = ErrorsController(StaticTemplates())
 
     given("ErrorsController") {

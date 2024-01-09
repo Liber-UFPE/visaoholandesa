@@ -51,7 +51,6 @@ class DatabaseBook(id: EntityID<Long>) : LongEntity(id) {
     val rights by DatabaseBooks.rights
     val theSource by DatabaseBooks.theSource
     val text by DatabaseBooks.text
-
     val pages by DatabasePage referrersOn DatabasePages.bookId
 }
 

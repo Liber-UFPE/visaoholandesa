@@ -15,7 +15,6 @@ import io.mockk.mockkStatic
 import java.util.Optional
 
 class ViewsHelperTest : BehaviorSpec({
-
     fun setupCurrentRequest(request: Optional<HttpRequest<Any>>) {
         mockkStatic(ServerRequestContext::class)
         every { ServerRequestContext.currentRequest<Any>() } answers { request }
