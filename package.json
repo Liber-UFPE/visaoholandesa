@@ -16,7 +16,7 @@
     "gzipper": "^7.2.0",
     "postcss": "8.4.33",
     "purgecss": "5.0.0",
-    "sharp": "^0.33.1",
+    "sharp": "^0.33.2",
     "stylelint": "^16.1.0",
     "stylelint-config-standard": "^36.0.0",
     "stylelint-config-standard-scss": "^13.0.0"
