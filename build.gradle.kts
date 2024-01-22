@@ -49,7 +49,7 @@ plugins {
     id("io.github.vacxe.build-time-tracker") version "0.0.4"
     // To check dependency updates
     // https://github.com/ben-manes/gradle-versions-plugin
-    id("com.github.ben-manes.versions") version "0.50.0"
+    id("com.github.ben-manes.versions") version "0.51.0"
     // To manage docker images
     // https://github.com/bmuschko/gradle-docker-plugin
     id("com.bmuschko.docker-remote-api") version "9.4.0"
