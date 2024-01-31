@@ -34,7 +34,7 @@ plugins {
     id("org.jetbrains.kotlinx.kover") version "0.7.5"
     // Code Inspections
     // https://detekt.dev/
-    id("io.gitlab.arturbosch.detekt") version "1.23.4"
+    id("io.gitlab.arturbosch.detekt") version "1.23.5"
     // Task graph utility
     // https://github.com/dorongold/gradle-task-tree
     id("com.dorongold.task-tree") version "2.1.1"
