@@ -4,7 +4,6 @@ import com.adarshr.gradle.testlogger.theme.ThemeType
 import com.bmuschko.gradle.vagrant.tasks.VagrantUp
 import com.github.benmanes.gradle.versions.updates.DependencyUpdatesTask
 import com.github.gradle.node.npm.task.NpmTask
-import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import io.github.vacxe.buildtimetracker.reporters.markdown.MarkdownConfiguration
 import java.lang.System.getenv
 import java.nio.file.Files
@@ -48,15 +47,15 @@ plugins {
     // To manage docker images
     // https://github.com/bmuschko/gradle-docker-plugin
     id("com.bmuschko.docker-remote-api") version "9.4.0"
-    // To run npm/node/js tasks
-    // https://github.com/node-gradle/gradle-node-plugin
-    id("com.github.node-gradle.node") version "7.0.1"
     // SonarQube/SonarCloud plugin
     // https://github.com/SonarSource/sonar-scanner-gradle
     id("org.sonarqube") version "4.4.1.3373"
     // Add diktat
-    // https://github.com/marcospereira/diktat
+    // https://github.com/saveourtool/diktat
     id("com.saveourtool.diktat") version "2.0.0"
+    // To run npm/node/js tasks
+    // https://github.com/node-gradle/gradle-node-plugin
+    id("com.github.node-gradle.node") version "7.0.1"
 }
 
 val runningOnCI: Boolean = getenv().getOrDefault("CI", "false").toBoolean()
@@ -88,7 +87,7 @@ java {
 
 sonar {
     properties {
-        property("sonar.projectKey", "Liber-UFPE_visaoholandesa")
+        property("sonar.projectKey", "Liber-UFPE_${project.name}")
         property("sonar.organization", "liber-ufpe")
         property("sonar.host.url", "https://sonarcloud.io")
 
@@ -156,6 +155,20 @@ diktat {
         exclude("src/accessibilityTest/**/*.kt")
     }
 }
+tasks.named("check") {
+    dependsOn("diktatCheck")
+}
+
+tasks.named<Test>("test") {
+    useJUnitPlatform()
+    // See https://kotest.io/docs/extensions/system_extensions.html#system-environment
+    jvmArgs("--add-opens=java.base/java.util=ALL-UNNAMED")
+
+    // Only generate reports when running on CI. Helps to speed up test execution.
+    // https://docs.gradle.org/current/userguide/performance.html#disable_reports
+    reports.html.required = runningOnCI
+    reports.junitXml.required = runningOnCI
+}
 
 /* -------------------------------- */
 /* Start: Node/assets configuration */
@@ -200,35 +213,10 @@ tasks {
 /* End: Node/assets configuration */
 /* ------------------------------ */
 
-/* ------------------------- */
-/* Start: Test configuration */
-/* ------------------------- */
-tasks.named<Test>("test") {
-    useJUnitPlatform()
-    // See https://kotest.io/docs/extensions/system_extensions.html#system-environment
-    jvmArgs("--add-opens=java.base/java.util=ALL-UNNAMED")
-
-    // Only generate reports when running on CI. Helps to speed up test execution.
-    // https://docs.gradle.org/current/userguide/performance.html#disable_reports
-    reports.html.required = runningOnCI
-    reports.junitXml.required = runningOnCI
-}
-
 testSets {
     create("accessibilityTest")
 }
 val accessibilityTestImplementation: Configuration = configurations["accessibilityTestImplementation"]
-
-koverReport {
-    filters {
-        excludes {
-            classes("br.ufpe.liber.tasks.*", "br.ufpe.liber.*.*Generated")
-        }
-    }
-}
-/* ----------------------- */
-/* End: Test configuration */
-/* ----------------------- */
 
 // See https://graalvm.github.io/native-build-tools/latest/gradle-plugin.html
 graalvmNative {
@@ -237,11 +225,8 @@ graalvmNative {
         named("main") {
             fallback.set(false)
             richOutput.set(true)
-            buildArgs.addAll("--verbose", "-march=native")
+            buildArgs.addAll("--verbose", "-march=native", "--gc=G1")
             jvmArgs.add("-XX:MaxRAMPercentage=100")
-            if (javaVersion == 21) {
-                buildArgs.addAll("--gc=G1")
-            }
             if (runningOnCI) {
                 // A little extra verbose on CI to prevent jobs being killed
                 // due to the lack of output (since native-image creation can
@@ -377,9 +362,8 @@ tasks.register<JavaExec>("generateSitemaps") {
 // Install pre-commit git hooks to run ktlint and detekt
 // https://docs.gradle.org/current/userguide/working_with_files.html#sec:copying_single_file_example
 tasks.register<Copy>("installGitHooks") {
-    group = "Project Setup"
+    group = "setup"
     description = "Install pre-commit git hooks"
-
     from(layout.projectDirectory.file("scripts/pre-commit"))
     into(layout.projectDirectory.dir(".git/hooks/"))
 }
@@ -402,7 +386,6 @@ dependencies {
 
     ksp(mn.micronaut.http.validation)
     ksp(mn.micronaut.serde.processor)
-
     implementation(mn.micronaut.aop)
     implementation(mn.micronaut.kotlin.runtime)
     implementation(mn.micronaut.kotlin.extension.functions)
