@@ -5,6 +5,7 @@ import gg.jte.html.HtmlContent
 import gg.jte.html.HtmlTemplateOutput
 import io.kotest.matchers.should
 import io.kotest.matchers.string.contain
+import io.kotest.matchers.string.containIgnoringCase
 import java.io.StringWriter
 
 fun KteWriteable.asString(): String {
@@ -15,6 +16,11 @@ fun KteWriteable.asString(): String {
 
 infix fun KteWriteable.shouldContain(substr: String): KteWriteable {
     this.asString() should contain(substr)
+    return this
+}
+
+infix fun KteWriteable.shouldContainIgnoringCase(substr: String): KteWriteable {
+    this.asString() should containIgnoringCase(substr)
     return this
 }
 

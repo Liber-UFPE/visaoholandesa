@@ -1,5 +1,6 @@
 package br.ufpe.liber.controllers
 
+import br.ufpe.liber.get
 import io.kotest.core.spec.style.BehaviorSpec
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.string.shouldContain
@@ -21,7 +22,7 @@ class SeoControllerTest(
 
     given("#sitemap") {
         `when`("GET /sitemap.xml") {
-            val response = client.exchange("/sitemap.xml", KteWriteable::class.java)
+            val response = client.get("/sitemap.xml")
             then("should return HTTP Ok") {
                 response.status() shouldBe HttpStatus.OK
             }
@@ -34,7 +35,7 @@ class SeoControllerTest(
 
     given("#robots") {
         `when`("GET /robots.txt") {
-            val response = client.exchange("/robots.txt", KteWriteable::class.java)
+            val response = client.get("/robots.txt")
             then("should return HTTP Ok") {
                 response.status() shouldBe HttpStatus.OK
             }
@@ -45,7 +46,7 @@ class SeoControllerTest(
 
             then("should include sitemap with correct host") {
                 val host = server.url
-                client.retrieve("/robots.txt") shouldContain "Sitemap: $host/sitemap.xml"
+                client.get("/robots.txt").body() shouldContain "Sitemap: $host/sitemap.xml"
             }
         }
     }
