@@ -37,15 +37,13 @@ jobs:
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
-      - name: Docker / Create image
-        run: ./gradlew dockerBuildNative
-      - name: Gradle Tasks Summary
-        run: cat build/reports/build-times.md >> $GITHUB_STEP_SUMMARY
-      - name: Docker / List images
-        run: docker images
       - name: Docker / Get image name
         id: dockerImageName
-        run: echo "dockerImageName=$(gradle -q dockerImageNameNative)" >> "$GITHUB_OUTPUT"
+        run: echo "dockerImageName=visaoholandesa:$(date '+%Y%m%d.%H%M.%S')" >> "$GITHUB_OUTPUT"
+      - name: Docker / Create Image
+        run: docker image build -t ${{ steps.dockerImageName.outputs.dockerImageName }} .
+      - name: Docker / List images
+        run: docker images
       - name: Docker / Analyse image
         uses: docker/scout-action@v1
         continue-on-error: true
@@ -56,7 +54,6 @@ jobs:
           summary: true
       # Adapted from https://docs.docker.com/build/ci/github-actions/test-before-push/
       - name: Docker / Test Image
-        id: dockerImageTest
         # From `docker run --help`:
         #   -d, --detach          Run container in background and print container ID
         #   --rm                  Automatically remove the container when it exits
