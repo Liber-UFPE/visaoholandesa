@@ -25,7 +25,7 @@ RUN npm install \
 
 FROM eclipse-temurin:21
 
-ENV PEREIRA_DA_COSTA_PORT=8080
+ENV VISAO_HOLANDESA_PORT=8080
 ENV MICRONAUT_ENVIRONMENTS=container
 
 COPY --from=build /app/app.jar .

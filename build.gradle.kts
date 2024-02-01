@@ -4,6 +4,7 @@ import com.github.benmanes.gradle.versions.updates.DependencyUpdatesTask
 import com.github.gradle.node.npm.task.NpmTask
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import io.github.vacxe.buildtimetracker.reporters.markdown.MarkdownConfiguration
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import java.lang.System.getenv
 import java.nio.file.Files
 import java.time.Duration
