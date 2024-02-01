@@ -93,22 +93,6 @@ jobs:
       - name: Gradle Tasks Summary
         run: cat build/reports/build-times.md >> $GITHUB_STEP_SUMMARY
 
-  accessibility-test:
-    name: Tests / Accessibility
-    runs-on: ubuntu-latest
-    # Since this job is experimental
-    continue-on-error: true
-    needs:
-      - compile
-    steps:
-      - uses: actions/checkout@v4
-      - name: Set up Gradle and Java
-        uses: ./.github/gradle-action
-      - name: Run Accessibility Tests
-        run: ./gradlew accessibilityTest
-      - name: Gradle Tasks Summary
-        run: cat build/reports/build-times.md >> $GITHUB_STEP_SUMMARY
-
   esbuild-check:
     name: Test / Assets / pipeline
     runs-on: ubuntu-latest
@@ -150,39 +134,15 @@ jobs:
       - name: Set up Gradle and Java
         uses: ./.github/gradle-action
       - name: Run tests
-        run: ./gradlew test
-      - name: Generate Kover Reports
-        run: ./gradlew koverHtmlReport koverXmlReport -x accessibilityTest
-      - name: Generate Detekt Report
-        run: ./gradlew detekt
-      - name: Check folders
-        run: |
-          tree build/test-results
-          tree build/reports
+        run: ./gradlew check koverXmlReport
+      - name: Gradle Tasks Summary
+        run: cat build/reports/build-times.md >> $GITHUB_STEP_SUMMARY
       - name: Run SonarCloud Analysis
+        continue-on-error: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: ./gradlew sonar
-      - name: Gradle Tasks Summary
-        run: cat build/reports/build-times.md >> $GITHUB_STEP_SUMMARY
-      - name: Setup Pandoc
-        uses: r-lib/actions/setup-pandoc@v2
-      - name: Output Kover summary
-        # Adapted from https://github.com/Kotlin/kotlinx-kover/issues/419#issuecomment-1632572084
-        run: |
-          pandoc build/reports/kover/html/index.html -f html -t gfm | \
-            sed -n '/# visaoholandesa: Overall Coverage Summary/,/<\/div>/p' | \
-            grep -v "</div>" >> $GITHUB_STEP_SUMMARY
-      - name: Test Summary Report
-        uses: phoenix-actions/test-reporting@v12
-        if: always()
-        with:
-          name: Kotest Report
-          path: "build/test-results/test/TEST-*.xml"
-          reporter: java-junit
-          output-to: "step-summary"
-          only-summary: "true"
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v3
         env:
@@ -257,7 +217,9 @@ jobs:
       - uses: actions/checkout@v4
       - name: Create Github Release
         env:
-          GH_TOKEN: ${{ secrets.RELEASE_GITHUB_TOKEN }}
+          GH_TOKEN: ${{ github.token }}
+        # TAG_NAME value is trying to emulate semver to avoid release ordering issues.
+        # See https://github.com/orgs/community/discussions/8226.
         run: |
           RELEASE_TITLE=$(date '+%Y %b %d %H:%M:%S')
           TAG_NAME="v$(date '+%Y%m%d.%H%M.%S')"
