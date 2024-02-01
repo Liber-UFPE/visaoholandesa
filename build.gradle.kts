@@ -1,4 +1,5 @@
 import br.ufpe.liber.tasks.GenerateAssetsMetadataTask
+import br.ufpe.liber.tasks.GenerateBooksJsonTask
 import com.adarshr.gradle.testlogger.theme.ThemeType
 import com.bmuschko.gradle.vagrant.tasks.VagrantUp
 import com.github.benmanes.gradle.versions.updates.DependencyUpdatesTask
@@ -64,7 +65,6 @@ val javaVersion: Int = 21
 
 val kotlinVersion: String = properties["kotlinVersion"] as String
 val jteVersion: String = properties["jteVersion"] as String
-val exposedVersion: String = properties["exposedVersion"] as String
 val luceneVersion: String = properties["luceneVersion"] as String
 val flexmarkVersion: String = properties["flexmarkVersion"] as String
 val kotestVersion: String = properties["kotestVersion"] as String
@@ -407,6 +407,8 @@ tasks.named<DependencyUpdatesTask>("dependencyUpdates") {
     }
 }
 
+val generateBooksJsonTask by tasks.registering(GenerateBooksJsonTask::class)
+
 dependencies {
     ksp(mn.micronaut.http.validation)
     ksp(mn.micronaut.serde.processor)
@@ -449,13 +451,6 @@ dependencies {
     // Creates a dependency provider for graal (org.graalvm.nativeimage:svm)
     compileOnly(mn.graal.asProvider())
     compileOnly(mn.micronaut.http.client)
-
-    // Exposed
-    // https://github.com/JetBrains/Exposed
-    compileOnly("org.jetbrains.exposed:exposed-core:$exposedVersion")
-    compileOnly("org.jetbrains.exposed:exposed-dao:$exposedVersion")
-
-    // runtimeOnly("com.mysql:mysql-connector-j:8.2.0")
     runtimeOnly(mn.jackson.module.kotlin)
 
     // Kotest latest version

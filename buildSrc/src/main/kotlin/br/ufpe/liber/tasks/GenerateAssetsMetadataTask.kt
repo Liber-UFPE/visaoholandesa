@@ -3,9 +3,7 @@ package br.ufpe.liber.tasks
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonArray
-import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
-import kotlinx.serialization.json.JsonPrimitive
 import org.apache.commons.codec.binary.Base64
 import org.apache.commons.codec.digest.DigestUtils
 import org.apache.tika.config.TikaConfig
@@ -146,8 +144,4 @@ abstract class GenerateAssetsMetadataTask : DefaultTask() {
                 else -> emptyList()
             }
         }.toList()
-
-    private fun String.toJson(): JsonPrimitive = JsonPrimitive(this)
-    private fun Number.toJson(): JsonPrimitive = JsonPrimitive(this)
-    private fun Map<String, JsonElement>.toJson() = JsonObject(this)
 }
