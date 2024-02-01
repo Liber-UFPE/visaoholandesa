@@ -10,7 +10,7 @@ pull_request_rules:
     conditions:
       - base=main
       - "#commits-behind>0"
-      - author=dependabot
+      - author=dependabot[bot]
     actions:
       comment:
         message: "@{{author}} rebase"
@@ -18,7 +18,7 @@ pull_request_rules:
   - name: "[dependabot] Add labels for npm updates"
     conditions:
       - title~=npm
-      - author=dependabot
+      - author=dependabot[bot]
     actions:
       label:
         toggle:
@@ -28,7 +28,7 @@ pull_request_rules:
   - name: "[dependabot] Add labels for GitHub Actions updates"
     conditions:
       - title~=github-actions
-      - author=dependabot
+      - author=dependabot[bot]
     actions:
       label:
         toggle:
@@ -38,7 +38,7 @@ pull_request_rules:
   - name: "[dependabot] Add labels Gradle updates"
     conditions:
       - title~=gradle
-      - author=dependabot
+      - author=dependabot[bot]
     actions:
       label:
         toggle:
