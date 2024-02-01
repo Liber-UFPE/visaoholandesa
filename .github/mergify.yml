@@ -1,0 +1,46 @@
+pull_request_rules:
+  - name: Automatic merge when CI passes
+    conditions:
+      - check-success=Good to merge
+    actions:
+      merge:
+        method: rebase
+
+  - name: "[dependabot] Ask to rebase"
+    conditions:
+      - base=main
+      - "#commits-behind>0"
+      - author=dependabot
+    actions:
+      comment:
+        message: "@{{author}} rebase"
+
+  - name: "[dependabot] Add labels for npm updates"
+    conditions:
+      - title~=npm
+      - author=dependabot
+    actions:
+      label:
+        toggle:
+          - dependencies
+          - javascript
+
+  - name: "[dependabot] Add labels for GitHub Actions updates"
+    conditions:
+      - title~=github-actions
+      - author=dependabot
+    actions:
+      label:
+        toggle:
+          - dependencies
+          - github-actions
+
+  - name: "[dependabot] Add labels Gradle updates"
+    conditions:
+      - title~=gradle
+      - author=dependabot
+    actions:
+      label:
+        toggle:
+          - dependencies
+          - jvm

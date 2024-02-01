@@ -211,6 +211,15 @@ jobs:
           docker container logs "$containerId"
           docker container stop "$containerId"
 
+  good-to-merge:
+    name: Good to merge
+    runs-on: ubuntu-latest
+    if: ${{ github.event_name == 'pull_request' }}
+    needs:
+      - build-docker
+    steps:
+      - run: echo "This PR is ready to merge."
+
   check-if-prod:
     if: ${{ github.ref == 'refs/heads/main' }}
     name: Check if prod
