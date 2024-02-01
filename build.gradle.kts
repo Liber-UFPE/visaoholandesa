@@ -281,9 +281,6 @@ micronaut {
     }
 }
 
-/* ------------------------ */
-/* Start: jte configuration */
-/* ------------------------ */
 jte {
     sourceDirectory.set(file("src/main/jte").toPath())
     targetDirectory.set(layout.buildDirectory.dir("jte-classes").get().asFile.toPath())
@@ -307,16 +304,6 @@ tasks.named<Jar>("jar") {
         include("**/.*.class")
     }
 }
-
-tasks.withType<ShadowJar>().configureEach {
-    // See Gradle docs:
-    // https://docs.gradle.org/8.5/dsl/org.gradle.api.tasks.bundling.Zip.html#org.gradle.api.tasks.bundling.Zip:zip64
-    isZip64 = true
-}
-
-/* ---------------------- */
-/* End: jte configuration */
-/* ---------------------- */
 
 testlogger {
     theme = ThemeType.MOCHA
@@ -437,6 +424,12 @@ dependencies {
     implementation(kotlin("stdlib-jdk8", kotlinVersion))
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.2")
 
+    // jte dependencies
+    jteGenerate("gg.jte:jte-models:$jteVersion")
+    jteGenerate("gg.jte:jte-native-resources:$jteVersion")
+    implementation("gg.jte:jte:$jteVersion")
+    implementation("gg.jte:jte-kotlin:$jteVersion")
+
     // Lucene
     implementation("org.apache.lucene:lucene-core:$luceneVersion")
     implementation("org.apache.lucene:lucene-analysis-common:$luceneVersion")
@@ -450,12 +443,6 @@ dependencies {
     implementation("org.owasp.antisamy:antisamy:1.7.4")
     implementation("org.owasp.encoder:encoder:1.2.3")
 
-    // jte dependencies
-    implementation("gg.jte:jte:$jteVersion")
-    implementation("gg.jte:jte-kotlin:$jteVersion")
-
-    jteGenerate("gg.jte:jte-models:$jteVersion")
-    jteGenerate("gg.jte:jte-native-resources:$jteVersion")
     // Accessibility Tests
     accessibilityTestImplementation("org.seleniumhq.selenium:selenium-java:4.17.0")
     accessibilityTestImplementation("com.deque.html.axe-core:selenium:4.8.1")
