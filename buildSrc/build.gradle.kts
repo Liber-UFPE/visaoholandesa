@@ -18,6 +18,6 @@ dependencies {
 
     // Exposed
     implementation("org.jetbrains.exposed:exposed-core:0.47.0")
-    implementation("org.jetbrains.exposed:exposed-dao:0.44.1")
+    implementation("org.jetbrains.exposed:exposed-dao:0.47.0")
     runtimeOnly("com.mysql:mysql-connector-j:8.3.0")
 }
