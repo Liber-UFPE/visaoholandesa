@@ -7,8 +7,6 @@ import io.github.vacxe.buildtimetracker.reporters.markdown.MarkdownConfiguration
 import java.lang.System.getenv
 import java.nio.file.Files
 import java.time.Duration
-import java.util.Optional
-import kotlin.jvm.optionals.getOrElse
 
 plugins {
     kotlin("jvm") version "1.9.22"
