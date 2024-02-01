@@ -18,18 +18,13 @@ inputs:
 runs:
   using: 'composite'
   steps:
-    - uses: actions/setup-node@v4
-      with:
-        node-version: 18 # lts version
-        check-latest: true
-        cache: "npm"
     - name: Set up JDK 21
-      uses: actions/setup-java@v3
+      uses: actions/setup-java@v4
       with:
         java-version: "21"
         distribution: "temurin"
     - name: Set up Gradle
-      uses: gradle/gradle-build-action@v2
+      uses: gradle/actions/setup-gradle@v3
       with:
         generate-job-summary: false
         cache-disabled: ${{ inputs.gradle-cache-disabled }}

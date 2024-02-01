@@ -1,15 +1,16 @@
 name: Main
 
 on:
+  push:
+    branches: [ "main" ]
   release:
-    types:
-      - published
+    types: [ "created", "published" ]
+
+env:
+  GRADLE_OPTS: '-Dorg.gradle.console=plain -Dorg.gradle.caching=true -Dsonar.gradle.skipCompile=true -Dorg.gradle.jvmargs="-Xmx2g -XX:MaxMetaspaceSize=512m"'
 
 permissions:
   contents: write
-
-env:
-  GRADLE_OPTS: "-Dorg.gradle.console=plain -Dorg.gradle.caching=true -Dsonar.gradle.skipCompile=true"
 
 jobs:
   gh-dependency-graph:
@@ -22,11 +23,5 @@ jobs:
         with:
           java-version: "21"
           distribution: "temurin"
-      - name: Setup Gradle
-        uses: gradle/gradle-build-action@v3
-        with:
-          dependency-graph: generate-and-submit
-      - name: Generate Dependency Graph
-        run: ./gradlew testClasses
-      - name: Gradle Tasks Summary
-        run: cat build/reports/build-times.md >> $GITHUB_STEP_SUMMARY
+      - name: Generate and submit dependency graph
+        uses: gradle/actions/dependency-submission@v3
