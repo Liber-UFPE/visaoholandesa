@@ -5,9 +5,11 @@
     "filename": "/javascripts/main.34UGRNNI.js",
     "hash": "34UGRNNI",
     "integrity": "sha384-qWyHoR/uZ7x+UjVssG6ex4WUplfdMrwZMRmqQDXnn6uwCmlQUJkwhdifK4iY0EnX",
+    "etag": "MzRVR1JOTkkK",
+    "lastModified": 1706201197863,
     "extension": "js",
     "mediaType": "application/javascript",
-    "encodings": [
+    "supportedEncodings": [
       {
         "http": "br",
         "extension": "br",
@@ -31,9 +33,11 @@
     "filename": "/stylesheets/main.Y6PST7YS.css",
     "hash": "Y6PST7YS",
     "integrity": "sha384-TyLwwdc4QXD5F9vjpmD8Y0ozuOljr1I5RBmGWjsGxK8Q34JRE+NR1TmZNHiI6rps",
+    "etag": "WTZQU1Q3WVMK",
+    "lastModified": 1706201197863,
     "extension": "css",
     "mediaType": "text/css",
-    "encodings": [
+    "supportedEncodings": [
       {
         "http": "br",
         "extension": "br",

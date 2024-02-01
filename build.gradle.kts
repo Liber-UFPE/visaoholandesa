@@ -1,3 +1,4 @@
+import br.ufpe.liber.tasks.GenerateAssetsMetadataTask
 import com.adarshr.gradle.testlogger.theme.ThemeType
 import com.bmuschko.gradle.vagrant.tasks.VagrantUp
 import com.github.benmanes.gradle.versions.updates.DependencyUpdatesTask
@@ -166,39 +167,36 @@ node {
 }
 
 tasks {
-
     val npmAssetsPipeline by registering(NpmTask::class) {
         group = "Assets"
         description = "Executes assets pipeline using npm"
 
-        dependsOn("npmInstall")
         inputs.files(fileTree(layout.projectDirectory.dir("src/main/resources")))
         args = listOf("run", "assetsPipeline")
         outputs.files(fileTree(layout.buildDirectory.dir("resources/main/public")))
+
+        dependsOn("npmInstall")
     }
 
-    val generateMetafile by registering(JavaExec::class) {
+    val generateMetafile by registering(GenerateAssetsMetadataTask::class) {
         group = "Assets"
         description = "Generate assets metadata file"
+        assetsDirectory = layout.buildDirectory.dir("resources/main/public/")
 
-        classpath = assetsImplementation.plus(sourceSets.main.get().runtimeClasspath)
-        mainClass = "br.ufpe.liber.tasks.GenerateAssetsMetadata"
-        args(layout.buildDirectory.file("resources/main/public/").get().asFile.absolutePath)
+        dependsOn(npmAssetsPipeline)
     }
 
     val assetsPipeline by registering {
         group = "Assets"
         description = "Executes the complete assets pipeline including manifest generation"
 
-        dependsOn(npmAssetsPipeline)
-        finalizedBy(generateMetafile)
+        dependsOn(npmAssetsPipeline, generateMetafile)
     }
 
     processResources {
         dependsOn(assetsPipeline)
     }
 }
-
 /* ------------------------------ */
 /* End: Node/assets configuration */
 /* ------------------------------ */
@@ -410,17 +408,6 @@ tasks.named<DependencyUpdatesTask>("dependencyUpdates") {
     }
 }
 
-val assetsImplementation by configurations.register("assetsImplementation")
-
-// LATER: This is hacky and there is probably a better way to do it.
-// We don't want to pollute the generate jars with dependencies that
-// only used for tasks, hence the `assetsImplementation` configuration.
-// But `assetsImplementation` dependencies need to be part of compile/run
-// for the task.
-tasks.named<KotlinCompile>("compileKotlin") {
-    libraries = assetsImplementation.plus(libraries)
-}
-
 dependencies {
     ksp(mn.micronaut.http.validation)
     ksp(mn.micronaut.serde.processor)
@@ -482,11 +469,4 @@ dependencies {
     // Accessibility Tests
     accessibilityTestImplementation("org.seleniumhq.selenium:selenium-java:4.17.0")
     accessibilityTestImplementation("com.deque.html.axe-core:selenium:4.8.1")
-
-    // Assets pipeline
-    assetsImplementation("commons-codec:commons-codec:1.16.0")
-    assetsImplementation("org.lz4:lz4-pure-java:1.8.0")
-    assetsImplementation("org.apache.tika:tika-core:2.9.1")
-    assetsImplementation("org.apache.tika:tika-parsers-standard-package:2.9.1")
-    assetsImplementation("org.apache.logging.log4j:log4j-core:2.22.1")
 }
