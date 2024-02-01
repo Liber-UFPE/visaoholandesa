@@ -164,7 +164,7 @@ jobs:
         uses: docker/setup-buildx-action@v3
       - name: Docker / Get image name
         id: dockerImageName
-        run: echo "dockerImageName=hyginia:$(date '+%Y%m%d.%H%M.%S')" >> "$GITHUB_OUTPUT"
+        run: echo "dockerImageName=visaoholandesa:$(date '+%Y%m%d.%H%M.%S')" >> "$GITHUB_OUTPUT"
       - name: Docker / Create Image
         run: docker image build -t ${{ steps.dockerImageName.outputs.dockerImageName }} .
       - name: Docker / List images

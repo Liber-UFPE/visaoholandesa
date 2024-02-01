@@ -1,11 +1,13 @@
 #
-# Based on https://www.baeldung.com/linux/run-java-application-as-service
+# Referência:
+# https://www.baeldung.com/linux/run-java-application-as-service
 #
 [Unit]
 Description=Visao Holandesa Java Application Service
 After=rsyslog.service
 
 [Service]
+# Grupo e usuários precisam ser criados, ou alterados aqui para valores existentes
 User=jvmapps
 Group=appmgr
 
@@ -14,6 +16,9 @@ RestartSec=10
 Restart=on-failure
 Type=simple
 
+# MICRONAUT_ENVIRONMENTS pode ser qualquer valor que faça sentido para
+# o ambiente, mas NÃO deve ser "dev" para evitar de carregar configurações
+# usadas no modo desenvolvimento.
 Environment="MICRONAUT_ENVIRONMENTS=baremetal"
 
 # MUST be consistent with what is defined in nginx proxy pass
@@ -21,6 +26,7 @@ Environment="MICRONAUT_ENVIRONMENTS=baremetal"
 Environment="VISAOHOLANDESA_PORT=8082"
 Environment="VISAOHOLANDESA_PATH=/visaoholandesa"
 
+# Valores apenas de exemplo, mas nos testes que fiz essa quantidade de memoria parecia suficiente.
 WorkingDirectory=/opt/javaapps
 ExecStart=/usr/bin/java -Xms128m -Xmx256m -jar visaoholandesa-all.jar
 ExecStop=/bin/kill -15 $MAINPID
