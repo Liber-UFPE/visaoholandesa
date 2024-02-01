@@ -81,9 +81,11 @@ jobs:
           echo "Using last git sha $last_git_sha"
           echo "Context's github.sha = ${{ github.sha }}"
 
-          echo "Images to tag => $source_image_name:$git_tag"
-          echo "Images to tag => $source_image_name:$last_git_sha"
-          docker tag "$source_image_name" "$source_image_name:$git_tag"
-          docker tag "$source_image_name" "$source_image_name:$last_git_sha"
+          echo "Images to tag => visaoholandesa:latest"
+          echo "Images to tag => visaoholandesa:$git_tag"
+          echo "Images to tag => visaoholandesa:$last_git_sha"
+          docker tag "$source_image_name" "visaoholandesa:latest"
+          docker tag "$source_image_name" "visaoholandesa:$git_tag"
+          docker tag "$source_image_name" "visaoholandesa:$last_git_sha"
 
           docker push --all-tags ${{ steps.dockerImageName.outputs.dockerImageName }}
