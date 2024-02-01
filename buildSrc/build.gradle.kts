@@ -17,7 +17,7 @@ dependencies {
     implementation("org.apache.logging.log4j:log4j-core:2.22.1")
 
     // Exposed
-    implementation("org.jetbrains.exposed:exposed-core:0.44.1")
+    implementation("org.jetbrains.exposed:exposed-core:0.47.0")
     implementation("org.jetbrains.exposed:exposed-dao:0.44.1")
     runtimeOnly("com.mysql:mysql-connector-j:8.2.0")
 }
