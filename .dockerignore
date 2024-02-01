@@ -1,27 +1,10 @@
-# flyctl launch added from .gitignore
 **/bin
 **/Thumbs.db
 **/.DS_Store
 **/.gradle
 **/build
-**/target
 **/out
-**/.micronaut
 **/.idea
-**/*.iml
-**/*.ipr
-**/*.iws
-**/.project
-**/.settings
-**/.classpath
-**/.factorypath
-
-# Added from .idea/.gitignore
-# Default ignored files
-.idea/shelf
-.idea/workspace.xml
-# Editor-based HTTP Client requests
-.idea/httpRequests
-# Datasource local storage ignored files
-.idea/dataSources
-.idea/dataSources.local.xml
+node_modules
+.lighthouseci
+jte-classes

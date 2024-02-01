@@ -1,14 +1,9 @@
 import com.adarshr.gradle.testlogger.theme.ThemeType
-import com.bmuschko.gradle.docker.tasks.image.DockerBuildImage
-import com.bmuschko.gradle.docker.tasks.image.Dockerfile
 import com.bmuschko.gradle.vagrant.tasks.VagrantUp
 import com.github.benmanes.gradle.versions.updates.DependencyUpdatesTask
 import com.github.gradle.node.npm.task.NpmTask
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import io.github.vacxe.buildtimetracker.reporters.markdown.MarkdownConfiguration
-import io.micronaut.gradle.docker.MicronautDockerfile
-import io.micronaut.gradle.docker.NativeImageDockerfile
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import java.lang.System.getenv
 import java.nio.file.Files
 import java.time.Duration
@@ -65,9 +60,8 @@ plugins {
 }
 
 val runningOnCI: Boolean = getenv().getOrDefault("CI", "false").toBoolean()
-val loglevel: String = properties.getOrDefault("org.gradle.logging.level", "LIFECYCLE") as String
 
-val javaVersion: Int = 17
+val javaVersion: Int = 21
 
 val kotlinVersion: String = properties["kotlinVersion"] as String
 val jteVersion: String = properties["jteVersion"] as String
@@ -239,61 +233,6 @@ koverReport {
 /* ----------------------- */
 /* End: Test configuration */
 /* ----------------------- */
-
-/* --------------------------- */
-/* Start: Docker configuration */
-/* --------------------------- */
-fun registry(): Optional<String> = Optional.ofNullable(getenv("REGISTRY")).map { it.lowercase() }
-fun imageName(): Optional<String> = Optional.ofNullable(getenv("IMAGE_NAME")).map { it.lowercase() }
-fun imageNames(): List<String> {
-    return registry()
-        .flatMap { registry -> imageName().map { name -> "$registry/$name".lowercase() } }
-        .map { imageTag -> listOf("$imageTag:latest", "$imageTag:$version") }
-        .getOrElse { emptyList() }
-}
-
-tasks.named<DockerBuildImage>("dockerBuild") { images.addAll(imageNames()) }
-tasks.named<DockerBuildImage>("dockerBuildNative") { images.addAll(imageNames()) }
-tasks.withType<MicronautDockerfile> {
-    // Amazon Correto is slightly larger than `eclipse-temurin` image,
-    // but seems better maintained and with no vulnerabilities reported.
-    baseImage.set("amazoncorretto:$javaVersion")
-    environmentVariable("MICRONAUT_ENVIRONMENTS", "docker")
-    healthcheck(Dockerfile.Healthcheck("curl -I -f http://localhost:8080/ || exit 1"))
-}
-tasks.withType<NativeImageDockerfile> {
-    // Oracle's images provide access to G1 GC and other features.
-    graalImage.set("container-registry.oracle.com/graalvm/native-image:$javaVersion")
-    // Using a distroless image generates a "mostly-static" image:
-    // https://micronaut-projects.github.io/micronaut-gradle-plugin/latest/#_build_mostly_static_native_executables
-    // https://www.graalvm.org/latest/reference-manual/native-image/guides/build-static-executables/
-    baseImage("gcr.io/distroless/cc-debian12")
-    environmentVariable("MICRONAUT_ENVIRONMENTS", "docker")
-    healthcheck(Dockerfile.Healthcheck("curl -I -f http://localhost:8080/ || exit 1"))
-}
-tasks.register("dockerImageNameNative") {
-    group = "help"
-    description = "Shows the name of the Docker image"
-    doFirst {
-        val images = tasks.named<DockerBuildImage>("dockerBuildNative").get().images.get()
-        val maybeRegistry = registry()
-        val imageName = if (maybeRegistry.isPresent) {
-            images.find { it.contains(maybeRegistry.get()) }
-        } else {
-            images.first()
-        }
-        // No need to show `:latest`, so remove if it is present
-        println(imageName?.replace(":latest", ""))
-    }
-}
-tasks.register("dockerImageName") { // This is how Gradle add aliases.
-    group = "help"
-    description = "Shows the name of the Docker image"
-    dependsOn("dockerImageNameNative")
-}
-/* ------------------------- */
-/* End: Docker configuration */
-/* ------------------------- */
 
 // See https://graalvm.github.io/native-build-tools/latest/gradle-plugin.html
 graalvmNative {
