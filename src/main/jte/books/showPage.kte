@@ -1,3 +1,4 @@
+@import br.ufpe.liber.search.TextHighlighter
 @import br.ufpe.liber.views.LinksHelper.linkTo
 @import br.ufpe.liber.views.Markdown
 
@@ -10,7 +11,11 @@
         <p class="display-6">Página ${page.number}</p>
         <hr />
         <div class="col page-contents">
+        @if(query.isEmpty)
             ${Markdown.toHtml(page.text)}
+        @else
+            ${Markdown.toHtml(TextHighlighter.highlightText(query.get(), page.text))}
+        @endif
         </div>
     </div>
     !{val previousPage = book.previousPage(page.id)}
