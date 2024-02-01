@@ -1,0 +1,15 @@
+# JSON Schema: https://json.schemastore.org/codecov.json
+# Reference: https://docs.codecov.com/docs/codecovyml-reference
+coverage:
+  status:
+    project:
+      default:
+        target: 80%
+        threshold: 2%
+
+# https://docs.codecov.com/docs/ignoring-paths
+ignore:
+  - "**/accessibilityTest/**/*.*"
+
+github_checks:
+  annotations: true
