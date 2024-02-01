@@ -17,8 +17,8 @@ plugins {
     id("com.google.devtools.ksp") version "1.9.22-1.0.17"
     id("com.github.johnrengelman.shadow") version "8.1.1"
     id("io.micronaut.application") version "4.2.1"
-    id("io.micronaut.aot") version "4.2.1"
     id("gg.jte.gradle") version "3.1.9"
+    id("io.micronaut.aot") version "4.2.1"
     // Apply GraalVM Native Image plugin. Micronaut already adds it, but
     // adding it explicitly allows to control which version is used.
     id("org.graalvm.buildtools.native") version "0.9.28"
@@ -64,10 +64,10 @@ val runningOnCI: Boolean = getenv().getOrDefault("CI", "false").toBoolean()
 val javaVersion: Int = 21
 
 val kotlinVersion: String = properties["kotlinVersion"] as String
+val micronautVersion: String = properties["micronautVersion"] as String
 val jteVersion: String = properties["jteVersion"] as String
 val luceneVersion: String = properties["luceneVersion"] as String
 val flexmarkVersion: String = properties["flexmarkVersion"] as String
-val kotestVersion: String = properties["kotestVersion"] as String
 
 version = "0.1"
 group = "br.ufpe.liber"
@@ -410,6 +410,9 @@ tasks.named<DependencyUpdatesTask>("dependencyUpdates") {
 val generateBooksJsonTask by tasks.registering(GenerateBooksJsonTask::class)
 
 dependencies {
+    // TEMP: Brings logback 1.4.14. Remove when micronaut-core updates.
+    implementation(platform("io.micronaut.logging:micronaut-logging-bom:1.2.2"))
+
     ksp(mn.micronaut.http.validation)
     ksp(mn.micronaut.serde.processor)
 
@@ -419,11 +422,17 @@ dependencies {
     implementation(mn.micronaut.serde.jackson)
     implementation(mn.micronaut.views.jte)
     implementation(mn.micronaut.management)
+    compileOnly(mn.micronaut.http.client)
+    testImplementation(mn.micronaut.http.client)
 
-    // Later use the catalog. For now, it will declare the dependency
-    // manually to avoid CVE-2023-45960:
-    // runtimeOnly(mn.logback.classic)
-    implementation("ch.qos.logback:logback-core:1.4.14")
+    // To test health indicators
+    testImplementation(mn.reactor.test)
+
+    // Creates a dependency provider for graal (org.graalvm.nativeimage:svm)
+    compileOnly(mn.graal.asProvider())
+    runtimeOnly(mn.logback.classic)
+    runtimeOnly(mn.jackson.module.kotlin)
+
     implementation(kotlin("reflect", kotlinVersion))
     implementation(kotlin("stdlib-jdk8", kotlinVersion))
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.2")
@@ -447,19 +456,6 @@ dependencies {
 
     jteGenerate("gg.jte:jte-models:$jteVersion")
     jteGenerate("gg.jte:jte-native-resources:$jteVersion")
-
-    // Creates a dependency provider for graal (org.graalvm.nativeimage:svm)
-    compileOnly(mn.graal.asProvider())
-    compileOnly(mn.micronaut.http.client)
-    runtimeOnly(mn.jackson.module.kotlin)
-
-    // Kotest latest version
-    testImplementation(platform("io.kotest:kotest-bom:$kotestVersion"))
-    testImplementation(mn.micronaut.http.client)
-
-    // To test health indicators
-    testImplementation(mn.reactor.test)
-
     // Accessibility Tests
     accessibilityTestImplementation("org.seleniumhq.selenium:selenium-java:4.17.0")
     accessibilityTestImplementation("com.deque.html.axe-core:selenium:4.8.1")
