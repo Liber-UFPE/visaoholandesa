@@ -2,6 +2,7 @@ package br.ufpe.liber.controllers
 
 import br.ufpe.liber.assets.Asset
 import br.ufpe.liber.assets.AssetsResolver
+import br.ufpe.liber.assets.CacheControl
 import io.micronaut.core.io.ResourceResolver
 import io.micronaut.http.HttpHeaders
 import io.micronaut.http.HttpResponse
@@ -10,41 +11,41 @@ import io.micronaut.http.annotation.Controller
 import io.micronaut.http.annotation.Get
 import io.micronaut.http.annotation.Header
 import io.micronaut.http.server.types.files.StreamedFile
+import java.time.Duration
 import java.time.LocalDateTime
-import java.time.ZoneId
-import java.time.ZoneOffset.UTC
-import java.time.format.DateTimeFormatter
-import java.util.Locale
 import java.util.Optional
-import java.util.concurrent.TimeUnit
 
 @Controller("/static/{+path}")
 class AssetsController(
     private val assetsResolver: AssetsResolver,
     private val resourceResolver: ResourceResolver,
 ) {
-    object Cache {
-        @Suppress("detekt:MagicNumber", "MAGIC_NUMBER")
-        val ONE_YEAR_IN_SECONDS: Long = TimeUnit.DAYS.toSeconds(365)
-        val HTTP_DATE_FORMATTER: DateTimeFormatter = DateTimeFormatter
-            .ofPattern("EEE, dd MMM yyyy HH:mm:ss z", Locale.ENGLISH)
-            .withZone(ZoneId.of("GMT"))
-    }
-
     @Get
-    fun asset(@Header("Accept-Encoding") encoding: String, path: String): HttpResponse<StreamedFile> {
-        return assetsResolver
-            .fromHashed("/$path")
-            .flatMap { asset -> httpResponseForAsset(asset, encoding) }
-            .map { response ->
-                response
-                    .header(HttpHeaders.CACHE_CONTROL, "public, max-age=${Cache.ONE_YEAR_IN_SECONDS}, immutable")
-                    .header(HttpHeaders.EXPIRES, oneYearFromNow())
-            }
-            .orElse(HttpResponse.notFound())
+    fun asset(
+        path: String,
+        @Header("Accept-Encoding") encoding: String,
+        @Header("If-None-Match") ifNoneMatch: Optional<String> = Optional.empty(),
+    ): HttpResponse<StreamedFile> {
+        val maybeAsset = assetsResolver.fromHashed("/$path")
+        if (maybeAsset.isEmpty) return HttpResponse.notFound()
+
+        val asset = maybeAsset.get()
+        return notModified(asset, ifNoneMatch).orElseGet { httpResponseForAsset(asset, encoding) }
     }
 
-    private fun httpResponseForAsset(asset: Asset, encoding: String): Optional<MutableHttpResponse<StreamedFile>> {
+    private fun notModified(asset: Asset, ifNoneMatch: Optional<String>): Optional<HttpResponse<StreamedFile>> {
+        // Handle Etags:
+        // https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/If-None-Match
+        return ifNoneMatch
+            .filter { etags ->
+                // Syntax for `If-None-Match` header:
+                // https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/If-None-Match#syntax
+                etags.split(",").any { etag -> etag.trim() == asset.etag }
+            }
+            .map { HttpResponse.notModified() }
+    }
+
+    private fun httpResponseForAsset(asset: Asset, encoding: String): HttpResponse<StreamedFile> {
         return asset
             .preferredEncodedResource(encoding)
             .flatMap { availableEncoding ->
@@ -56,12 +57,29 @@ class AssetsController(
                             .contentEncoding(availableEncoding.http)
                     }
             }
-            .or {
-                resourceResolver
-                    .getResourceAsStream(asset.classpath())
-                    .map { inputStream -> HttpResponse.ok(StreamedFile(inputStream, asset.mediaType())) }
-            }
+            .or { tryPlainAsset(asset) }
+            .map { response -> setCacheHeaders(asset, response) }
+            .orElse(HttpResponse.notFound())
     }
 
-    private fun oneYearFromNow(): String = LocalDateTime.now(UTC).plusYears(1).format(Cache.HTTP_DATE_FORMATTER)
+    private fun tryPlainAsset(asset: Asset): Optional<MutableHttpResponse<StreamedFile>> = resourceResolver
+        .getResourceAsStream(asset.classpath())
+        .map { inputStream -> HttpResponse.ok(StreamedFile(inputStream, asset.mediaType())) }
+
+    @Suppress("MagicNumber", "MAGIC_NUMBER")
+    private fun setCacheHeaders(
+        asset: Asset,
+        response: MutableHttpResponse<StreamedFile>,
+    ): MutableHttpResponse<StreamedFile> {
+        val maxAge = Duration.ofDays(365) // one year
+        response.headers
+            .lastModified(asset.lastModified)
+            .expires(LocalDateTime.now().plus(maxAge))
+            .add(
+                HttpHeaders.CACHE_CONTROL,
+                CacheControl(maxAge = maxAge, immutable = true, public = true).toString(),
+            )
+            .add(HttpHeaders.ETAG, asset.etag)
+        return response
+    }
 }

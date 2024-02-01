@@ -15,7 +15,7 @@ class AssetsResolverTest : BehaviorSpec({
     given("AssetsResolver") {
         val resourceResolver: ResourceResolver = mockk()
         every { resourceResolver.getResource("classpath:public/assets-metadata.json") } answers {
-            Optional.of(File("src/test/resources/public/assets-metadata.json").toURI().toURL())
+            Optional.of(File("src/test/resources/public/test-assets-metadata.json").toURI().toURL())
         }
 
         val assetsResolver = AssetsResolver(resourceResolver)
