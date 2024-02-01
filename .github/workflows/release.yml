@@ -33,9 +33,9 @@ jobs:
       - name: Docker / Get image name
         id: dockerImageName
         run: |
-          echo "dockerImageName=${{ env.REGISTRY }}/${{ github.repository }}:latest" | tr '[:upper:]' '[:lower:]'>> "$GITHUB_OUTPUT"
+          echo "dockerImageName=${{ env.REGISTRY }}/${{ github.repository }}" | tr '[:upper:]' '[:lower:]'>> "$GITHUB_OUTPUT"
       - name: Docker / Create Image
-        run: docker image build -t ${{ steps.dockerImageName.outputs.dockerImageName }} .
+        run: docker image build -t ${{ steps.dockerImageName.outputs.dockerImageName }}:latest .
       - name: Docker / List images
         run: docker images
       # Used to run docker scout below
