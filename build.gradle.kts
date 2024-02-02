@@ -55,7 +55,7 @@ plugins {
     id("com.saveourtool.diktat") version "2.0.0"
     // To run npm/node/js tasks
     // https://github.com/node-gradle/gradle-node-plugin
-    id("com.github.node-gradle.node") version "7.0.1"
+    id("com.github.node-gradle.node") version "7.0.2"
 }
 
 val runningOnCI: Boolean = getenv().getOrDefault("CI", "false").toBoolean()
@@ -423,7 +423,7 @@ dependencies {
     implementation("com.vladsch.flexmark:flexmark-ext-footnotes:$flexmarkVersion")
 
     // Content sanitizer
-    implementation("org.owasp.antisamy:antisamy:1.7.4")
+    implementation("org.owasp.antisamy:antisamy:1.7.5")
     implementation("org.owasp.encoder:encoder:1.2.3")
 
     // Accessibility Tests
