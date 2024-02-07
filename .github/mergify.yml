@@ -1,7 +1,26 @@
+queue_rules:
+  - name: deps-update
+    conditions:
+      - check-success=Good to merge
+    batch_size: 10
+    batch_max_wait_time: 15min
+    queue_branch_merge_method: fast-forward
+    merge_method: merge
+
 pull_request_rules:
+  - name: Automatic merge from dependabot
+    conditions:
+      - check-success=test
+      - author=dependabot[bot]
+    actions:
+      queue:
+        name: deps-update
+
   - name: Automatic merge when CI passes
     conditions:
       - check-success=Good to merge
+      # So that dependabot PRs go to the queue above
+      - author!=dependabot[bot]
     actions:
       merge:
         method: rebase
