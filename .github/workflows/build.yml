@@ -97,7 +97,11 @@ jobs:
     name: Test / Assets / pipeline
     runs-on: ubuntu-latest
     needs:
-      - compile
+      - diktat
+      - detekt
+      - ktlint
+      - stylelint
+      - eslint
     strategy:
       matrix:
         node-version: [18, 20]
@@ -121,6 +125,7 @@ jobs:
     runs-on: ubuntu-latest
     needs:
       - compile
+      - esbuild-check
     steps:
       - uses: actions/checkout@v4
         with:
@@ -151,53 +156,32 @@ jobs:
         with:
           verbose: true
 
-  build-docker:
-    name: Package / Docker / build
-    runs-on: ubuntu-latest
-    needs:
-      - compile
-    steps:
-      - uses: actions/checkout@v4
-      - name: Docker / Set up QEMU
-        uses: docker/setup-qemu-action@v3
-      - name: Docker / Set up Buildx
-        uses: docker/setup-buildx-action@v3
-      - name: Docker / Get image name
-        id: dockerImageName
-        run: echo "dockerImageName=visaoholandesa:$(date '+%Y%m%d.%H%M.%S')" >> "$GITHUB_OUTPUT"
-      - name: Docker / Create Image
-        run: docker image build -t ${{ steps.dockerImageName.outputs.dockerImageName }} .
-      - name: Docker / List images
-        run: docker images
-      # Adapted from https://docs.docker.com/build/ci/github-actions/test-before-push/
-      - name: Docker / Test Image
-        # From `docker run --help`:
-        #   -d, --detach          Run container in background and print container ID
-        #   --rm                  Automatically remove the container when it exits
-        #   -p, --publish list    Publish a container's port(s) to the host
-        run: |
-          containerId=$(docker run -d --rm --publish 8080:8080 ${{ steps.dockerImageName.outputs.dockerImageName }})
-          wget --retry-connrefused --tries=20 -nv --wait=1 --spider http://localhost:8080/
-          docker container logs "$containerId"
-          docker container stop "$containerId"
-
   good-to-merge:
     name: Good to merge
     runs-on: ubuntu-latest
     if: ${{ github.event_name == 'pull_request' }}
     needs:
-      - build-docker
+      - test
     steps:
       - run: echo "This PR is ready to merge."
 
-  check-if-prod:
+  check-if-should-release:
     if: ${{ github.ref == 'refs/heads/main' }}
-    name: Check if prod
+    name: Check if should release
     runs-on: ubuntu-latest
     needs:
-      - compile
+      - test
+    # This job also has an output that can be used by downstream jobs.
+    # https://docs.github.com/en/actions/using-jobs/defining-outputs-for-jobs
+    outputs:
+      tagName: ${{ steps.generateTagName.outputs.tagName }}
     steps:
-      - run: echo "This is a push to main branch. Following with release and deploy"
+      - run: echo "This is a push to main branch. Following with release a new version"
+      - name: Generate tag name
+        id: generateTagName
+        # TAG_NAME value is trying to emulate semver to avoid release ordering issues.
+        # See https://github.com/orgs/community/discussions/8226.
+        run: echo "tagName=v$(date '+%Y%m%d.%H%M.%S')" >> "$GITHUB_OUTPUT"
 
   create-release:
     name: Creates a GitHub Release
@@ -207,21 +191,93 @@ jobs:
       cancel-in-progress: true
     needs:
       - test
-      - check-if-prod
-      - build-docker
+      - check-if-should-release
     # Docs:
     # https://docs.github.com/en/actions/using-jobs/assigning-permissions-to-jobs
     permissions:
       contents: write
       packages: read # to preserve default permissions
+    env:
+      GH_TOKEN: ${{ github.token }}
+      TAG_NAME: ${{ needs.check-if-should-release.outputs.tagName }}
+      RELEASE_TITLE: Release ${{ needs.check-if-should-release.outputs.tagName }}
     steps:
       - uses: actions/checkout@v4
+      - uses: ./.github/gradle-action
+      - name: Generate jar artifacts
+        run: ./gradlew -PreleaseTag=$TAG_NAME clean shadowJar -x test -x accessibilityTest --no-configuration-cache
       - name: Create Github Release
-        env:
-          GH_TOKEN: ${{ github.token }}
-        # TAG_NAME value is trying to emulate semver to avoid release ordering issues.
-        # See https://github.com/orgs/community/discussions/8226.
+        run: gh release create "$TAG_NAME" --title "$RELEASE_TITLE" --generate-notes --latest ./build/libs/*.jar
+
+  publish-docker-image:
+    name: Publish docker image
+    runs-on: ubuntu-latest
+    env:
+      REGISTRY: ghcr.io
+      GH_TOKEN: ${{ github.token }}
+      TAG_NAME: ${{ needs.check-if-should-release.outputs.tagName }}
+    concurrency:
+      group: "publish-docker-image"
+      cancel-in-progress: true
+    needs:
+      - test
+      - check-if-should-release
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # 0 indicates all history for all branches and tags.
+      - uses: docker/setup-qemu-action@v3
+      - uses: docker/setup-buildx-action@v3
+      - name: Docker / Get image name
+        id: dockerImageName
         run: |
-          RELEASE_TITLE=$(date '+%Y %b %d %H:%M:%S')
-          TAG_NAME="v$(date '+%Y%m%d.%H%M.%S')"
-          gh release create "$TAG_NAME" --title "$RELEASE_TITLE" --generate-notes --latest
+          echo "dockerImageName=${{ env.REGISTRY }}/${{ github.repository }}" | tr '[:upper:]' '[:lower:]'>> "$GITHUB_OUTPUT"
+      - name: Create Image
+        run: docker image build -t ${{ steps.dockerImageName.outputs.dockerImageName }}:latest .
+      # Needs to log in to use docker scout below
+      - uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - uses: docker/scout-action@v1
+        continue-on-error: true
+        with:
+          command: quickview
+          image: ${{ steps.dockerImageName.outputs.dockerImageName }}
+          write-comment: false
+          summary: true
+      # Adapted from https://docs.docker.com/build/ci/github-actions/test-before-push/
+      - name: Test Image
+        # From `docker run --help`:
+        #   -d, --detach          Run container in background and print container ID
+        #   --rm                  Automatically remove the container when it exits
+        #   -p, --publish list    Publish a container's port(s) to the host
+        run: |
+          containerId=$(docker run -d --rm --publish 8080:8080 ${{ steps.dockerImageName.outputs.dockerImageName }})
+          wget --retry-connrefused --tries=20 -nv --wait=1 --spider http://localhost:8080/
+          docker container logs "$containerId"
+          docker container stop "$containerId"
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Publish to GitHub Registry
+        run: |
+          last_git_sha=$(git log --pretty=format:'%h' HEAD -1)
+          source_image_name=${{ steps.dockerImageName.outputs.dockerImageName }}
+
+          echo "Using git tag $TAG_NAME"
+          echo "Using last git sha $last_git_sha"
+          echo "Context's github.sha = ${{ github.sha }}"
+
+          echo "Images to tag => $source_image_name:$TAG_NAME"
+          echo "Images to tag => $source_image_name:$last_git_sha"
+          docker tag "$source_image_name" "$source_image_name:$TAG_NAME"
+          docker tag "$source_image_name" "$source_image_name:$last_git_sha"
+
+          docker push --all-tags ${{ steps.dockerImageName.outputs.dockerImageName }}
