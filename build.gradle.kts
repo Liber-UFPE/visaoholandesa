@@ -68,7 +68,8 @@ val jteVersion: String = properties["jteVersion"] as String
 val luceneVersion: String = properties["luceneVersion"] as String
 val flexmarkVersion: String = properties["flexmarkVersion"] as String
 
-version = "0.1"
+val releaseTag: String? by project
+version = releaseTag ?: "0.1"
 group = "br.ufpe.liber"
 
 repositories {
