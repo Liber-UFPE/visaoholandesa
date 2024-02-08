@@ -51,7 +51,7 @@
 @if(notHtmxRequest())
 <header id="header">
     <div id="request-progress-bar" class="container-fluid fixed-top">
-        <div class="progress" role="progressbar" aria-valuemin="0" aria-valuemax="100">
+        <div class="progress" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-label="Request Progress">
             <div class="progress-bar progress-bar-striped progress-bar-animated bg-success" style="width: 100%"></div>
         </div>
     </div>
@@ -111,7 +111,8 @@
     <div class="container">
         <div class="row row-cols-1 row-cols-sm-2 row-cols-md-5 py-5">
             <div class="col mb-3">
-                <a href="${LinksHelper.Liber.SITE}" class="d-flex align-items-center mb-3 link-body-emphasis text-decoration-none">
+                <a href="${LinksHelper.Liber.SITE}" aria-label="Site do Laboratório Liber"
+                   class="d-flex align-items-center mb-3 link-body-emphasis text-decoration-none">
                     @template.assets.picture(
                         path = "/images/Liber-Circular.png",
                         prefix = "/static",
