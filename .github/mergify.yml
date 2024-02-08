@@ -10,7 +10,7 @@ queue_rules:
 pull_request_rules:
   - name: Automatic merge from dependabot
     conditions:
-      - check-success=test
+      - check-success=Good to merge
       - author=dependabot[bot]
     actions:
       queue:
