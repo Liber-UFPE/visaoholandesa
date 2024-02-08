@@ -15,9 +15,9 @@ plugins {
     kotlin("plugin.serialization") version "1.9.22"
     id("com.google.devtools.ksp") version "1.9.22-1.0.17"
     id("com.github.johnrengelman.shadow") version "8.1.1"
-    id("io.micronaut.application") version "4.3.1"
+    id("io.micronaut.application") version "4.3.2"
     id("gg.jte.gradle") version "3.1.9"
-    id("io.micronaut.aot") version "4.3.1"
+    id("io.micronaut.aot") version "4.3.2"
     // Apply GraalVM Native Image plugin. Micronaut already adds it, but
     // adding it explicitly allows to control which version is used.
     id("org.graalvm.buildtools.native") version "0.10.0"
@@ -383,7 +383,7 @@ val generateBooksJsonTask by tasks.registering(GenerateBooksJsonTask::class)
 
 dependencies {
     // TEMP: Brings logback 1.4.14. Remove when micronaut-core updates.
-    implementation(platform("io.micronaut.logging:micronaut-logging-bom:1.2.2"))
+    implementation(platform("io.micronaut.logging:micronaut-logging-bom:1.2.3"))
 
     ksp(mn.micronaut.http.validation)
     ksp(mn.micronaut.serde.processor)
