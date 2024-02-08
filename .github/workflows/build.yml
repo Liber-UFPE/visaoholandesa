@@ -9,6 +9,12 @@ on:
 env:
   GRADLE_OPTS: '-Dorg.gradle.console=plain -Dorg.gradle.caching=true -Dsonar.gradle.skipCompile=true -Dorg.gradle.jvmargs="-Xmx2g -XX:MaxMetaspaceSize=512m"'
 
+concurrency:
+  # This workflow cuts releases, so we want only a
+  # single concurrent workflow run per branch/tag/etc.
+  group: ${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   diktat:
     name: Code Analysis / diktat
@@ -186,9 +192,6 @@ jobs:
   create-release:
     name: Creates a GitHub Release
     runs-on: ubuntu-latest
-    concurrency:
-      group: "create-releases"
-      cancel-in-progress: true
     needs:
       - test
       - check-if-should-release
@@ -216,9 +219,6 @@ jobs:
       REGISTRY: ghcr.io
       GH_TOKEN: ${{ github.token }}
       TAG_NAME: ${{ needs.check-if-should-release.outputs.tagName }}
-    concurrency:
-      group: "publish-docker-image"
-      cancel-in-progress: true
     needs:
       - test
       - check-if-should-release
