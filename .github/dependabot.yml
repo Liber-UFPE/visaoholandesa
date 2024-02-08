@@ -7,7 +7,7 @@ version: 2
 updates:
   - package-ecosystem: "gradle"
     directory: "/"
-    rebase-strategy: auto
+    rebase-strategy: disabled
     schedule:
       interval: "daily"
     commit-message:
@@ -17,14 +17,14 @@ updates:
         update-types: [ "patch" ]
   - package-ecosystem: "github-actions"
     directory: "/"
-    rebase-strategy: auto
+    rebase-strategy: disabled
     schedule:
       interval: "weekly"
     commit-message:
       prefix: "[github-actions]"
   - package-ecosystem: "npm"
     directory: "/"
-    rebase-strategy: auto
+    rebase-strategy: disabled
     schedule:
       interval: "daily"
     commit-message:
