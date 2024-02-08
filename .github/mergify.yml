@@ -5,7 +5,7 @@ queue_rules:
     batch_size: 10
     batch_max_wait_time: 15min
     queue_branch_merge_method: fast-forward
-    merge_method: merge
+    merge_method: rebase
 
 pull_request_rules:
   - name: Automatic merge from dependabot
