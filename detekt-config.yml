@@ -1,3 +1,6 @@
+---
+# DO NOT EDIT: this file is automatically synced from the template repository
+# in https://github.com/Liber-UFPE/project-starter.
 # This is supposed to be used together with `--build-upon-default-config` CLI option.
 # Meaning that all the defaults would be respected, except that we don't want to exclude
 # `DetektProgressListener`. Therefore, `exclude` is set to an empty array.

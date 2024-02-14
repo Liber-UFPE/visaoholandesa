@@ -8,6 +8,9 @@ import io.kotest.matchers.string.contain
 import io.kotest.matchers.string.containIgnoringCase
 import java.io.StringWriter
 
+// DO NOT EDIT: this file is automatically synced from the template repository
+// in https://github.com/Liber-UFPE/project-starter.
+
 fun KteWriteable.asString(): String {
     val writer = StringWriter()
     this.writeTo(writer)

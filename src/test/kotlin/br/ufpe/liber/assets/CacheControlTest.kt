@@ -8,6 +8,9 @@ import io.kotest.data.table
 import io.kotest.matchers.shouldBe
 import java.time.Duration
 
+// DO NOT EDIT: this file is automatically synced from the template repository
+// in https://github.com/Liber-UFPE/project-starter.
+
 class CacheControlTest : BehaviorSpec({
     given("CacheControl") {
         `when`(".toString") {

@@ -21,12 +21,29 @@ function runDetekt {
   fi
 }
 
+function runStylelint {
+  echo -e "Running ${BOLD}${GREEN}stylelint${RESET} pre-commit hook"
+  npx stylelint src/main/**/*.scss
+}
+
+function runEslint {
+  echo -e "Running ${BOLD}${GREEN}eslint${RESET} pre-commit hook"
+    npx eslint .
+}
+
 runKtlint
 KTLINT_STATUS=$?
 
 runDetekt
 DETEKT_STATUS=$?
 
-[ $KTLINT_STATUS -ne 0 ] || [ $DETEKT_STATUS -ne 0 ] && exit 1
+runStylelint
+STYLELINT_STATUS=$?
+
+runEslint
+ESLINT_STATUS=$?
+
+
+[ $KTLINT_STATUS -ne 0 ] || [ $DETEKT_STATUS -ne 0 ] || [ $STYLELINT_STATUS -ne 0 ] || [ $ESLINT_STATUS -ne 0 ] && exit 1
 
 exit 0
