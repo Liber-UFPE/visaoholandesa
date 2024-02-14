@@ -182,7 +182,15 @@ jobs:
         run: |
           echo "dockerImageName=${{ env.REGISTRY }}/${{ github.repository }}" | tr '[:upper:]' '[:lower:]'>> "$GITHUB_OUTPUT"
       - name: Create Image
-        run: docker image build -t ${{ steps.dockerImageName.outputs.dockerImageName }}:latest .
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          load: true  # Load is a shorthand for --output=type=docker
+          tags: ${{ steps.dockerImageName.outputs.dockerImageName }}:latest
+          # See https://docs.docker.com/build/ci/github-actions/cache/#github-cache
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
       - name: Test Image
         run: |
           containerId=$(docker run -d --rm --publish 8080:8080 ${{ steps.dockerImageName.outputs.dockerImageName }})
