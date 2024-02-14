@@ -10,6 +10,9 @@ import io.micronaut.http.MediaType
 import java.time.Instant
 import java.util.Optional
 
+// DO NOT EDIT: this file is automatically synced from the template repository
+// in https://github.com/Liber-UFPE/project-starter.
+
 class AssetTest : BehaviorSpec({
     given("Asset") {
         val brotli = Encoding("br", "br", 0)

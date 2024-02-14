@@ -11,6 +11,9 @@ import io.mockk.mockk
 import java.io.File
 import java.util.Optional
 
+// DO NOT EDIT: this file is automatically synced from the template repository
+// in https://github.com/Liber-UFPE/project-starter.
+
 class AssetsResolverTest : BehaviorSpec({
     given("AssetsResolver") {
         val resourceResolver: ResourceResolver = mockk()

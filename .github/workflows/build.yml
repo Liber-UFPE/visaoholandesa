@@ -1,13 +1,22 @@
+---
+# DO NOT EDIT: this file is automatically synced from the template repository
+# in https://github.com/Liber-UFPE/project-starter.
 name: CI
 
+# yamllint disable rule:truthy
 on:
   push:
     branches: [ "main" ]
   pull_request:
     types: [ "opened", "synchronize", "reopened" ]
+# yamllint enable rule:truthy
 
 env:
-  GRADLE_OPTS: '-Dorg.gradle.console=plain -Dorg.gradle.caching=true -Dsonar.gradle.skipCompile=true -Dorg.gradle.jvmargs="-Xmx2g -XX:MaxMetaspaceSize=512m"'
+  GRADLE_OPTS: >
+    -Dorg.gradle.console=plain
+    -Dorg.gradle.caching=true
+    -Dsonar.gradle.skipCompile=true
+    -Dorg.gradle.jvmargs="-Xmx2g -XX:MaxMetaspaceSize=512m"'
 
 concurrency:
   # This workflow cuts releases, so we want only a
@@ -54,7 +63,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: "lts/*" # latest lts
+          node-version: "lts/*"  # latest lts
           check-latest: true
           cache: "npm"
       - name: npm install
@@ -69,7 +78,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: "lts/*" # latest lts
+          node-version: "lts/*"  # latest lts
           check-latest: true
           cache: "npm"
       - name: npm install
@@ -77,40 +86,12 @@ jobs:
       - name: run eslint
         run: npx eslint .
 
-  compile:
-    name: Build / compile
-    runs-on: ubuntu-latest
-    needs:
-      - diktat
-      - detekt
-      - ktlint
-      - stylelint
-      - eslint
-    steps:
-      - uses: actions/checkout@v4
-      - name: Set up Gradle and Java
-        uses: ./.github/gradle-action
-        with:
-          # Allows this job to write to the cache every time it runs
-          gradle-cache-read-only: false
-      - name: Start Gradle Daemon
-        run: ./gradlew --info
-      - run: ./gradlew testClasses
-      - name: Gradle Tasks Summary
-        run: cat build/reports/build-times.md >> $GITHUB_STEP_SUMMARY
-
   esbuild-check:
     name: Test / Assets / pipeline
     runs-on: ubuntu-latest
-    needs:
-      - diktat
-      - detekt
-      - ktlint
-      - stylelint
-      - eslint
     strategy:
       matrix:
-        node-version: [18, 20]
+        node-version: [ 18, 20 ]
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -126,12 +107,34 @@ jobs:
           node assets-pipeline.mjs
           tree ./build
 
+  compile:
+    name: Build / compile
+    runs-on: ubuntu-latest
+    needs:
+      - diktat
+      - detekt
+      - ktlint
+      - stylelint
+      - eslint
+      - esbuild-check
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Gradle and Java
+        uses: ./.github/gradle-action
+        with:
+          # Allows this job to write to the cache every time it runs
+          gradle-cache-read-only: false
+      - name: Start Gradle Daemon
+        run: ./gradlew --info
+      - run: ./gradlew testClasses
+      - name: Gradle Tasks Summary
+        run: cat build/reports/build-times.md >> $GITHUB_STEP_SUMMARY
+
   test:
     name: Tests / test
     runs-on: ubuntu-latest
     needs:
       - compile
-      - esbuild-check
     steps:
       - uses: actions/checkout@v4
         with:
@@ -162,21 +165,65 @@ jobs:
         with:
           verbose: true
 
+  test-docker-image:
+    name: Tests / docker image
+    runs-on: ubuntu-latest
+    needs:
+      - compile
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/setup-qemu-action@v3
+      - uses: docker/setup-buildx-action@v3
+      - name: Docker / Get image name
+        id: dockerImageName
+        run: |
+          echo "dockerImageName=${{ github.repository }}" | tr '[:upper:]' '[:lower:]'>> "$GITHUB_OUTPUT"
+      - name: Create Image
+        run: docker image build -t ${{ steps.dockerImageName.outputs.dockerImageName }}:latest .
+      - name: Test Image
+        run: |
+          containerId=$(docker run -d --rm --publish 8080:8080 ${{ steps.dockerImageName.outputs.dockerImageName }})
+          wget --retry-connrefused --tries=20 -nv --wait=1 --spider http://localhost:8080/
+          docker container logs "$containerId"
+          docker container stop "$containerId"
+      - name: Generate image tar if release branch
+        if: ${{ github.ref == 'refs/heads/main' }}
+        # language="shell script"
+        run: |
+          docker save "${{ steps.dockerImageName.outputs.dockerImageName }}:latest" | \
+            gzip > generate-image-latest.tar.gz
+      - name: Upload image tar if release branch
+        if: ${{ github.ref == 'refs/heads/main' }}
+        uses: actions/upload-artifact@v4
+        with:
+          path: generate-image-latest.tar.gz
+          compression-level: 0  # No compression since it is already a gzip file
+
   good-to-merge:
     name: Good to merge
     runs-on: ubuntu-latest
     if: ${{ github.event_name == 'pull_request' }}
     needs:
       - test
+      - test-docker-image
     steps:
       - run: echo "This PR is ready to merge."
 
-  check-if-should-release:
+  check-if-release-branch:
     if: ${{ github.ref == 'refs/heads/main' }}
-    name: Check if should release
+    name: Check if release branch
     runs-on: ubuntu-latest
     needs:
       - test
+      - test-docker-image
+    steps:
+      - run: echo "This is a push to main branch. Following with release a new version"
+
+  generate-tag-name:
+    name: Generate tag name
+    runs-on: ubuntu-latest
+    needs:
+      - check-if-release-branch
     # This job also has an output that can be used by downstream jobs.
     # https://docs.github.com/en/actions/using-jobs/defining-outputs-for-jobs
     outputs:
@@ -193,17 +240,16 @@ jobs:
     name: Creates a GitHub Release
     runs-on: ubuntu-latest
     needs:
-      - test
-      - check-if-should-release
+      - generate-tag-name
     # Docs:
     # https://docs.github.com/en/actions/using-jobs/assigning-permissions-to-jobs
     permissions:
       contents: write
-      packages: read # to preserve default permissions
+      packages: read  # to preserve default permissions
     env:
       GH_TOKEN: ${{ github.token }}
-      TAG_NAME: ${{ needs.check-if-should-release.outputs.tagName }}
-      RELEASE_TITLE: Release ${{ needs.check-if-should-release.outputs.tagName }}
+      TAG_NAME: ${{ needs.generate-tag-name.outputs.tagName }}
+      RELEASE_TITLE: Release ${{ needs.generate-tag-name.outputs.tagName }}
     steps:
       - uses: actions/checkout@v4
       - uses: ./.github/gradle-action
@@ -218,25 +264,43 @@ jobs:
     env:
       REGISTRY: ghcr.io
       GH_TOKEN: ${{ github.token }}
-      TAG_NAME: ${{ needs.check-if-should-release.outputs.tagName }}
+      TAG_NAME: ${{ needs.generate-tag-name.outputs.tagName }}
     needs:
-      - test
-      - check-if-should-release
+      - generate-tag-name
     permissions:
       contents: read
       packages: write
     steps:
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 0 # 0 indicates all history for all branches and tags.
+          fetch-depth: 0  # 0 indicates all history for all branches and tags.
       - uses: docker/setup-qemu-action@v3
       - uses: docker/setup-buildx-action@v3
       - name: Docker / Get image name
         id: dockerImageName
+        # yamllint disable rule:line-length
+        # language="shell script"
         run: |
           echo "dockerImageName=${{ env.REGISTRY }}/${{ github.repository }}" | tr '[:upper:]' '[:lower:]'>> "$GITHUB_OUTPUT"
+        # yamllint enable rule:line-length
+      - name: Download previously generated image tar
+        uses: actions/download-artifact@v4
       - name: Create Image
-        run: docker image build -t ${{ steps.dockerImageName.outputs.dockerImageName }}:latest .
+        # language="shell script"
+        run: |
+          pwd
+          ls -l
+          pushd "$GITHUB_WORKSPACE"
+            pwd
+            ls -l
+          popd
+          if [ -f generate-image-latest.tar.gz ]; then
+            echo "Previously generate image found. Will load image"
+            docker load < generate-image-latest.tar.gz
+          else
+            echo "Previously generate image NOT found. Will build image"
+            docker image build -t ${{ steps.dockerImageName.outputs.dockerImageName }}:latest .
+          fi
       # Needs to log in to use docker scout below
       - uses: docker/login-action@v3
         with:

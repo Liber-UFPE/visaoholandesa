@@ -15,6 +15,8 @@ import java.util.Optional
 import java.util.TreeMap
 import kotlin.jvm.optionals.getOrDefault
 
+// DO NOT EDIT: this file is automatically synced from the template repository
+// in https://github.com/Liber-UFPE/project-starter.
 @OptIn(ExperimentalSerializationApi::class)
 @Singleton
 @EagerInProduction

@@ -2,6 +2,9 @@ package br.ufpe.liber.assets
 
 import java.time.Duration
 
+// DO NOT EDIT: this file is automatically synced from the template repository
+// in https://github.com/Liber-UFPE/project-starter.
+
 // Based on https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Cache-Control, but stills incomplete.
 data class CacheControl(
     val maxAge: Duration,
