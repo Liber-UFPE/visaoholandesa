@@ -49,7 +49,7 @@ class Indexer(
         logger.info("Starting to index all books")
 
         IndexWriter(directory, IndexWriterConfig(analyzer)).use { writer ->
-            bookRepository.listAll().forEach { book ->
+            bookRepository.listAll().parallelStream().forEach { book ->
                 logger.info("Indexing book with id ${book.id}")
                 book.pages.forEach { page ->
                     val doc = Document()

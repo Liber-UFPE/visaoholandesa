@@ -1,3 +1,5 @@
+@import br.ufpe.liber.pagination.Gap
+@import br.ufpe.liber.pagination.SinglePage
 @import br.ufpe.liber.views.LinksHelper.linkTo
 
 @param query: String
@@ -34,46 +36,44 @@
                         @endfor
                     </div>
                 </div>
+                !{val pagination = results.pagination}
                 <div class="col-md-12">
                     <nav class="btn-toolbar" role="navigation" aria-label="Paginação dos resultados da busca">
                         <div class="btn-group btn-group-lg me-2" role="group" aria-label="Botões para páginação">
-                            @if(results.isFirstPage)
+                            @if(pagination.prev == null)
                                 <button class="btn btn-outline-success" disabled aria-label="Vá para a primeira página">&laquo; Primeira</button>
                                 <button class="btn btn-outline-success" disabled>&lsaquo; Anterior</button>
                             @else
-                                <a href="${linkTo("/search/?query=${query}&page=1")}"
+                                <a href="${linkTo("/search/?query=${query}")}"
                                    hx-boost="true" hx-target="#content" hx-swap="outerHTML show:top" hx-push-url="true"
                                    class="btn btn-outline-success" aria-label="Vá para a primeira página">&laquo; Primeira</a>
-                                <a href="${linkTo("/search/?query=${query}&page=${results.currentPage - 1}")}"
+                                <a href="${linkTo("/search/?query=${query}&page=${pagination.prev}")}"
                                    hx-boost="true" hx-target="#content" hx-swap="outerHTML show:top" hx-push-url="true"
                                    class="btn btn-outline-success" aria-label="Vá para página anterior">&lsaquo; Anterior</a>
                             @endif
 
-                            @for(page in results.pages)
-                                !{val isCurrentPage: Boolean = page.number == results.currentPage}
-                                @if(isCurrentPage)
+                            @for(page in pagination.listPages())
+                                @if(page is Gap)
+                                    <button class="btn btn-outline-success" disabled>${page.toString()}</button>
+                                @elseif(page is SinglePage && page.current)
                                     <button class="btn btn-success" aria-label="Essa é a página atual, página ${page.number}">${page.toString()}</button>
-                                @else
-                                    @if(page.hidden)
-                                        <button class="btn btn-outline-success" disabled>${page.toString()}</button>
-                                    @else
-                                        <a href="${linkTo("/search/?query=${query}&page=${page.number}")}"
-                                           hx-boost="true" hx-target="#content" hx-swap="outerHTML show:top" hx-push-url="true"
-                                           class="btn btn-outline-success" aria-label="Vá para página ${page.number}">${page.toString()}</a>
-                                    @endif
+                                @elseif(page is SinglePage)
+                                    <a href="${linkTo("/search/?query=${query}&page=${page.number}")}"
+                                       hx-boost="true" hx-target="#content" hx-swap="outerHTML show:top" hx-push-url="true"
+                                       class="btn btn-outline-success" aria-label="Vá para página ${page.number}">${page.toString()}</a>
                                 @endif
                             @endfor
 
-                            @if(results.isLastPage)
+                            @if(pagination.next == null)
                                 <button class="btn btn-outline-success" disabled>Próxima &rsaquo;</button>
-                                <button class="btn btn-outline-success" aria-label="Vá para a última página, página ${results.totalPages}" disabled>Última &raquo;</button>
+                                <button class="btn btn-outline-success" aria-label="Vá para a última página, página ${pagination.pages}" disabled>Última &raquo;</button>
                             @else
-                                <a href="${linkTo("/search/?query=${query}&page=${results.currentPage + 1}")}"
+                                <a href="${linkTo("/search/?query=${query}&page=${pagination.next}")}"
                                    hx-boost="true" hx-target="#content" hx-swap="outerHTML show:top" hx-push-url="true"
                                    class="btn btn-outline-success" aria-label="Vá para a próxima página">Próxima &rsaquo;</a>
-                                <a href="${linkTo("/search/?query=${query}&page=${results.totalPages}")}"
+                                <a href="${linkTo("/search/?query=${query}&page=${pagination.pages}")}"
                                    hx-boost="true" hx-target="#content" hx-swap="outerHTML show:top" hx-push-url="true"
-                                   class="btn btn-outline-success" aria-label="Vá para a última página, página ${results.totalPages}">Última &raquo;</a>
+                                   class="btn btn-outline-success" aria-label="Vá para a última página, página ${pagination.pages}">Última &raquo;</a>
                             @endif
 
                         </div>
