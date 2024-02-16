@@ -117,7 +117,7 @@ jobs:
 
   get_npm_cache:
     docker:
-      - image: cimg/node:20.11
+      - image: cimg/node:21.6
     steps:
       - attach_checkout_workspace
       - restore_npm_cache
@@ -177,7 +177,7 @@ jobs:
 
   eslint:
     docker:
-      - image: cimg/node:20.11
+      - image: cimg/node:21.6
     steps:
       - attach_checkout_workspace
       - run:
@@ -186,7 +186,7 @@ jobs:
 
   stylelint:
     docker:
-      - image: cimg/node:20.11
+      - image: cimg/node:21.6
     steps:
       - attach_checkout_workspace
       - run:
