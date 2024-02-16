@@ -1,0 +1,367 @@
+version: 2.1
+
+orbs:
+  # https://circleci.com/developer/orbs/orb/idanelh/ktlint
+  ktlint: idanelh/ktlint@1.0.1
+  node: circleci/node@5.2.0
+
+executors:
+  gradle-executor:
+    environment:
+      _JAVA_OPTIONS: "-Xmx3g"
+      GRADLE_OPTS: "-Dorg.gradle.daemon=false -Dorg.gradle.workers.max=2"
+    docker:
+      - image: cimg/openjdk:21.0.2-browsers
+
+commands:
+  attach_checkout_workspace:
+    description: "Attach to project checkout workspace"
+    steps:
+      - attach_workspace:
+          at: .
+
+  # https://circleci.com/docs/reusing-config/#authoring-reusable-commands
+  restore_gradle_cache:
+    description: "Restore Gradle wrapper and dependencies caches"
+    steps:
+      - restore_cache:
+          name: Restore gradle-wrapper cache
+          keys:
+            - v3-gradle-wrapper-{{ checksum "gradle/wrapper/gradle-wrapper.properties" }}
+            - v3-gradle-wrapper-
+      - run:
+          name: Generate gradle cache key
+          command: md5sum **/*.kts gradle.properties > /tmp/deps-gradle-cache-key
+      - restore_cache:
+          name: Restore Gradle cache
+          keys:
+            - v3-gradle-deps-{{ checksum "/tmp/deps-gradle-cache-key" }}
+            - v3-gradle-deps-
+
+  restore_npm_cache:
+    description: "Restore npm cache"
+    steps:
+      - restore_cache:
+          name: Restore npm cache
+          keys:
+            - v3-npm-deps-{{ checksum "package-lock.json" }}
+            - v3-npm-deps-
+
+  save_gradle_cache:
+    description: "Save Gradle wrapper and dependencies cache"
+    steps:
+      - save_cache:
+          name: Save Gradle wrapper cache
+          paths:
+            - ~/.gradle/wrapper
+          key: v3-gradle-wrapper-{{ checksum "gradle/wrapper/gradle-wrapper.properties" }}
+      - run:
+          name: Generate gradle cache key
+          command: md5sum **/*.kts gradle.properties > /tmp/deps-gradle-cache-key
+      - save_cache:
+          name: Save Gradle cache
+          key: v3-gradle-deps-{{ checksum "/tmp/deps-gradle-cache-key" }}
+          paths:
+            - ~/.gradle/caches
+
+  save_npm_cache:
+    description: "Save npm cache"
+    steps:
+      - save_cache:
+          name: Save npm cache
+          key: v3-npm-deps-{{ checksum "package-lock.json" }}
+          paths:
+            - node_modules
+
+  store_test_results_artifacts:
+    description: "Store test results"
+    steps:
+      - store_test_results:
+          path: build/test-results/test
+      - store_artifacts:
+          path: build/test-results/test
+
+  build_time_report:
+    description: "Show build time report"
+    steps:
+      - run:
+          name: Download glow
+          # language="shell script"
+          command: |
+            # Get the latest release
+            latest_release_url="https://api.github.com/repos/charmbracelet/glow/releases/latest"
+            latest_release_asset_url=$(
+              curl --retry 3 --retry-delay 5 --retry-max-time 30 --retry-connrefused $latest_release_url |
+              jq '.assets[] | select(.name | endswith("Linux_x86_64.tar.gz")) | .browser_download_url' -r
+            )
+            curl -L --retry 3 --retry-delay 5 --retry-max-time 30 --retry-connrefused -o glow.tar.gz $latest_release_asset_url
+            tar -xzf glow.tar.gz
+            chmod +x glow
+      - run:
+          name: Show build time report
+          command: ./glow ./build/reports/build-times.md
+
+jobs:
+  checkout_code:
+    docker:
+      - image: cimg/base:stable
+    steps:
+      - checkout
+      - run:
+          name: Show current directory
+          command: pwd
+      - persist_to_workspace:
+          root: .
+          paths:
+              - .
+
+  get_npm_cache:
+    docker:
+      - image: cimg/node:20.11
+    steps:
+      - attach_checkout_workspace
+      - restore_npm_cache
+      - run:
+          name: Install dependencies
+          command: npm install
+      - persist_to_workspace:
+          root: .
+          paths:
+            - node_modules
+
+  ktlint:
+    docker:
+      - image: cimg/openjdk:21.0.2-browsers
+    steps:
+      - attach_checkout_workspace
+      - ktlint/install:
+          version: 1.1.1
+      - ktlint/lint:
+          working-directory: ~/project
+
+  detekt:
+    docker:
+      - image: cimg/openjdk:21.0.2-browsers
+    environment:
+      DETEKT_VERSION: "1.23.5"
+    steps:
+      - attach_checkout_workspace
+      - run:
+          name: Install Detekt
+          # language="shell script"
+          command: |
+            detekt_release_url="https://github.com/detekt/detekt/releases/download/v$DETEKT_VERSION/detekt-cli-$DETEKT_VERSION.zip"
+            curl -sSLO --retry 3 --retry-delay 5 --retry-max-time 30 --retry-connrefused "$detekt_release_url"
+            unzip "detekt-cli-$DETEKT_VERSION.zip"
+            chmod +x "./detekt-cli-$DETEKT_VERSION/bin/detekt-cli"
+            ./detekt-cli-$DETEKT_VERSION/bin/detekt-cli --report md:detekt.md
+      - store_artifacts:
+          path: detekt.md
+          destination: detekt.md
+
+  diktat:
+    docker:
+      - image: cimg/openjdk:21.0.2-browsers
+    environment:
+      DIKTAT_VERSION: "2.0.0"
+    steps:
+      - attach_checkout_workspace
+      - run:
+          name: Install Diktat
+          # language="shell script"
+          command: |
+            diktat_release_url="https://github.com/saveourtool/diktat/releases/download/v$DIKTAT_VERSION/diktat"
+            curl -sSLO --retry 3 --retry-delay 5 --retry-max-time 30 --retry-connrefused "$diktat_release_url"
+            chmod a+x diktat
+            ./diktat src/main/kotlin src/test/kotlin
+
+  eslint:
+    docker:
+      - image: cimg/node:20.11
+    steps:
+      - attach_checkout_workspace
+      - run:
+          name: Run ESLint
+          command: npx eslint .
+
+  stylelint:
+    docker:
+      - image: cimg/node:20.11
+    steps:
+      - attach_checkout_workspace
+      - run:
+          name: Run Stylelint
+          command: npx stylelint src/main/**/*.scss
+
+  esbuild-check:
+    docker:
+      - image: cimg/base:stable
+    parameters:
+      node-version:
+        type: string
+    steps:
+      - attach_checkout_workspace
+      - node/install:
+          node-version: << parameters.node-version >>
+      - run:
+          name: Check if esbuild is installed
+          # language="shell script"
+          command: |
+            rm -rf ./build
+            npm install
+            node assets-pipeline.mjs
+            ls -l -R ./build
+
+  validate-links:
+    executor: gradle-executor
+    steps:
+      - attach_checkout_workspace
+      - run:
+          name: Install jq
+          command: |
+            sudo apt-get update && sudo apt-get install jq -y
+      - run:
+          name: Install lychee
+          # language="shell script"
+          command: |
+            # Get the latest release
+            latest_release_url="https://api.github.com/repos/lycheeverse/lychee/releases/latest"
+            latest_release_asset_url=$(
+              curl --retry 3 --retry-delay 5 --retry-max-time 30 --retry-connrefused "$latest_release_url" |
+              jq '.assets[] | select(.name | endswith("x86_64-unknown-linux-gnu.tar.gz")) | .browser_download_url' -r
+            )
+            curl -L --retry 3 --retry-delay 5 --retry-max-time 30 --retry-connrefused -o lychee.tar.gz $latest_release_asset_url
+            tar -xzf lychee.tar.gz
+            chmod +x lychee
+      - run:
+          name: Run lychee
+          command: ./lychee --verbose --no-progress --exclude-loopback --exclude-path node_modules **/*.md
+
+  compile:
+    executor: gradle-executor
+    steps:
+      - attach_checkout_workspace
+      - restore_gradle_cache
+      - run:
+          name: Compile App & Tests
+          command: ./gradlew testClasses --build-cache --configuration-cache
+      - save_gradle_cache
+      - save_npm_cache
+      - persist_to_workspace:
+          root: .
+          paths:
+            - build
+      - build_time_report
+
+  test:
+    parallelism: 2
+    executor: gradle-executor
+    steps:
+      - attach_checkout_workspace
+      - restore_gradle_cache
+      - run:
+          name: Run tests in parallel
+          # language="shell script"
+          command: |
+            pushd src/test/kotlin
+              # Get list of classnames of tests that should run on this node
+              CLASSNAMES=$(circleci tests glob "**/**Test.kt" \
+                | cut -c 1- | sed 's@/@.@g' \
+                | sed 's/.\{3\}$//' \
+                | circleci tests split --split-by=timings --timings-type=classname)
+            popd
+            # Format the arguments to "./gradlew test"
+            GRADLE_ARGS=$(echo $CLASSNAMES | awk '{for (i=1; i<=NF; i++) print "--tests",$i}')
+            echo "Prepared arguments for Gradle: $GRADLE_ARGS"
+            ./gradlew test --build-cache --configuration-cache $GRADLE_ARGS
+      - store_test_results_artifacts
+      - build_time_report
+
+  accessibility-test:
+    executor: gradle-executor
+    steps:
+      - attach_checkout_workspace
+      - restore_gradle_cache
+      - run:
+          name: Run Tests & Checks
+          command: ./gradlew accessibilityTest --build-cache --configuration-cache
+      - store_test_results_artifacts
+      - build_time_report
+
+  docker-build:
+    docker:
+      - image: cimg/base:stable
+    steps:
+      - attach_checkout_workspace
+      - setup_remote_docker:
+          docker_layer_caching: true
+      - run:
+          name: Docker pull build image
+          # language="shell script"
+          command: |
+            image=$(cat Dockerfile | grep "AS build" | awk -F" " '{ print $2 }' | xargs)
+            docker pull "$image"
+      - run:
+          name: Build Docker image
+          # language="shell script"
+          command: |
+            docker build --progress plain -t "$DOCKER_PROJECT_NAME:latest" .
+      - run:
+          name: Test Docker image
+          # language="shell script"
+          command : |
+            containerId=$(docker run -d --rm --publish 8080:8080 --name citest "$DOCKER_PROJECT_NAME:latest")
+            docker container logs "$containerId"
+            sleep 10
+            docker container logs "$containerId"
+            docker container logs "$containerId" | grep "Server Running" || (echo "Server is NOT running after 10 secs" && exit 1)
+
+workflows:
+  build_and_test:
+    jobs:
+      - checkout_code
+      - get_npm_cache:
+          requires:
+            - checkout_code
+      - ktlint:
+          requires:
+            - checkout_code
+      - detekt:
+          requires:
+            - checkout_code
+      - diktat:
+          requires:
+            - checkout_code
+      - validate-links:
+          requires:
+            - checkout_code
+      - eslint:
+          requires:
+            - get_npm_cache
+      - stylelint:
+          requires:
+            - get_npm_cache
+      - esbuild-check:
+          requires:
+            - get_npm_cache
+          matrix:
+            parameters:
+              node-version: ["18.19.0", "20.11.0"]
+      - compile:
+          requires:
+            - ktlint
+            - detekt
+            - diktat
+            - eslint
+            - stylelint
+            - esbuild-check
+            - validate-links
+      - test:
+          requires:
+            - compile
+      - accessibility-test:
+          requires:
+            - compile
+      - docker-build:
+          requires:
+            - compile
