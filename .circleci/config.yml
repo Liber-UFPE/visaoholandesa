@@ -296,16 +296,15 @@ jobs:
       - setup_remote_docker:
           docker_layer_caching: true
       - run:
-          name: Docker pull build image
-          # language="shell script"
-          command: |
-            image=$(cat Dockerfile | grep "AS build" | awk -F" " '{ print $2 }' | xargs)
-            docker pull "$image"
-      - run:
           name: Build Docker image
           # language="shell script"
           command: |
             docker build --progress plain -t "$DOCKER_PROJECT_NAME:latest" .
+      - run:
+          name: List docker images
+          # language="shell script"
+          command: |
+            docker image ls --all
       - run:
           name: Test Docker image
           # language="shell script"
