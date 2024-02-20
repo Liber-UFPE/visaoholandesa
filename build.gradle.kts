@@ -428,6 +428,6 @@ dependencies {
     implementation("org.owasp.encoder:encoder:1.2.3")
 
     // Accessibility Tests
-    accessibilityTestImplementation("org.seleniumhq.selenium:selenium-java:4.18.0")
+    accessibilityTestImplementation("org.seleniumhq.selenium:selenium-java:4.18.1")
     accessibilityTestImplementation("com.deque.html.axe-core:selenium:4.8.2")
 }
