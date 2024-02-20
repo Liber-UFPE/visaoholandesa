@@ -20,7 +20,7 @@ plugins {
     id("io.micronaut.aot") version "4.3.2"
     // Apply GraalVM Native Image plugin. Micronaut already adds it, but
     // adding it explicitly allows to control which version is used.
-    id("org.graalvm.buildtools.native") version "0.10.0"
+    id("org.graalvm.buildtools.native") version "0.10.1"
     // Provides better test output
     id("com.adarshr.test-logger") version "4.0.0"
     // Code Coverage:
