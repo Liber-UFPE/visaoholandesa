@@ -17,7 +17,7 @@ plugins {
     id("com.github.johnrengelman.shadow") version "8.1.1"
     id("io.micronaut.application") version "4.3.3"
     id("gg.jte.gradle") version "3.1.9"
-    id("io.micronaut.aot") version "4.3.2"
+    id("io.micronaut.aot") version "4.3.3"
     // Apply GraalVM Native Image plugin. Micronaut already adds it, but
     // adding it explicitly allows to control which version is used.
     id("org.graalvm.buildtools.native") version "0.10.1"
