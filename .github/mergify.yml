@@ -6,14 +6,16 @@ queue_rules:
     conditions:
       - check-success=Good to merge
     batch_size: 10
-    batch_max_wait_time: 15min
+    batch_max_wait_time: 90min
     merge_method: rebase
 
 pull_request_rules:
   - name: Automatic merge from renovate
     conditions:
       - check-success=Good to merge
-      - author=renovate[bot]
+      - or:
+          - author=renovate[bot]
+          - label=file-sync
     actions:
       queue:
         name: deps-update
