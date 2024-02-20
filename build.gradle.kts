@@ -15,7 +15,7 @@ plugins {
     kotlin("plugin.serialization") version "1.9.22"
     id("com.google.devtools.ksp") version "1.9.22-1.0.17"
     id("com.github.johnrengelman.shadow") version "8.1.1"
-    id("io.micronaut.application") version "4.3.2"
+    id("io.micronaut.application") version "4.3.3"
     id("gg.jte.gradle") version "3.1.9"
     id("io.micronaut.aot") version "4.3.2"
     // Apply GraalVM Native Image plugin. Micronaut already adds it, but
