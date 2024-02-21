@@ -14,7 +14,7 @@ dependencies {
     implementation("commons-codec:commons-codec:1.16.1")
     implementation("org.apache.tika:tika-core:2.9.1")
     implementation("org.apache.tika:tika-parsers-standard-package:2.9.1")
-    implementation("org.apache.logging.log4j:log4j-core:2.22.1")
+    implementation("org.apache.logging.log4j:log4j-core:2.23.0")
 
     // Exposed
     implementation("org.jetbrains.exposed:exposed-core:0.47.0")
