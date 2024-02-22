@@ -1,8 +1,7 @@
 version: 2.1
 
 orbs:
-  # https://circleci.com/developer/orbs/orb/idanelh/ktlint
-  ktlint: idanelh/ktlint@1.0.1
+  ktlint: marcospereira/kotlin-ktlint-orb@0.0.6
   node: circleci/node@5.2.0
 
 executors:
@@ -147,10 +146,12 @@ jobs:
       - image: cimg/openjdk:21.0.2-browsers
     steps:
       - attach_checkout_workspace
-      - ktlint/install:
-          version: 1.1.1
-      - ktlint/lint:
-          working-directory: ~/project
+      - ktlint/install
+      - run:
+          name: Run ktlint
+          command: |
+            ktlint --version
+            ktlint --relative --reporter=plain --color --log-level=debug
 
   detekt:
     docker:
