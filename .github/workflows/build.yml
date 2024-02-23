@@ -158,6 +158,13 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: ./gradlew sonar
+      - uses: testspace-com/setup-testspace@v1
+        with:
+          domain: ${{ github.repository_owner }}
+      - name: Push result to Testspace server
+        if: ${{ github.ref == 'refs/heads/main' && always() }}
+        run: |
+          testspace ./build/test-results/**/*.xml build/reports/kover/report.xml
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v4
         continue-on-error: true
@@ -173,7 +180,6 @@ jobs:
       - compile
     steps:
       - uses: actions/checkout@v4
-      - uses: docker/setup-qemu-action@v3
       - uses: docker/setup-buildx-action@v3
       - name: Docker / Get image name
         id: dockerImageName
@@ -190,6 +196,8 @@ jobs:
           # See https://docs.docker.com/build/ci/github-actions/cache/#github-cache
           cache-from: type=gha
           cache-to: type=gha,mode=max
+          build-args: |
+            BUILDKIT_INLINE_CACHE=1
 
       - name: Test Image
         run: |
@@ -284,7 +292,6 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0  # 0 indicates all history for all branches and tags.
-      - uses: docker/setup-qemu-action@v3
       - uses: docker/setup-buildx-action@v3
       - name: Docker / Get image name
         id: dockerImageName

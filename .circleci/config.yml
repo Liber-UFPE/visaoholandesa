@@ -100,19 +100,6 @@ commands:
           name: Show build time report
           command: ./glow ./build/reports/build-times.md
 
-  debug_docker_images:
-    description: "List and inspect all docker images"
-    steps:
-      - run:
-          name: List docker images
-          # language="shell script"
-          command: |
-            docker image ls --all --digests
-      - run:
-          name: Inspect all docker images
-          # language="shell script"
-          command: |
-            docker image list --format '{{ .ID }}' | sort | uniq | xargs -I {} docker inspect {}
 jobs:
   checkout_code:
     docker:
@@ -309,13 +296,14 @@ jobs:
       - attach_checkout_workspace
       - setup_remote_docker:
           docker_layer_caching: true
-      - debug_docker_images
       - run:
           name: Build Docker image
           # language="shell script"
           command: |
-            docker build --progress plain -t "$DOCKER_PROJECT_NAME:latest" .
-      - debug_docker_images
+            docker build \
+              --progress plain \
+              --build-arg BUILDKIT_INLINE_CACHE=1 \
+              -t "$DOCKER_PROJECT_NAME:latest" .
       - run:
           name: Test Docker image
           # language="shell script"
