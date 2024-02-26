@@ -43,8 +43,8 @@ commands:
       - restore_cache:
           name: Restore npm cache
           keys:
-            - v3-npm-deps-{{ checksum "package-lock.json" }}
-            - v3-npm-deps-
+            - v3-node-deps-{{ checksum "yarn.lock" }}
+            - v3-node-deps-
 
   save_gradle_cache:
     description: "Save Gradle wrapper and dependencies cache"
@@ -68,7 +68,7 @@ commands:
     steps:
       - save_cache:
           name: Save npm cache
-          key: v3-npm-deps-{{ checksum "package-lock.json" }}
+          key: v3-node-deps-{{ checksum "yarn.lock" }}
           paths:
             - node_modules
 
@@ -122,7 +122,7 @@ jobs:
       - restore_npm_cache
       - run:
           name: Install dependencies
-          command: npm install
+          command: corepack enable && yarn install
       - persist_to_workspace:
           root: .
           paths:
@@ -209,7 +209,6 @@ jobs:
           # language="shell script"
           command: |
             rm -rf ./build
-            npm install
             node assets-pipeline.mjs
             ls -l -R ./build
 
@@ -245,7 +244,7 @@ jobs:
       - restore_gradle_cache
       - run:
           name: Compile App & Tests
-          command: ./gradlew testClasses --build-cache --configuration-cache
+          command: ./gradlew testClasses --build-cache
       - save_gradle_cache
       - save_npm_cache
       - persist_to_workspace:
@@ -274,7 +273,7 @@ jobs:
             # Format the arguments to "./gradlew test"
             GRADLE_ARGS=$(echo $CLASSNAMES | awk '{for (i=1; i<=NF; i++) print "--tests",$i}')
             echo "Prepared arguments for Gradle: $GRADLE_ARGS"
-            ./gradlew test --build-cache --configuration-cache $GRADLE_ARGS
+            ./gradlew test --build-cache $GRADLE_ARGS
       - store_test_results_artifacts
       - build_time_report
 
@@ -285,7 +284,7 @@ jobs:
       - restore_gradle_cache
       - run:
           name: Run Tests & Checks
-          command: ./gradlew accessibilityTest --build-cache --configuration-cache
+          command: ./gradlew accessibilityTest --build-cache
       - store_test_results_artifacts
       - build_time_report
 
