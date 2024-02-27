@@ -100,6 +100,13 @@ commands:
           name: Show build time report
           command: ./glow ./build/reports/build-times.md
 
+  install_node_package_manager:
+    description: "Install package manager configured in package.json"
+    steps:
+      - run:
+          name: "Run corepacke enable"
+          command: sudo corepack enable
+
 jobs:
   checkout_code:
     docker:
@@ -112,7 +119,7 @@ jobs:
       - persist_to_workspace:
           root: .
           paths:
-              - .
+            - .
 
   get_npm_cache:
     docker:
@@ -242,9 +249,10 @@ jobs:
     steps:
       - attach_checkout_workspace
       - restore_gradle_cache
+      - install_node_package_manager
       - run:
           name: Compile App & Tests
-          command: ./gradlew testClasses --build-cache
+          command: ./gradlew testClasses --build-cache -x installPackageManager
       - save_gradle_cache
       - save_npm_cache
       - persist_to_workspace:
@@ -259,6 +267,7 @@ jobs:
     steps:
       - attach_checkout_workspace
       - restore_gradle_cache
+      - install_node_package_manager
       - run:
           name: Run tests in parallel
           # language="shell script"
@@ -273,7 +282,7 @@ jobs:
             # Format the arguments to "./gradlew test"
             GRADLE_ARGS=$(echo $CLASSNAMES | awk '{for (i=1; i<=NF; i++) print "--tests",$i}')
             echo "Prepared arguments for Gradle: $GRADLE_ARGS"
-            ./gradlew test --build-cache $GRADLE_ARGS
+            ./gradlew test --build-cache $GRADLE_ARGS -x installPackageManager
       - store_test_results_artifacts
       - build_time_report
 
@@ -282,9 +291,10 @@ jobs:
     steps:
       - attach_checkout_workspace
       - restore_gradle_cache
+      - install_node_package_manager
       - run:
           name: Run Tests & Checks
-          command: ./gradlew accessibilityTest --build-cache
+          command: ./gradlew accessibilityTest --build-cache -x installPackageManager
       - store_test_results_artifacts
       - build_time_report
 
@@ -306,7 +316,7 @@ jobs:
       - run:
           name: Test Docker image
           # language="shell script"
-          command : |
+          command: |
             containerId=$(docker run -d --rm --publish 8080:8080 --name citest "$DOCKER_PROJECT_NAME:latest")
             docker container logs "$containerId"
             sleep 10
