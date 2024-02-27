@@ -17,7 +17,7 @@ import org.apache.lucene.analysis.Analyzer
 import org.apache.lucene.document.Document
 import org.apache.lucene.queryparser.classic.QueryParser
 import org.apache.lucene.search.IndexSearcher
-import org.apache.lucene.search.TopScoreDocCollector
+import org.apache.lucene.search.TopScoreDocCollectorManager
 import org.reactivestreams.Publisher
 import java.util.concurrent.ExecutorService
 import kotlin.math.max
@@ -30,7 +30,6 @@ class Search(
     private val textHighlighter: TextHighlighter,
 ) {
     companion object {
-        const val RESULTS_PER_PAGE: Int = 10
         const val MAX_HITS_THRESHOLD: Int = 5_000
     }
 
@@ -44,16 +43,15 @@ class Search(
         val indexReader = indexSearcher.indexReader
         val termVectors = indexReader.termVectors()
 
-        val collector = TopScoreDocCollector.create(MAX_HITS_THRESHOLD, MAX_HITS_THRESHOLD + 1)
-        indexSearcher.search(query, collector)
-        val topDocs = collector.topDocs()
+        val collector = TopScoreDocCollectorManager(MAX_HITS_THRESHOLD, MAX_HITS_THRESHOLD + 1)
+        val topDocs = indexSearcher.search(query, collector)
 
         if (topDocs.totalHits.value == 0L) {
             return SearchResults.empty()
         }
 
-        val pagingStart: Int = max(page, 0) * RESULTS_PER_PAGE
-        val pagingEnd: Int = min(pagingStart + RESULTS_PER_PAGE, topDocs.totalHits.value.toInt() - 1)
+        val pagingStart: Int = max(page, 0) * Pagination.DEFAULT_PER_PAGE
+        val pagingEnd: Int = min(pagingStart + Pagination.DEFAULT_PER_PAGE, topDocs.totalHits.value.toInt()) - 1
 
         val searchResults = topDocs.scoreDocs.slice(pagingStart..pagingEnd).map { scoreDoc ->
             val document = storedFields.document(scoreDoc.doc)
