@@ -129,8 +129,31 @@ jobs:
       - name: Start Gradle Daemon
         run: ./gradlew --info
       - run: ./gradlew testClasses
-      - name: Gradle Tasks Summary
-        run: cat build/reports/build-times.md >> $GITHUB_STEP_SUMMARY
+
+  sonar:
+    name: Code Analysis / SonarCloud
+    runs-on: ubuntu-latest
+    needs:
+      - compile
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - run: corepack enable
+      - name: Cache SonarCloud packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.sonar/cache
+          key: ${{ runner.os }}-sonar
+          restore-keys: ${{ runner.os }}-sonar
+      - name: Set up Gradle and Java
+        uses: ./.github/gradle-action
+      - name: Run SonarCloud Analysis
+        continue-on-error: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        run: ./gradlew sonar
 
   test:
     name: Tests / test
@@ -141,32 +164,30 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - name: Cache SonarCloud packages
-        uses: actions/cache@v4
-        with:
-          path: ~/.sonar/cache
-          key: ${{ runner.os }}-sonar
-          restore-keys: ${{ runner.os }}-sonar
       - run: corepack enable
       - name: Set up Gradle and Java
         uses: ./.github/gradle-action
       - name: Run tests
         run: ./gradlew check koverXmlReport
-      - name: Gradle Tasks Summary
-        run: cat build/reports/build-times.md >> $GITHUB_STEP_SUMMARY
-      - name: Run SonarCloud Analysis
-        continue-on-error: true
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        run: ./gradlew sonar
-      - uses: testspace-com/setup-testspace@v1
-        with:
-          domain: ${{ github.repository_owner }}
-      - name: Push result to Testspace server
+      - name: Buildkite Test Analytics
         if: ${{ github.ref == 'refs/heads/main' && always() }}
+        env:
+          BUILDKITE_ANALYTICS_TOKEN: ${{ secrets.BUILDKITE_ANALYTICS_TOKEN }}
         run: |
-          testspace ./build/test-results/**/*.xml
+          ./gradlew mergeJUnitReports
+          COMMIT_MESSAGE=$(git log -n 1 --format="%s")
+          curl -X POST --fail-with-body \
+          -H "Authorization: Token token=$BUILDKITE_ANALYTICS_TOKEN" \
+          -F "data=@build/test-results/junit.xml" \
+          -F "format=junit" \
+          -F "run_env[CI]=github_actions" \
+          -F "run_env[key]=$GITHUB_ACTION-$GITHUB_RUN_NUMBER-$GITHUB_RUN_ATTEMPT" \
+          -F "run_env[number]=$GITHUB_RUN_NUMBER" \
+          -F "run_env[branch]=$GITHUB_REF" \
+          -F "run_env[commit_sha]=$GITHUB_SHA" \
+          -F "run_env[message]=$COMMIT_MESSAGE" \
+          -F "run_env[url]=https://github.com/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID" \
+          https://analytics-api.buildkite.com/v1/uploads
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v4
         continue-on-error: true
@@ -226,6 +247,7 @@ jobs:
     if: ${{ github.event_name == 'pull_request' }}
     needs:
       - test
+      - sonar
       - test-docker-image
     steps:
       - run: echo "This PR is ready to merge."
@@ -236,6 +258,7 @@ jobs:
     runs-on: ubuntu-latest
     needs:
       - test
+      - sonar
       - test-docker-image
     steps:
       - run: echo "This is a push to main branch. Following with release a new version"
