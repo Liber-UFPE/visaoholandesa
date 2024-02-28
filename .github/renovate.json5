@@ -4,5 +4,41 @@
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
     "config:recommended"
+  ],
+  // https://docs.renovatebot.com/configuration-options/#rebasewhen
+  "rebaseWhen": "conflicted",
+  "packageRules": [
+    {
+      "matchDepTypes": [
+        "devDependencies"
+      ],
+      "matchUpdateTypes": [
+        "patch",
+        "minor"
+      ],
+      "groupName": "Node / Dev Dependencies / Patch and Minor Updates",
+      "groupSlug": "node-dev-deps-patch-minor"
+    },
+    {
+      matchPackagePatterns: [
+        "^stylelint"
+      ],
+      groupName: "Node / Dev Dependencies / Stylelint",
+      groupSlug: "node-dev-deps-stylelint"
+    },
+    {
+      matchPackagePrefixes: [
+        "io.micronaut"
+      ],
+      groupName: "Java / Micronaut",
+      groupSlug: "java-micronaut"
+    },
+    {
+      matchPackagePrefixes: [
+        "org.apache.tika"
+      ],
+      groupName: "Java / Apache Tika",
+      groupSlug: "java-apache-tika"
+    }
   ]
 }
