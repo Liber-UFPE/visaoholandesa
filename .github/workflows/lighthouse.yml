@@ -35,9 +35,13 @@ jobs:
       - run: ./gradlew classes
       - run: yarn install
       - name: Run Lighthouse CI
-        run: npx lhci autorun
-        env:
-          PROJECT_TOKEN: ${{ vars.LHCI_PROJECT_TOKEN }}
-          GITHUB_TOKEN: ${{ secrets.LHCI_GITHUB_TOKEN }}
-          BASIC_AUTH_USERNAME: ${{ secrets.LHCI_BASIC_AUTH_USERNAME }}
-          BASIC_AUTH_PASSWORD: ${{ secrets.LHCI_BASIC_AUTH_PASSWORD }}
+        run: |
+          npx lhci collect
+          npx lhci assert
+      - name: Upload Lighthouse CI results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: lighthouse-ci-results-${{ github.run_id }}-${{ github.sha }}
+          path: .lighthouseci/
+          retention-days: 30
