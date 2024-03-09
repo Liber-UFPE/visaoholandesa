@@ -18,7 +18,7 @@ dependencies {
     implementation("com.lordcodes.turtle:turtle:0.9.0")
 
     // Manually adding commons-compress due to https://devhub.checkmarx.com/cve-details/CVE-2024-26308/
-    implementation("org.apache.commons:commons-compress:1.26.0")
+    implementation("org.apache.commons:commons-compress:1.26.1")
 
     // Exposed
     implementation("org.jetbrains.exposed:exposed-core:0.48.0")
