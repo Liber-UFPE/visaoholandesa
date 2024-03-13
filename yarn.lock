@@ -1969,15 +1969,15 @@ __metadata:
   linkType: hard
 
 "esbuild-sass-plugin@npm:^3.0.0":
-  version: 3.1.0
-  resolution: "esbuild-sass-plugin@npm:3.1.0"
+  version: 3.2.0
+  resolution: "esbuild-sass-plugin@npm:3.2.0"
   dependencies:
     resolve: "npm:^1.22.8"
     sass: "npm:^1.71.1"
   peerDependencies:
     esbuild: ^0.20.1
     sass-embedded: ^1.71.1
-  checksum: 10c0/9b1d0a2c0d57c206c525377b2f830ad1da8055b0c6b695a66c422c7bf0684665090f016a1ebf201a1052fb5181b1587e47538455c90a16aabdb7aff410a2dcd4
+  checksum: 10c0/18c9ee4d9a6bf33724ea65509e4a702fc105fc5b30ebcced023479c120bbc524dc743321b219a3cccf0bb66e7dd53a086735b8cb05fc5d642075f25838607ed2
   languageName: node
   linkType: hard
 
