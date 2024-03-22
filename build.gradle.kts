@@ -1,13 +1,7 @@
 import br.ufpe.liber.tasks.GenerateAssetsMetadataTask
-import br.ufpe.liber.tasks.GenerateBooksJsonTask
 import com.adarshr.gradle.testlogger.theme.ThemeType
-import com.bmuschko.gradle.vagrant.tasks.VagrantUp
-import com.github.benmanes.gradle.versions.updates.DependencyUpdatesTask
 import com.lordcodes.turtle.shellRun
-import io.github.vacxe.buildtimetracker.reporters.markdown.MarkdownConfiguration
 import java.lang.System.getenv
-import java.nio.file.Files
-import java.time.Duration
 
 plugins {
     kotlin("jvm") version "1.9.23"
@@ -18,9 +12,6 @@ plugins {
     id("io.micronaut.application") version "4.3.5"
     id("gg.jte.gradle") version "3.1.9"
     id("io.micronaut.aot") version "4.3.5"
-    // Apply GraalVM Native Image plugin. Micronaut already adds it, but
-    // adding it explicitly allows to control which version is used.
-    id("org.graalvm.buildtools.native") version "0.10.1"
     // Provides better test output
     id("com.adarshr.test-logger") version "4.0.0"
     // Code Coverage:
@@ -29,21 +20,9 @@ plugins {
     // Code Inspections
     // https://detekt.dev/
     id("io.gitlab.arturbosch.detekt") version "1.23.5"
-    // Task graph utility
-    // https://github.com/dorongold/gradle-task-tree
-    id("com.dorongold.task-tree") version "2.1.1"
-    // Manages Vagrant boxes:
-    // https://plugins.gradle.org/plugin/com.bmuschko.vagrant
-    id("com.bmuschko.vagrant") version "3.0.0"
     // Easily add new test sets
     // https://github.com/unbroken-dome/gradle-testsets-plugin
     id("org.unbroken-dome.test-sets") version "4.1.0"
-    // Report task timings
-    // https://github.com/vacxe/build-time-tracker
-    id("io.github.vacxe.build-time-tracker") version "0.0.4"
-    // To check dependency updates
-    // https://github.com/ben-manes/gradle-versions-plugin
-    id("com.github.ben-manes.versions") version "0.51.0"
     // To manage docker images
     // https://github.com/bmuschko/gradle-docker-plugin
     id("com.bmuschko.docker-remote-api") version "9.4.0"
@@ -51,7 +30,7 @@ plugins {
     // https://github.com/SonarSource/sonar-scanner-gradle
     id("org.sonarqube") version "4.4.1.3373"
     // Add diktat
-    // https://github.com/saveourtool/diktat
+    // https://github.com/marcospereira/diktat
     id("com.saveourtool.diktat") version "2.0.0"
     // To buil the app ui frontend
     // https://siouan.github.io/frontend-gradle-plugin/
@@ -71,6 +50,25 @@ val flexmarkVersion: String = properties["flexmarkVersion"] as String
 val releaseTag: String? by project
 version = releaseTag ?: "0.1"
 group = "br.ufpe.liber"
+
+// Filter out generated files from source sets, and then filter in only existing files.
+fun filterSourceSet(sourceSet: SourceSet): List<File> = sourceSet.allSource
+    .srcDirs
+    .filterNot {
+        // Exclude generated files (inside build directory)
+        it.absolutePath.startsWith(layout.buildDirectory.asFile.get().absolutePath)
+    }
+    .filter(File::exists)
+
+val getNodeExecutable = try {
+    Result.success(
+        shellRun {
+            files.which("node") ?: error("Node.js is not installed or not in the path.")
+        },
+    )
+} catch (ex: IllegalStateException) {
+    Result.failure<Exception>(ex)
+}
 
 repositories {
     mavenCentral()
@@ -103,19 +101,7 @@ sonar {
         // https://docs.sonarsource.com/sonarcloud/advanced-setup/languages/kotlin/#specifying-the-kotlin-source-code-version
         property("sonar.kotlin.source.version", "1.9")
 
-        property(
-            "sonar.sources",
-            sourceSets
-                .main
-                .get()
-                .allSource
-                .srcDirs
-                .filterNot {
-                    // Exclude generated files
-                    it.absolutePath.startsWith(layout.buildDirectory.asFile.get().absolutePath)
-                }
-                .filter(File::exists),
-        )
+        property("sonar.sources", filterSourceSet(sourceSets.main.get()))
 
         property(
             "sonar.tests",
@@ -123,28 +109,19 @@ sonar {
                 // Include any source set that contains test in its name.
                 // For example, "test", "integrationTest", etc.
                 .filter { sourceSet -> sourceSet.name.contains("test", ignoreCase = true) }
-                .flatMap { sourceSet ->
-                    sourceSet
-                        .allSource
-                        .srcDirs
-                        .filterNot { dir ->
-                            // Exclude generated files
-                            dir.absolutePath.startsWith(layout.buildDirectory.asFile.get().absolutePath)
-                        }
-                        .filter(File::exists)
-                },
+                .flatMap(::filterSourceSet),
         )
 
         // See docs here:
         // https://docs.sonarsource.com/sonarqube/latest/project-administration/analysis-scope/#code-coverage-exclusion
         property(
             "sonar.coverage.exclusions",
-            listOf("**/*Generated*", "**/tasks/*.*"),
+            listOf("**/*Generated*"),
         )
 
         property(
             "sonar.exclusions",
-            listOf("src/**/*.sql", "src/main/**/sitemap.xml", "src/main/**/tasks/*.*"),
+            listOf("src/main/**/books/*.txt"),
         )
     }
 }
@@ -156,36 +133,9 @@ diktat {
         exclude("src/accessibilityTest/**/*.kt")
     }
 }
-tasks.named("check") {
-    dependsOn("diktatCheck")
-}
-
-tasks.named<Test>("test") {
-    useJUnitPlatform()
-    // See https://kotest.io/docs/extensions/system_extensions.html#system-environment
-    jvmArgs("--add-opens=java.base/java.util=ALL-UNNAMED")
-
-    // Only generate reports when running on CI. Helps to speed up test execution.
-    // https://docs.gradle.org/current/userguide/performance.html#disable_reports
-    reports.html.required = runningOnCI
-    reports.junitXml.required = runningOnCI
-}
-
-/* -------------------------------- */
-/* Start: Node/assets configuration */
-/* -------------------------------- */
-val getNodeExecutable = try {
-    Result.success(
-        shellRun {
-            files.which("node") ?: error("Node.js is not installed or not in the path.")
-        },
-    )
-} catch (e: IllegalStateException) {
-    Result.failure<Exception>(e)
-}
 
 frontend {
-    nodeVersion = "18.19.0"
+    nodeVersion = "18.19.1"
     // The plugin will NOT try to download Node.js.
     nodeDistributionProvided = getNodeExecutable.isSuccess
     verboseModeEnabled = true
@@ -196,72 +146,6 @@ frontend {
             println("Could not find Node.js executable. ${it.message}")
             file(".gradle/nodejs")
         }
-}
-
-tasks {
-    named("installFrontend") {
-        inputs.files("package.json", "yarn.lock")
-        outputs.dir("node_modules")
-    }
-
-    val npmAssetsPipeline by named("assembleFrontend") {
-        inputs.files(fileTree(layout.projectDirectory.dir("src/main/resources")))
-        outputs.files(fileTree(layout.buildDirectory.dir("resources/main/public")))
-    }
-
-    val generateMetafile by registering(GenerateAssetsMetadataTask::class) {
-        group = "Assets"
-        description = "Generate assets metadata file"
-        assetsDirectory = layout.buildDirectory.dir("resources/main/public/")
-        dependsOn(npmAssetsPipeline)
-    }
-
-    val assetsPipeline by registering {
-        group = "Assets"
-        description = "Executes the complete assets pipeline including manifest generation"
-
-        dependsOn(npmAssetsPipeline, generateMetafile)
-    }
-
-    processResources {
-        dependsOn(assetsPipeline)
-    }
-}
-/* ------------------------------ */
-/* End: Node/assets configuration */
-/* ------------------------------ */
-
-testSets {
-    create("accessibilityTest")
-}
-val accessibilityTestImplementation: Configuration = configurations["accessibilityTestImplementation"]
-
-// See https://graalvm.github.io/native-build-tools/latest/gradle-plugin.html
-graalvmNative {
-    toolchainDetection.set(false)
-    binaries {
-        named("main") {
-            fallback.set(false)
-            richOutput.set(true)
-            buildArgs.addAll("--verbose", "-march=native", "--gc=G1")
-            jvmArgs.add("-XX:MaxRAMPercentage=100")
-            if (runningOnCI) {
-                // A little extra verbose on CI to prevent jobs being killed
-                // due to the lack of output (since native-image creation can
-                // take a long time to complete).
-                jvmArgs.add("-Xlog:gc*")
-                // 7GB is what is available when using Github-hosted runners:
-                // https://docs.github.com/en/actions/using-github-hosted-runners/about-github-hosted-runners#supported-runners-and-hardware-resources
-                jvmArgs.addAll("-Xms7G", "-Xmx7G")
-            } else {
-                // `gc` is less verbose than `gc*`, and good enough for local builds.
-                jvmArgs.add("-Xlog:gc")
-                // 16G is a good chunk of memory, but reducing GC speeds up
-                // the native image generation.
-                jvmArgs.addAll("-Xms16G", "-Xmx16G")
-            }
-        }
-    }
 }
 
 micronaut {
@@ -290,21 +174,8 @@ jte {
     trimControlStructures.set(true)
     packageName.set(group.toString())
     generate()
-    jteExtension("gg.jte.nativeimage.NativeResourcesExtension")
     jteExtension("gg.jte.models.generator.ModelExtension") {
         property("language", "Kotlin")
-    }
-}
-// Gradle requires that generateJte is run before some tasks
-tasks.configureEach {
-    if (name == "inspectRuntimeClasspath" || name == "kspKotlin") {
-        mustRunAfter("generateJte")
-    }
-}
-tasks.named<Jar>("jar") {
-    dependsOn.add("precompileJte")
-    from(fileTree(layout.buildDirectory.file("jte-classes").get().asFile.absolutePath)) {
-        include("**/.*.class")
     }
 }
 
@@ -314,94 +185,115 @@ testlogger {
     showStackTraces = true
 }
 
-buildTimeTracker {
-    markdownConfiguration.set(
-        MarkdownConfiguration(
-            reportFile = reporting.file("build-times.md").absolutePath,
-            minDuration = Duration.ofMillis(0),
-            withTableLabels = true,
-            sorted = true,
-            take = Int.MAX_VALUE,
-        ),
-    )
+testSets {
+    create("accessibilityTest")
 }
 
-/* ---------------------------- */
-/* Start: Vagrant configuration */
-/* ---------------------------- */
-val vagrantBoxDir: File = layout.buildDirectory.dir("vagrant").get().asFile
-val jarsDir: File = File(vagrantBoxDir, "build/libs")
-val scriptsDir: File = File(vagrantBoxDir, "scripts")
+val accessibilityTestImplementation: Configuration = configurations["accessibilityTestImplementation"]
+val antJUnit: Configuration by configurations.creating
 
-tasks.register("createVagrantDirs") {
-    group = "Vagrant"
-    description = "Create directories required by vagrantUp task"
+tasks {
+    /* -------------------------------- */
+    /* Start: Node/assets configuration */
+    /* -------------------------------- */
+    named("installFrontend") {
+        inputs.files("package.json", "yarn.lock")
+        outputs.dir("node_modules")
+    }
 
-    doLast {
-        Files.createDirectories(jarsDir.toPath())
-        Files.createDirectories(scriptsDir.toPath())
+    val npmAssetsPipeline by named("assembleFrontend") {
+        inputs.files(fileTree(layout.projectDirectory.dir("src/main/resources")))
+        outputs.files(fileTree(layout.buildDirectory.dir("resources/main/public")))
+    }
+
+    val generateMetafile by registering(GenerateAssetsMetadataTask::class) {
+        group = "Assets"
+        description = "Generate assets metadata file"
+        assetsDirectory = layout.buildDirectory.dir("resources/main/public/")
+        dependsOn(npmAssetsPipeline)
+    }
+
+    val assetsPipeline by registering {
+        group = "Assets"
+        description = "Executes the complete assets pipeline including manifest generation"
+
+        dependsOn(npmAssetsPipeline, generateMetafile)
+    }
+
+    processResources {
+        dependsOn(assetsPipeline)
+    }
+    /* ------------------------------ */
+    /* End: Node/assets configuration */
+    /* ------------------------------ */
+
+    named("check") {
+        dependsOn("diktatCheck")
+    }
+
+    named<Test>("test") {
+        useJUnitPlatform()
+        // See https://kotest.io/docs/extensions/system_extensions.html#system-environment
+        jvmArgs("--add-opens=java.base/java.util=ALL-UNNAMED")
+
+        // Only generate reports when running on CI. Helps to speed up test execution.
+        // https://docs.gradle.org/current/userguide/performance.html#disable_reports
+        reports.html.required = runningOnCI
+        reports.junitXml.required = runningOnCI
+    }
+
+    // Gradle requires that generateJte is run before some tasks
+    configureEach {
+        if (name == "inspectRuntimeClasspath" || name == "kspKotlin") {
+            mustRunAfter("generateJte")
+        }
+    }
+
+    named<Jar>("jar") {
+        dependsOn.add("precompileJte")
+        from(fileTree(layout.buildDirectory.file("jte-classes").get().asFile.absolutePath)) {
+            include("**/.*.class")
+        }
+    }
+
+    // Install pre-commit git hooks to run ktlint and detekt
+    // https://docs.gradle.org/current/userguide/working_with_files.html#sec:copying_single_file_example
+    register<Copy>("configureGitHooksPath") {
+        group = "setup"
+        description = "Configure git hooks directory"
+        shellRun("git", listOf("config", "core.hooksPath", "hooks"))
+    }
+
+    register("mergeJUnitReports") {
+        val resultsDir = project.layout.buildDirectory.file("test-results/test").get().asFile
+        val accessibilityResultsDir = project.layout.buildDirectory.file("test-results/accessibilityTest").get().asFile
+        val aggregateFile = "build/test-results/junit.xml"
+
+        doLast {
+            ant.withGroovyBuilder {
+                "taskdef"(
+                    "name" to "junitreport",
+                    "classname" to "org.apache.tools.ant.taskdefs.optional.junit.XMLResultAggregator",
+                    "classpath" to antJUnit.asPath,
+                )
+
+                // generates an XML report
+                "junitreport"("tofile" to aggregateFile) {
+                    "fileset"(
+                        "dir" to resultsDir,
+                        "includes" to "TEST-*.xml",
+                    )
+                    "fileset"(
+                        "dir" to accessibilityResultsDir,
+                        "includes" to "TEST-*.xml",
+                    )
+                }
+            }
+        }
     }
 }
-
-tasks.register<Copy>("copyAppJar") {
-    group = "Vagrant"
-    description = "Copy application jar to Vagrant directories"
-
-    from(layout.buildDirectory.dir("libs"))
-    include("*.jar")
-    into(jarsDir)
-    dependsOn(tasks.named("createVagrantDirs"))
-    dependsOn(tasks.named("runnerJar"))
-}
-
-tasks.register<Copy>("copyVagrantScripts") {
-    group = "Vagrant"
-    description = "Copy application configurations to Vagrant directories"
-
-    from(layout.projectDirectory.dir("scripts"))
-    into(scriptsDir)
-}
-
-tasks.named<VagrantUp>("vagrantUp") {
-    boxDir = vagrantBoxDir
-    dependsOn(tasks.named("copyAppJar"), tasks.named("copyVagrantScripts"))
-}
-/* -------------------------- */
-/* End: Vagrant configuration */
-/* -------------------------- */
-
-tasks.register<JavaExec>("generateSitemaps") {
-    group = "Application"
-    description = "Generate Sitemap.xml"
-    classpath = sourceSets.main.get().runtimeClasspath
-    mainClass = "br.ufpe.liber.tasks.Sitemaps"
-}
-
-// Install pre-commit git hooks to run ktlint and detekt
-// https://docs.gradle.org/current/userguide/working_with_files.html#sec:copying_single_file_example
-tasks.register<Copy>("installGitHooks") {
-    group = "setup"
-    description = "Install pre-commit git hooks"
-    from(layout.projectDirectory.file("scripts/pre-commit"))
-    into(layout.projectDirectory.dir(".git/hooks/"))
-}
-
-tasks.named<DependencyUpdatesTask>("dependencyUpdates") {
-    rejectVersionIf {
-        val version = this.currentVersion
-        val stableKeyword = listOf("RELEASE", "FINAL", "GA").any { version.uppercase().contains(it) }
-        val regex = "^[0-9,.v-]+(-r)?\$".toRegex()
-        val possiblySnapshot = "\\d{8}".toRegex()
-        !stableKeyword && !version.matches(regex) || version.matches(possiblySnapshot)
-    }
-}
-
-val generateBooksJsonTask by tasks.registering(GenerateBooksJsonTask::class)
 
 dependencies {
-    // TEMP: Brings logback 1.4.14. Remove when micronaut-core updates.
-    implementation(platform("io.micronaut.logging:micronaut-logging-bom:1.2.3"))
-
     ksp(mn.micronaut.http.validation)
     ksp(mn.micronaut.serde.processor)
     implementation(mn.micronaut.aop)
@@ -445,6 +337,11 @@ dependencies {
     implementation("org.owasp.encoder:encoder:1.2.3")
 
     // Accessibility Tests
+    // Manually adding commons-compress due to https://devhub.checkmarx.com/cve-details/CVE-2024-26308/
+    accessibilityTestImplementation("org.apache.commons:commons-compress:1.26.1")
     accessibilityTestImplementation("org.seleniumhq.selenium:selenium-java:4.18.1")
     accessibilityTestImplementation("com.deque.html.axe-core:selenium:4.8.2")
+
+    // Apache Ant: to generate a single JUnit report
+    antJUnit("org.apache.ant", "ant-junit", "1.10.14")
 }
