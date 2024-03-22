@@ -130,31 +130,6 @@ jobs:
         run: ./gradlew --info
       - run: ./gradlew testClasses
 
-  sonar:
-    name: Code Analysis / SonarCloud
-    runs-on: ubuntu-latest
-    needs:
-      - compile
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-      - run: corepack enable
-      - name: Cache SonarCloud packages
-        uses: actions/cache@v4
-        with:
-          path: ~/.sonar/cache
-          key: ${{ runner.os }}-sonar
-          restore-keys: ${{ runner.os }}-sonar
-      - name: Set up Gradle and Java
-        uses: ./.github/gradle-action
-      - name: Run SonarCloud Analysis
-        continue-on-error: true
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        run: ./gradlew sonar
-
   test:
     name: Tests / test
     runs-on: ubuntu-latest
@@ -167,8 +142,20 @@ jobs:
       - run: corepack enable
       - name: Set up Gradle and Java
         uses: ./.github/gradle-action
+      - name: Cache SonarCloud packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.sonar/cache
+          key: ${{ runner.os }}-sonar
+          restore-keys: ${{ runner.os }}-sonar
       - name: Run tests
         run: ./gradlew check koverXmlReport
+      - name: Run SonarCloud Analysis
+        continue-on-error: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        run: ./gradlew sonar
       - name: Buildkite Test Analytics
         if: ${{ github.ref == 'refs/heads/main' && always() }}
         env:
@@ -247,7 +234,6 @@ jobs:
     if: ${{ github.event_name == 'pull_request' }}
     needs:
       - test
-      - sonar
       - test-docker-image
     steps:
       - run: echo "This PR is ready to merge."
@@ -258,7 +244,6 @@ jobs:
     runs-on: ubuntu-latest
     needs:
       - test
-      - sonar
       - test-docker-image
     steps:
       - run: echo "This is a push to main branch. Following with release a new version"
