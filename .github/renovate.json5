@@ -39,6 +39,13 @@
       ],
       groupName: "Java / Apache Tika",
       groupSlug: "java-apache-tika"
+    },
+    {
+      matchPackagePrefixes: [
+        "org.jetbrains.exposed"
+      ],
+      groupName: "Java / JetBrains Exposed",
+      groupSlug: "java-jetbrains-exposed"
     }
   ]
 }
