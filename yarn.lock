@@ -1480,6 +1480,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"commander@npm:^12.0.0":
+  version: 12.0.0
+  resolution: "commander@npm:12.0.0"
+  checksum: 10c0/e51cac1d1d0aa1f76581981d2256a9249497e08f5a370bf63b0dfc7e76a647fc8cbc3ddd507928f2bdca6c514c83834e87e2687ace2fe2fc7cc7e631bf80f83d
+  languageName: node
+  linkType: hard
+
 "commander@npm:^7.2.0":
   version: 7.2.0
   resolution: "commander@npm:7.2.0"
@@ -4595,7 +4602,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"purgecss@npm:5.0.0, purgecss@npm:^5.0.0":
+"purgecss@npm:6.0.0":
+  version: 6.0.0
+  resolution: "purgecss@npm:6.0.0"
+  dependencies:
+    commander: "npm:^12.0.0"
+    glob: "npm:^10.3.10"
+    postcss: "npm:^8.4.4"
+    postcss-selector-parser: "npm:^6.0.7"
+  bin:
+    purgecss: bin/purgecss.js
+  checksum: 10c0/24f01c1f46e7908964e0d99d48b3ed701d0b878abe111e8706ba26206bcd3747d7ae8c9c01173e5e79ae2d565c6bfc06dc683bfb999f2d00f204243edf603281
+  languageName: node
+  linkType: hard
+
+"purgecss@npm:^5.0.0":
   version: 5.0.0
   resolution: "purgecss@npm:5.0.0"
   dependencies:
@@ -4845,7 +4866,7 @@ __metadata:
     fast-glob: "npm:3.3.2"
     gzipper: "npm:^7.2.0"
     postcss: "npm:8.4.38"
-    purgecss: "npm:5.0.0"
+    purgecss: "npm:6.0.0"
     sass-embedded: "npm:^1.71.1"
     sharp: "npm:^0.33.2"
     stylelint: "npm:^16.2.1"
