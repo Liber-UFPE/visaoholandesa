@@ -17,7 +17,7 @@ export default [
                 require: "readonly",
             }
         },
-        ignores: ["**/node_modules/*.*", "**/build/**/*.js"],
+        ignores: ["./node_modules/*.*", "./build/**/*.js"],
         rules: {
             "indent": [
                 "error",
