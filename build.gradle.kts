@@ -301,6 +301,7 @@ dependencies {
     implementation(mn.micronaut.kotlin.extension.functions)
     implementation(mn.micronaut.serde.jackson)
     implementation(mn.micronaut.views.jte)
+    implementation(mn.micronaut.views.htmx)
     implementation(mn.micronaut.management)
     compileOnly(mn.micronaut.http.client)
     testImplementation(mn.micronaut.http.client)
