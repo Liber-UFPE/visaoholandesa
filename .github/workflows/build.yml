@@ -228,6 +228,15 @@ jobs:
           path: generate-image-latest.tar.gz
           compression-level: 0  # No compression since it is already a gzip file
 
+  check-if-release-branch:
+    if: ${{ github.ref == 'refs/heads/main' }}
+    name: Check if release branch
+    runs-on: ubuntu-latest
+    needs:
+      - compile
+    steps:
+      - run: echo "This is a push to main branch. Following with release a new version"
+
   good-to-merge:
     name: Good to merge
     runs-on: ubuntu-latest
@@ -238,20 +247,12 @@ jobs:
     steps:
       - run: echo "This PR is ready to merge."
 
-  check-if-release-branch:
-    if: ${{ github.ref == 'refs/heads/main' }}
-    name: Check if release branch
+  generate-tag-name:
+    name: Generate GitHub tag name
     runs-on: ubuntu-latest
     needs:
       - test
       - test-docker-image
-    steps:
-      - run: echo "This is a push to main branch. Following with release a new version"
-
-  generate-tag-name:
-    name: Generate tag name
-    runs-on: ubuntu-latest
-    needs:
       - check-if-release-branch
     # This job also has an output that can be used by downstream jobs.
     # https://docs.github.com/en/actions/using-jobs/defining-outputs-for-jobs
