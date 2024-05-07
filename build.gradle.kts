@@ -4,7 +4,7 @@ import com.lordcodes.turtle.shellRun
 import java.lang.System.getenv
 
 plugins {
-    kotlin("jvm") version "1.9.23"
+    kotlin("jvm") version "1.9.24"
     kotlin("plugin.allopen") version "1.9.23"
     kotlin("plugin.serialization") version "1.9.23"
     id("com.google.devtools.ksp") version "1.9.23-1.0.20"
