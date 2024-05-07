@@ -4,7 +4,7 @@ import io.micronaut.core.util.StringUtils
 import java.util.Optional
 
 object LinksHelper {
-    const val UFPE: String = "https://ufpe.br/"
+    const val UFPE: String = "https://www.ufpe.br/"
     const val HOLANDAEVOCE: String = "https://www.holandaevoce.nl/"
     const val DCI: String = "https://www.ufpe.br/dci"
 
