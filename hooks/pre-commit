@@ -28,7 +28,7 @@ function runStylelint {
 
 function runEslint {
   echo -e "Running ${BOLD}${GREEN}eslint${RESET} pre-commit hook"
-    npx eslint .
+  npx eslint . --ignore-pattern "build/*"
 }
 
 runKtlint
