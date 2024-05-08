@@ -41,16 +41,25 @@
                     <nav class="btn-toolbar" role="navigation" aria-label="Paginação dos resultados da busca">
                         <div class="btn-group btn-group-lg me-2" role="group" aria-label="Botões para páginação">
                             @if(pagination.prev == null)
-                                <button class="btn btn-outline-success" disabled aria-label="Vá para a primeira página">&laquo; Primeira</button>
+                                <button class="btn btn-outline-success" disabled>&laquo; Primeira</button>
                                 <button class="btn btn-outline-success" disabled>&lsaquo; Anterior</button>
                             @else
                                 <a href="${linkTo("/search/?query=${query}")}"
                                    hx-boost="true" hx-target="#content" hx-swap="outerHTML show:top" hx-push-url="true"
-                                   class="btn btn-outline-success" aria-label="Vá para a primeira página">&laquo; Primeira</a>
+                                   class="btn btn-outline-success">&laquo; Primeira</a>
                                 <a href="${linkTo("/search/?query=${query}&page=${pagination.prev}")}"
                                    hx-boost="true" hx-target="#content" hx-swap="outerHTML show:top" hx-push-url="true"
-                                   class="btn btn-outline-success" aria-label="Vá para página anterior">&lsaquo; Anterior</a>
+                                   class="btn btn-outline-success">&lsaquo; Anterior</a>
                             @endif
+
+
+                            <a href="/search/?query=recife&amp;page=3" class="relative inline-flex items-center rounded-l-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0">
+                                <span class="sr-only">Anterior</span>
+                                <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                                    <path fill-rule="evenodd" d="M12.79 5.23a.75.75 0 01-.02 1.06L8.832 10l3.938 3.71a.75.75 0 11-1.04 1.08l-4.5-4.25a.75.75 0 010-1.08l4.5-4.25a.75.75 0 011.06.02z" clip-rule="evenodd"></path>
+                                </svg>
+                            </a>
+
 
                             @for(page in pagination.listPages())
                                 @if(page is Gap)
@@ -66,14 +75,14 @@
 
                             @if(pagination.next == null)
                                 <button class="btn btn-outline-success" disabled>Próxima &rsaquo;</button>
-                                <button class="btn btn-outline-success" aria-label="Vá para a última página, página ${pagination.pages}" disabled>Última &raquo;</button>
+                                <button class="btn btn-outline-success" disabled>Última &raquo;</button>
                             @else
                                 <a href="${linkTo("/search/?query=${query}&page=${pagination.next}")}"
                                    hx-boost="true" hx-target="#content" hx-swap="outerHTML show:top" hx-push-url="true"
-                                   class="btn btn-outline-success" aria-label="Vá para a próxima página">Próxima &rsaquo;</a>
+                                   class="btn btn-outline-success">Próxima &rsaquo;</a>
                                 <a href="${linkTo("/search/?query=${query}&page=${pagination.pages}")}"
                                    hx-boost="true" hx-target="#content" hx-swap="outerHTML show:top" hx-push-url="true"
-                                   class="btn btn-outline-success" aria-label="Vá para a última página, página ${pagination.pages}">Última &raquo;</a>
+                                   class="btn btn-outline-success">Última &raquo;</a>
                             @endif
 
                         </div>
