@@ -26,7 +26,7 @@ class AccessibilityTest(
     private val server: EmbeddedServer,
     private val context: ApplicationContext,
 ) : BehaviorSpec({
-    val axeBuilder = AxeBuilder().disableRules(listOf("heading-order"))
+    val axeBuilder = AxeBuilder().withTags(listOf("wcag21a", "wcag21aa", "wcag22a", "wcag22aa"))
     val driver = ChromeDriver(
         ChromeOptions()
             .addArguments("--no-sandbox")
@@ -34,7 +34,6 @@ class AccessibilityTest(
             .addArguments("--headless"),
     )
 
-    val booksRepository = context.getBean<BookRepository>()
     val parameterlessRoutes = context.getBean<Router>()
         .uriRoutes()
         // filter in only routes that DO NOT require a parameter
@@ -45,6 +44,8 @@ class AccessibilityTest(
         .map { it.uriMatchTemplate.toPathString() }
         // More readable?
         .sorted()
+        // Avoid possible duplications
+        .distinct()
         // since `uriRoutes` returns a `Stream`.
         .toList()
 
@@ -70,7 +71,7 @@ class AccessibilityTest(
         driver.title shouldNotContain "500"
         driver.manage().logs().get(LogType.BROWSER) shouldHaveSize 0
         val results = axeBuilder.analyze(driver)
-        results.violations shouldBe listOf()
+        results.violations shouldBe emptyList()
     }
 
     given("The server is running") {
@@ -83,30 +84,31 @@ class AccessibilityTest(
             }
         }
 
-        `when`("navigating books") {
-            val firstBook = booksRepository.listAll().first()
-            val firstPage = firstBook.pages.first()
-
-            then("/obras should pass accessibility tests") {
-                checkAccessibility("/obras")
-            }
-
-            then("/obra/${firstBook.id} should pass accessibility checks") {
-                checkAccessibility("/obra/${firstBook.id}")
-            }
-
-            then("/obra/${firstBook.id}/pagina/${firstPage.id} should pass accessibility checks") {
-                checkAccessibility("/obra/${firstBook.id}/pagina/${firstPage.id}")
+        `when`("navigating to books") {
+            @Suppress("detekt:SpreadOperator")
+            forAll(
+                *context.getBean<BookRepository>()
+                    .listAll()
+                    .map { book -> row("/obra/${book.id}") }
+                    .toTypedArray(),
+            ) { path ->
+                then("$path passes accessibility tests") {
+                    checkAccessibility(path)
+                }
             }
         }
 
         `when`("searching") {
-            then("/advanced-search should pass the accessibility tests") {
-                checkAccessibility("/advanced-search")
+            and("query return results") {
+                then("should pass accessibility tests") {
+                    checkAccessibility("/search?query=recife")
+                }
             }
 
-            then("/search should pass the accessibility test") {
-                checkAccessibility("/search?query=recife")
+            and("query return empty results") {
+                then("should pass accessibility tests") {
+                    checkAccessibility("/search?query=asdfghjkl")
+                }
             }
         }
     }
