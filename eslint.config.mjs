@@ -3,10 +3,15 @@
 
 import globals from "globals";
 import js from "@eslint/js";
+import stylisticJs from "@stylistic/eslint-plugin-js";
+
 
 export default [
     js.configs.recommended,
     {
+        plugins: {
+            "@stylistic/js": stylisticJs
+        },
         languageOptions: {
             ecmaVersion: 2022,
             sourceType: "module",
@@ -17,21 +22,21 @@ export default [
                 require: "readonly",
             }
         },
-        ignores: ["./node_modules/*.*", "./build/**/*.js"],
+        ignores: ["node_modules/*", "build/*"],
         rules: {
-            "indent": [
+            "@stylistic/js/indent": [
                 "error",
                 4
             ],
-            "linebreak-style": [
+            "@stylistic/js/linebreak-style": [
                 "error",
                 "unix"
             ],
-            "quotes": [
+            "@stylistic/js/quotes": [
                 "error",
                 "double"
             ],
-            "semi": [
+            "@stylistic/js/semi": [
                 "error",
                 "always"
             ]
