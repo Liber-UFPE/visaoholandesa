@@ -1,49 +1,76 @@
 #!/usr/bin/env bash
 
 GREEN=$(tput setaf 2)
+GREEN_BG=$(tput setab 2)
+RED_BG=$(tput setab 1)
+YELLOW_BG=$(tput setab 3)
+
+WHITE=$(tput setaf 7)
 BOLD=$(tput bold)
 RESET=$(tput sgr0)
 
+function printRunning {
+  linter=$1
+  # shellcheck disable=SC2059
+  printf "${YELLOW_BG}${BOLD}${WHITE} RUNNING ${RESET} ${BOLD}${WHITE}$linter${RESET} pre-commit hook on staged files"
+}
+
 function runKtlint {
-  echo -e "Running ${BOLD}${GREEN}ktlint${RESET} pre-commit hook on staged files"
-  git diff --name-only -z --cached --relative -- '*.kt' '*.kts' | ktlint --relative --patterns-from-stdin=''
+  printRunning "ktlint"
+  git diff --name-only -z --cached --relative -- '*.kt' '*.kts' | ktlint --relative --patterns-from-stdin='' &> /dev/null
 }
 
 function runDetekt {
-  echo -e "Running ${BOLD}${GREEN}detekt${RESET} pre-commit hook on staged files"
+  printRunning "detekt"
   changeset="$(git diff --name-only --cached --relative -- '*.kt' '*.kts' | paste -sd "," -)"
   if [ -n "$changeset" ]; then
     detekt --config detekt-config.yml \
       --build-upon-default-config\
-      --input "$changeset"
-  else
-    echo "No Kotlin files to check!"
+      --input "$changeset" &> /dev/null
   fi
 }
 
 function runStylelint {
-  echo -e "Running ${BOLD}${GREEN}stylelint${RESET} pre-commit hook"
+  printRunning "stylelint"
   npx stylelint src/main/**/*.scss
 }
 
 function runEslint {
-  echo -e "Running ${BOLD}${GREEN}eslint${RESET} pre-commit hook"
+  printRunning "eslint"
   npx eslint . --ignore-pattern "build/*"
+}
+
+# shellcheck disable=SC2059
+function printResult {
+  exit_code=$1
+  linter=$2
+
+  if [ "$exit_code" == 0 ]; then
+    printf "\r\033[K${GREEN_BG}${BOLD}${WHITE} SUCCESS ${RESET} ${BOLD}${WHITE}$linter${RESET} did not find any issues\n"
+  else
+    printf "\r\033[K${RED_BG}${BOLD}${WHITE} ERROR   ${RESET} ${BOLD}${WHITE}$linter${RESET} found issues\n"
+  fi
 }
 
 runKtlint
 KTLINT_STATUS=$?
+printResult $KTLINT_STATUS "ktlint"
 
 runDetekt
 DETEKT_STATUS=$?
+printResult $DETEKT_STATUS "detekt"
 
 runStylelint
 STYLELINT_STATUS=$?
+printResult $STYLELINT_STATUS "stylelint"
 
 runEslint
 ESLINT_STATUS=$?
+printResult $ESLINT_STATUS "eslint"
 
 
 [ $KTLINT_STATUS -ne 0 ] || [ $DETEKT_STATUS -ne 0 ] || [ $STYLELINT_STATUS -ne 0 ] || [ $ESLINT_STATUS -ne 0 ] && exit 1
 
 exit 0
+
+SUCCESS
