@@ -340,7 +340,7 @@ dependencies {
     // Accessibility Tests
     // Manually adding commons-compress due to https://devhub.checkmarx.com/cve-details/CVE-2024-26308/
     accessibilityTestImplementation("org.apache.commons:commons-compress:1.26.1")
-    accessibilityTestImplementation("org.seleniumhq.selenium:selenium-java:4.20.0")
+    accessibilityTestImplementation("org.seleniumhq.selenium:selenium-java:4.21.0")
     accessibilityTestImplementation("com.deque.html.axe-core:selenium:4.9.1")
 
     // Apache Ant: to generate a single JUnit report
