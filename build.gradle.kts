@@ -5,7 +5,7 @@ import java.lang.System.getenv
 
 plugins {
     kotlin("jvm") version "1.9.24"
-    kotlin("plugin.allopen") version "1.9.24"
+    kotlin("plugin.allopen") version "2.0.0"
     kotlin("plugin.serialization") version "1.9.24"
     id("com.google.devtools.ksp") version "1.9.24-1.0.20"
     id("com.github.johnrengelman.shadow") version "8.1.1"
