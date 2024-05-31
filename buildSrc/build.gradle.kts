@@ -21,7 +21,7 @@ dependencies {
     implementation("org.apache.commons:commons-compress:1.26.2")
 
     // Exposed
-    implementation("org.jetbrains.exposed:exposed-core:0.50.1")
+    implementation("org.jetbrains.exposed:exposed-core:0.51.0")
     implementation("org.jetbrains.exposed:exposed-dao:0.50.1")
     runtimeOnly("com.mysql:mysql-connector-j:8.4.0")
 }
