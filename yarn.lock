@@ -2014,15 +2014,16 @@ __metadata:
   linkType: hard
 
 "esbuild-sass-plugin@npm:^3.0.0":
-  version: 3.3.0
-  resolution: "esbuild-sass-plugin@npm:3.3.0"
+  version: 3.3.1
+  resolution: "esbuild-sass-plugin@npm:3.3.1"
   dependencies:
     resolve: "npm:^1.22.8"
+    safe-identifier: "npm:^0.4.2"
     sass: "npm:^1.71.1"
   peerDependencies:
     esbuild: ">=0.20.1"
     sass-embedded: ^1.71.1
-  checksum: 10c0/4b4e85a2597d1832909679f2e0ede2c4d7736948c3146cc78a1a1d3ab0d760e28541973d45b44a5b4423ed2fe6a0fc1e1a90b9732afba0b853971aa6de95c463
+  checksum: 10c0/bbbef049ebe58c449caa8db0c893abbaf97c4b83ca349d8c541c11503092475afc4ed504218987cb745d61bfb1a26a19118688a450057a43e3943d2224ee2060
   languageName: node
   linkType: hard
 
@@ -4935,6 +4936,13 @@ __metadata:
   version: 5.2.1
   resolution: "safe-buffer@npm:5.2.1"
   checksum: 10c0/6501914237c0a86e9675d4e51d89ca3c21ffd6a31642efeba25ad65720bce6921c9e7e974e5be91a786b25aa058b5303285d3c15dbabf983a919f5f630d349f3
+  languageName: node
+  linkType: hard
+
+"safe-identifier@npm:^0.4.2":
+  version: 0.4.2
+  resolution: "safe-identifier@npm:0.4.2"
+  checksum: 10c0/a6b0cdb5347e48c5ea4ddf4cdca5359b12529a11a7368225c39f882fcc0e679c81e82e3b13e36bd27ba7bdec9286f4cc062e3e527464d93ba61290b6e0bc6747
   languageName: node
   linkType: hard
 
