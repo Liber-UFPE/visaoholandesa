@@ -10,6 +10,7 @@ import io.micronaut.test.extensions.kotest5.annotation.MicronautTest
 import kotlinx.serialization.json.Json
 import java.util.Optional
 
+@Suppress("detekt:MaxLineLength", "LONG_LINE")
 @MicronautTest
 class BookTest(private val resourceResolver: ResourceResolver) :
     BehaviorSpec({
@@ -36,7 +37,6 @@ class BookTest(private val resourceResolver: ResourceResolver) :
                 then("should have the correct date") { book.date shouldBe "1993" }
                 then("should have the correct local") { book.local shouldBe "Recife" }
 
-                @Suppress("detekt:MaxLineLength")
                 then("should have the correct collection") {
                     book.collection shouldBe
                         "Revista do Instituto Arqueológico Histórico e Geográfico Pernambucano, volume LVIII, pp 145-284."
