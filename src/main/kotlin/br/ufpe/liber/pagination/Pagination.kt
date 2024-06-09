@@ -44,9 +44,7 @@ data class Pagination(
         return min(count, possibleFrom)
     }
 
-    private fun calculateTo(): Int {
-        return min(count, from + perPage - 1)
-    }
+    private fun calculateTo(): Int = min(count, from + perPage - 1)
 
     @Suppress("SAY_NO_TO_VAR")
     fun listPages(): List<PaginationItem> {

@@ -23,8 +23,8 @@ class BooksController(private val bookRepository: BookRepository, private val te
         .orElse(notFound(templates.notFound(currentRequestPath())))
 
     @Get("/obra/{bookId}/pagina/{pageId}")
-    fun page(bookId: Long, pageId: Long, @QueryValue query: Optional<String>): HttpResponse<KteWriteable> {
-        return bookRepository
+    fun page(bookId: Long, pageId: Long, @QueryValue query: Optional<String>): HttpResponse<KteWriteable> =
+        bookRepository
             .get(bookId)
             .flatMap { book ->
                 book.page(pageId).map { page ->
@@ -32,7 +32,6 @@ class BooksController(private val bookRepository: BookRepository, private val te
                 }
             }
             .orElse(notFound(templates.notFound(currentRequestPath())))
-    }
 
     private fun currentRequestPath(): String = ServerRequestContext.currentRequest<Any>().map { it.path }.orElse("")
 }

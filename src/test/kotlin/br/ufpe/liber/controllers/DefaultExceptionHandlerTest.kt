@@ -13,21 +13,20 @@ import io.mockk.mockk
 // in https://github.com/Liber-UFPE/project-starter.
 
 @MicronautTest
-class DefaultExceptionHandlerTest(
-    private val exceptionHandler: DefaultExceptionHandler,
-) : BehaviorSpec({
-    given("Default ExceptionHandler") {
-        `when`("there is a server error") {
-            then("it should return 500 Internal Server Error") {
-                val request: HttpRequest<Any> = mockk()
-                val exception = Exception("The error message")
+class DefaultExceptionHandlerTest(private val exceptionHandler: DefaultExceptionHandler) :
+    BehaviorSpec({
+        given("Default ExceptionHandler") {
+            `when`("there is a server error") {
+                then("it should return 500 Internal Server Error") {
+                    val request: HttpRequest<Any> = mockk()
+                    val exception = Exception("The error message")
 
-                every { request.path } answers { "/testing-path" }
+                    every { request.path } answers { "/testing-path" }
 
-                val response = exceptionHandler.handle(request, exception)
-                response.status.shouldBe(HttpStatus.INTERNAL_SERVER_ERROR)
-                response.header(HttpHeaders.CONTENT_TYPE) shouldBe "text/html; charset=utf-8"
+                    val response = exceptionHandler.handle(request, exception)
+                    response.status.shouldBe(HttpStatus.INTERNAL_SERVER_ERROR)
+                    response.header(HttpHeaders.CONTENT_TYPE) shouldBe "text/html; charset=utf-8"
+                }
             }
         }
-    }
-})
+    })

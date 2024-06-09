@@ -13,18 +13,19 @@ import io.mockk.mockk
 // in https://github.com/Liber-UFPE/project-starter.
 
 @MicronautTest
-class ErrorsControllerTest(private val errorsController: ErrorsController) : BehaviorSpec({
-    given("ErrorsController") {
-        `when`(".defaultNotFound") {
-            then("return 404 Not Found") {
-                val request: HttpRequest<Any> = mockk()
+class ErrorsControllerTest(private val errorsController: ErrorsController) :
+    BehaviorSpec({
+        given("ErrorsController") {
+            `when`(".defaultNotFound") {
+                then("return 404 Not Found") {
+                    val request: HttpRequest<Any> = mockk()
 
-                every { request.path } answers { "/testing-path" }
+                    every { request.path } answers { "/testing-path" }
 
-                val response = errorsController.defaultNotFound(request)
-                response.status.shouldBe(HttpStatus.NOT_FOUND)
-                response.header(HttpHeaders.CONTENT_TYPE) shouldBe "text/html; charset=utf-8"
+                    val response = errorsController.defaultNotFound(request)
+                    response.status.shouldBe(HttpStatus.NOT_FOUND)
+                    response.header(HttpHeaders.CONTENT_TYPE) shouldBe "text/html; charset=utf-8"
+                }
             }
         }
-    }
-})
+    })

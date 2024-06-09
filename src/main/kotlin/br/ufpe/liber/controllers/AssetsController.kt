@@ -16,10 +16,7 @@ import java.time.LocalDateTime
 import java.util.Optional
 
 @Controller("/static/{+path}")
-class AssetsController(
-    private val assetsResolver: AssetsResolver,
-    private val resourceResolver: ResourceResolver,
-) {
+class AssetsController(private val assetsResolver: AssetsResolver, private val resourceResolver: ResourceResolver) {
     @Get
     fun asset(
         path: String,
@@ -45,22 +42,20 @@ class AssetsController(
             .map { HttpResponse.notModified() }
     }
 
-    private fun httpResponseForAsset(asset: Asset, encoding: String): HttpResponse<StreamedFile> {
-        return asset
-            .preferredEncodedResource(encoding)
-            .flatMap { availableEncoding ->
-                resourceResolver
-                    .getResourceAsStream(asset.classpath(availableEncoding.extension))
-                    .map { inputStream ->
-                        HttpResponse
-                            .ok(StreamedFile(inputStream, asset.mediaType()))
-                            .contentEncoding(availableEncoding.http)
-                    }
-            }
-            .or { tryPlainAsset(asset) }
-            .map { response -> setCacheHeaders(asset, response) }
-            .orElse(HttpResponse.notFound())
-    }
+    private fun httpResponseForAsset(asset: Asset, encoding: String): HttpResponse<StreamedFile> = asset
+        .preferredEncodedResource(encoding)
+        .flatMap { availableEncoding ->
+            resourceResolver
+                .getResourceAsStream(asset.classpath(availableEncoding.extension))
+                .map { inputStream ->
+                    HttpResponse
+                        .ok(StreamedFile(inputStream, asset.mediaType()))
+                        .contentEncoding(availableEncoding.http)
+                }
+        }
+        .or { tryPlainAsset(asset) }
+        .map { response -> setCacheHeaders(asset, response) }
+        .orElse(HttpResponse.notFound())
 
     private fun tryPlainAsset(asset: Asset): Optional<MutableHttpResponse<StreamedFile>> = resourceResolver
         .getResourceAsStream(asset.classpath())

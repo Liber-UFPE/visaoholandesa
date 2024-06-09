@@ -7,69 +7,70 @@ import io.kotest.extensions.system.withEnvironment
 import io.kotest.matchers.equals.shouldBeEqual
 import io.kotest.matchers.shouldBe
 
-class LinksHelperTest : BehaviorSpec({
-    given("LinksHelper") {
-        `when`(".Liber.link") {
-            then("should create a link that is a path of Liber website") {
-                LinksHelper.Liber.link("some-path") shouldBe "http://www.liber.ufpe.br/some-path"
-            }
+class LinksHelperTest :
+    BehaviorSpec({
+        given("LinksHelper") {
+            `when`(".Liber.link") {
+                then("should create a link that is a path of Liber website") {
+                    LinksHelper.Liber.link("some-path") shouldBe "http://www.liber.ufpe.br/some-path"
+                }
 
-            then("should return Liber website URL when path is empty") {
-                LinksHelper.Liber.link("") shouldBe "http://www.liber.ufpe.br/"
-            }
-        }
-    }
-
-    given("LinksHelper.linkTo") {
-        `when`("""when base url is "/" """) {
-            withEnvironment("VISAOHOLANDESA_PATH", "/") {
-                forAll(
-                    row("/some-path", "/some-path"),
-                    row("some-path", "/some-path"),
-                    row("/some-path/", "/some-path/"),
-                    row("some-path/", "/some-path/"),
-                    row("/", "/"),
-                    row("", "/"),
-                ) { path, expectedResult ->
-                    then("generate correct link for $path") {
-                        LinksHelper.linkTo(path) shouldBeEqual expectedResult
-                    }
+                then("should return Liber website URL when path is empty") {
+                    LinksHelper.Liber.link("") shouldBe "http://www.liber.ufpe.br/"
                 }
             }
         }
 
-        `when`("""when base url is "/base" """) {
-            withEnvironment("VISAOHOLANDESA_PATH", "/base") {
-                forAll(
-                    row("/some-path", "/base/some-path"),
-                    row("some-path", "/base/some-path"),
-                    row("/some-path/", "/base/some-path/"),
-                    row("some-path/", "/base/some-path/"),
-                    row("/", "/base"),
-                    row("", "/base"),
-                ) { path, expectedResult ->
-                    then("generate correct link for $path") {
-                        LinksHelper.linkTo(path) shouldBeEqual expectedResult
+        given("LinksHelper.linkTo") {
+            `when`("""when base url is "/" """) {
+                withEnvironment("VISAOHOLANDESA_PATH", "/") {
+                    forAll(
+                        row("/some-path", "/some-path"),
+                        row("some-path", "/some-path"),
+                        row("/some-path/", "/some-path/"),
+                        row("some-path/", "/some-path/"),
+                        row("/", "/"),
+                        row("", "/"),
+                    ) { path, expectedResult ->
+                        then("generate correct link for $path") {
+                            LinksHelper.linkTo(path) shouldBeEqual expectedResult
+                        }
                     }
                 }
             }
-        }
 
-        `when`("""when base url is "/base/" """) {
-            withEnvironment("VISAOHOLANDESA_PATH", "/base/") {
-                forAll(
-                    row("/some-path", "/base/some-path"),
-                    row("some-path", "/base/some-path"),
-                    row("/some-path/", "/base/some-path/"),
-                    row("some-path/", "/base/some-path/"),
-                    row("/", "/base/"),
-                    row("", "/base/"),
-                ) { path, expectedResult ->
-                    then("generate correct link for $path") {
-                        LinksHelper.linkTo(path) shouldBeEqual expectedResult
+            `when`("""when base url is "/base" """) {
+                withEnvironment("VISAOHOLANDESA_PATH", "/base") {
+                    forAll(
+                        row("/some-path", "/base/some-path"),
+                        row("some-path", "/base/some-path"),
+                        row("/some-path/", "/base/some-path/"),
+                        row("some-path/", "/base/some-path/"),
+                        row("/", "/base"),
+                        row("", "/base"),
+                    ) { path, expectedResult ->
+                        then("generate correct link for $path") {
+                            LinksHelper.linkTo(path) shouldBeEqual expectedResult
+                        }
+                    }
+                }
+            }
+
+            `when`("""when base url is "/base/" """) {
+                withEnvironment("VISAOHOLANDESA_PATH", "/base/") {
+                    forAll(
+                        row("/some-path", "/base/some-path"),
+                        row("some-path", "/base/some-path"),
+                        row("/some-path/", "/base/some-path/"),
+                        row("some-path/", "/base/some-path/"),
+                        row("/", "/base/"),
+                        row("", "/base/"),
+                    ) { path, expectedResult ->
+                        then("generate correct link for $path") {
+                            LinksHelper.linkTo(path) shouldBeEqual expectedResult
+                        }
                     }
                 }
             }
         }
-    }
-})
+    })

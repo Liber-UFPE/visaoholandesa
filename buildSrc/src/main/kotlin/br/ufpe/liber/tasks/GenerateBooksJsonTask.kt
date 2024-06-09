@@ -74,58 +74,56 @@ class DatabasePage(id: EntityID<Long>) : LongEntity(id) {
     fun toMarkdown(): String =
         processPageText(text) + "\n\n" + notes.joinToString(separator = "\n\n") { it.toMarkdown().trim() }
 
-    private fun processPageText(text: String): String {
-        return text.replace("</strong><strong>", "</strong><br /></strong>")
-            // Removes break lines at the beginning or end of the content
-            .replace("(^<br />|<br />(\\s|\\p{Punct})?\$)".toRegex(), "")
-            // Replaces "<strong>Something</strong>" at the beginning of the text with "## Something\n\n"
-            // since this would be the first "title" for the content.
-            // Using "##" (h2) because the page where this would be rendered most likely will already have a h1.
-            .replace("^<strong>([^<]+)</strong>".toRegex()) { matchResult ->
-                "## ${matchResult.groupValues[1]}\n\n"
+    private fun processPageText(text: String): String = text.replace("</strong><strong>", "</strong><br /></strong>")
+        // Removes break lines at the beginning or end of the content
+        .replace("(^<br />|<br />(\\s|\\p{Punct})?\$)".toRegex(), "")
+        // Replaces "<strong>Something</strong>" at the beginning of the text with "## Something\n\n"
+        // since this would be the first "title" for the content.
+        // Using "##" (h2) because the page where this would be rendered most likely will already have a h1.
+        .replace("^<strong>([^<]+)</strong>".toRegex()) { matchResult ->
+            "## ${matchResult.groupValues[1]}\n\n"
+        }
+        // Replaces HTML breaks with regular string line breaks
+        .replace("<br />", "\n")
+        // Replaces ?Something? with "Something". This was some problem when OCRing the text
+        .replace("\\?([^?]+)\\?".toRegex()) { matchResult ->
+            "\"${matchResult.groupValues[1]}\""
+        }
+        // Replaces "[nota 123]" with "[^nota-123]" with is compatible with Markdown footnotes.
+        // See https://githubook.com/vsch/flexmark-java/wiki/Footnotes-Extension.
+        .replace("\\[nota (\\d+)]".toRegex()) { result ->
+            "[^nota-${result.groupValues[1]}]"
+        }
+        // Replaces [123] with [^nota-123] to normalize footnotes format.
+        .replace("\\[(\\d+)]".toRegex()) { matchResult ->
+            "[^nota-${matchResult.groupValues[1]}]"
+        }
+        // Replaces "Some text.[^nota-123]More text" with "Some text.[^nota-123] More text".
+        // Attention to the extra space after the note.
+        .replace("\\[\\^nota-(\\d+)](\\p{Upper})".toRegex()) { result ->
+            "[^nota-${result.groupValues[1]}] ${result.groupValues[2]}"
+        }
+        .lines()
+        .filter { it.isNotBlank() }
+        .map { line ->
+            // There are many lines that are all uppercase, and looks like titles.
+            val trimmedLine = line.trim()
+            when {
+                // We want to discard lines starting with "#" because they are already formatted as titles.
+                trimmedLine.startsWith("#") -> trimmedLine
+                // \p{Lu} means uppercase unicode letters: https://www.regular-expressions.info/unicode.html#category
+                trimmedLine.matches("^[\\p{Lu}\\p{Punct}\\s]+\$".toRegex()) -> "### $trimmedLine"
+                else -> trimmedLine
             }
-            // Replaces HTML breaks with regular string line breaks
-            .replace("<br />", "\n")
-            // Replaces ?Something? with "Something". This was some problem when OCRing the text
-            .replace("\\?([^?]+)\\?".toRegex()) { matchResult ->
-                "\"${matchResult.groupValues[1]}\""
-            }
-            // Replaces "[nota 123]" with "[^nota-123]" with is compatible with Markdown footnotes.
-            // See https://githubook.com/vsch/flexmark-java/wiki/Footnotes-Extension.
-            .replace("\\[nota (\\d+)]".toRegex()) { result ->
-                "[^nota-${result.groupValues[1]}]"
-            }
-            // Replaces [123] with [^nota-123] to normalize footnotes format.
-            .replace("\\[(\\d+)]".toRegex()) { matchResult ->
-                "[^nota-${matchResult.groupValues[1]}]"
-            }
-            // Replaces "Some text.[^nota-123]More text" with "Some text.[^nota-123] More text".
-            // Attention to the extra space after the note.
-            .replace("\\[\\^nota-(\\d+)](\\p{Upper})".toRegex()) { result ->
-                "[^nota-${result.groupValues[1]}] ${result.groupValues[2]}"
-            }
-            .lines()
-            .filter { it.isNotBlank() }
-            .map { line ->
-                // There are many lines that are all uppercase, and looks like titles.
-                val trimmedLine = line.trim()
-                when {
-                    // We want to discard lines starting with "#" because they are already formatted as titles.
-                    trimmedLine.startsWith("#") -> trimmedLine
-                    // \p{Lu} means uppercase unicode letters: https://www.regular-expressions.info/unicode.html#category
-                    trimmedLine.matches("^[\\p{Lu}\\p{Punct}\\s]+\$".toRegex()) -> "### $trimmedLine"
-                    else -> trimmedLine
-                }
-            }
-            .joinToString(separator = "\n\n") { line ->
-                // Replaces "<strong>Something</strong>" at the beginning of the text with "### Something\n\n"
-                // Using "###" (h3) since we may already have h2 for the page.
-                // If not, using h3 is not a big deal.
-                line.replace("^<strong>([^<]+)</strong>".toRegex()) { "### ${it.groupValues[1]}\n\n" }
-                    // Some basic trim sanitization. :-)
-                    .trim()
-            }
-    }
+        }
+        .joinToString(separator = "\n\n") { line ->
+            // Replaces "<strong>Something</strong>" at the beginning of the text with "### Something\n\n"
+            // Using "###" (h3) since we may already have h2 for the page.
+            // If not, using h3 is not a big deal.
+            line.replace("^<strong>([^<]+)</strong>".toRegex()) { "### ${it.groupValues[1]}\n\n" }
+                // Some basic trim sanitization. :-)
+                .trim()
+        }
 }
 
 object DatabaseNotes : LongIdTable("ne_note", "note_id") {
@@ -143,30 +141,28 @@ class DatabaseNote(id: EntityID<Long>) : LongEntity(id) {
 
     fun toMarkdown() = "[^nota-$number]: **Nota $number:** ${processNotesText(text)}"
 
-    private fun processNotesText(text: String): String {
-        return text.replace("</strong><strong>", "</strong><br /></strong>")
-            // Removes break lines at the beginning or end of the content
-            .replace("(^<br />|<br />(\\s|\\p{Punct})?\$)".toRegex(), "")
-            // Removes "[123]" or "[nota 123]" at the begging of the notes to later normalize the format.
-            .replace("^\\[(nota )?\\d+]".toRegex(), "")
-            // Replaces HTML breaks with regular string line breaks
-            .replace("<br />", "\n")
-            // Replaces ?Something? with "Something". This was some problem when OCRing the text
-            .replace("\\?([^?]+)\\?".toRegex()) { matchResult ->
-                "\"${matchResult.groupValues[1]}\""
-            }
-            // Replaces "[i]Something[/i]" with "*Something*". See https://www.markdownguide.org/basic-syntax/#italic
-            .replace("\\[i]([^\\[]+)\\[/i]".toRegex()) { matchResult ->
-                "_${matchResult.groupValues[1]}_"
-            }
-            // Notes later won't have multiple line breaks, so let's use hr to split notes sections that are now
-            // defined with repeated "-".
-            .replace("-{3,}".toRegex(), "<hr />")
-            .lines()
-            .filter { it.isNotBlank() }
-            .joinToString("\n") { it.trim() }
-            .replace("\n<hr />\n".toRegex(), "<hr />")
-    }
+    private fun processNotesText(text: String): String = text.replace("</strong><strong>", "</strong><br /></strong>")
+        // Removes break lines at the beginning or end of the content
+        .replace("(^<br />|<br />(\\s|\\p{Punct})?\$)".toRegex(), "")
+        // Removes "[123]" or "[nota 123]" at the begging of the notes to later normalize the format.
+        .replace("^\\[(nota )?\\d+]".toRegex(), "")
+        // Replaces HTML breaks with regular string line breaks
+        .replace("<br />", "\n")
+        // Replaces ?Something? with "Something". This was some problem when OCRing the text
+        .replace("\\?([^?]+)\\?".toRegex()) { matchResult ->
+            "\"${matchResult.groupValues[1]}\""
+        }
+        // Replaces "[i]Something[/i]" with "*Something*". See https://www.markdownguide.org/basic-syntax/#italic
+        .replace("\\[i]([^\\[]+)\\[/i]".toRegex()) { matchResult ->
+            "_${matchResult.groupValues[1]}_"
+        }
+        // Notes later won't have multiple line breaks, so let's use hr to split notes sections that are now
+        // defined with repeated "-".
+        .replace("-{3,}".toRegex(), "<hr />")
+        .lines()
+        .filter { it.isNotBlank() }
+        .joinToString("\n") { it.trim() }
+        .replace("\n<hr />\n".toRegex(), "<hr />")
 }
 
 @CacheableTask
