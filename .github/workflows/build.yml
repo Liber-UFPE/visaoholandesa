@@ -198,7 +198,7 @@ jobs:
         run: |
           echo "dockerImageName=${{ env.REGISTRY }}/${{ github.repository }}" | tr '[:upper:]' '[:lower:]'>> "$GITHUB_OUTPUT"
       - name: Create Image
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v6
         with:
           context: .
           load: true  # Load is a shorthand for --output=type=docker
