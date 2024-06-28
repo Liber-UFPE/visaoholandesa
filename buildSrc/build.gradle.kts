@@ -10,7 +10,7 @@ repositories {
 
 dependencies {
     // Assets pipeline
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.1")
     implementation("commons-codec:commons-codec:1.17.0")
     implementation("org.apache.tika:tika-core:2.9.2")
     implementation("org.apache.tika:tika-parsers-standard-package:2.9.2")
