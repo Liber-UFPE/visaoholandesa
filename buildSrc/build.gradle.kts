@@ -8,6 +8,8 @@ repositories {
     gradlePluginPortal()
 }
 
+val exposedVersion: String = "0.52.0"
+
 dependencies {
     // Assets pipeline
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.1")
@@ -21,7 +23,7 @@ dependencies {
     implementation("org.apache.commons:commons-compress:1.26.2")
 
     // Exposed
-    implementation("org.jetbrains.exposed:exposed-core:0.51.1")
-    implementation("org.jetbrains.exposed:exposed-dao:0.52.0")
+    implementation("org.jetbrains.exposed:exposed-core:$exposedVersion")
+    implementation("org.jetbrains.exposed:exposed-dao:$exposedVersion")
     runtimeOnly("com.mysql:mysql-connector-j:8.4.0")
 }
