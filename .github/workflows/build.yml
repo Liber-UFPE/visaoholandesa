@@ -108,6 +108,13 @@ jobs:
           node assets-pipeline.mjs
           tree ./build
 
+  gradle-wrapper-validation:
+    name: Gradle / wrapper-validation
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: gradle/actions/wrapper-validation@v3
+
   compile:
     name: Build / compile
     runs-on: ubuntu-latest
@@ -118,6 +125,7 @@ jobs:
       - stylelint
       - eslint
       - esbuild-check
+      - gradle-wrapper-validation
     steps:
       - uses: actions/checkout@v4
       - run: corepack enable
@@ -226,6 +234,17 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           path: generate-image-latest.tar.gz
+          # From GitHub Actions docs: https://docs.github.com/en/actions/learn-github-actions/contexts#github-context
+          # github.run_id is a unique number for each workflow run within a repository.
+          # This number does not change if you re-run the workflow run.
+          #
+          # It then makes sense to use this to name artifacts and have some guarantees that the name
+          # is stable (per workflow) and unique (to avoid artifacts uploading name clashes).
+          #
+          # The same naming MUST be used when downloading the artifact later. See actions/upload-artifact migration
+          # docs for more information:
+          # https://github.com/actions/upload-artifact/blob/main/docs/MIGRATION.md#multiple-uploads-to-the-same-named-artifact
+          name: docker-image-${{ github.run_id }}
           compression-level: 0  # No compression since it is already a gzip file
 
   check-if-release-branch:
@@ -314,10 +333,12 @@ jobs:
         # yamllint enable rule:line-length
       - name: Download previously generated image tar
         uses: actions/download-artifact@v4
+        with:
+          name: docker-image-${{ github.run_id }}
       - name: Create Image
         # language="shell script"
         run: |
-          artifact_file="artifact/generate-image-latest.tar.gz"
+          artifact_file="generate-image-latest.tar.gz"
           if [ -f "$artifact_file" ]; then
             echo "Previously generate image found. Will load image"
             docker load < "$artifact_file"

@@ -29,6 +29,8 @@ class AddHeadersFilterTest(private val server: EmbeddedServer, private val conte
             context.getBean(AssetsResolver::class.java)
         }
 
+        afterSpec { server.stop() }
+
         given("AddHeadersFilter") {
             `when`("a request is made") {
                 val response = client.get("/")
