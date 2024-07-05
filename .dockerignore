@@ -8,6 +8,5 @@
 **/out
 **/.idea
 node_modules
-.lighthouseci
 jte-classes
 Dockerfile
