@@ -12,7 +12,7 @@
         "@lhci/cli": "0.14.0",
         "@stylistic/eslint-plugin-js": "^2.1.0",
         "autoprefixer": "10.4.19",
-        "esbuild": "0.22.0",
+        "esbuild": "0.23.0",
         "esbuild-sass-plugin": "^3.0.0",
         "eslint": "^9.0.0",
         "fast-glob": "3.3.2",
