@@ -127,17 +127,6 @@ jobs:
           format: markdown
           fail: true
 
-  dependency-review:
-    runs-on: ubuntu-latest
-    if: ${{ github.event_name == 'pull_request' }}
-    steps:
-      - uses: actions/checkout@v4
-      - name: 'Dependency Review'
-        uses: actions/dependency-review-action@v4
-        with:
-          fail-on-severity: high
-          fail-on-scopes: runtime
-
   compile:
     name: Build / compile
     runs-on: ubuntu-latest
@@ -150,7 +139,6 @@ jobs:
       - esbuild-check
       - gradle-wrapper-validation
       - validate-external-links
-      - dependency-review
     steps:
       - uses: actions/checkout@v4
       - run: corepack enable
@@ -162,6 +150,19 @@ jobs:
       - name: Start Gradle Daemon
         run: ./gradlew --info
       - run: ./gradlew testClasses
+
+  dependency-review:
+    runs-on: ubuntu-latest
+    if: ${{ github.event_name == 'pull_request' }}
+    needs:
+      - compile
+    steps:
+      - uses: actions/checkout@v4
+      - name: 'Dependency Review'
+        uses: actions/dependency-review-action@v4
+        with:
+          fail-on-severity: high
+          fail-on-scopes: runtime
 
   test:
     name: Tests / test
@@ -279,6 +280,7 @@ jobs:
     needs:
       - test
       - test-docker-image
+      - dependency-review
     steps:
       - run: echo "This PR is ready to merge."
 
@@ -300,6 +302,18 @@ jobs:
         # TAG_NAME value is trying to emulate semver to avoid release ordering issues.
         # See https://github.com/orgs/community/discussions/8226.
         run: echo "tagName=v$(date '+%Y%m%d.%H%M.%S')" >> "$GITHUB_OUTPUT"
+
+  gh-dependency-graph:
+    name: Generate and Submit Dependency Graph
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    needs:
+      - generate-tag-name
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/gradle-action
+      - uses: gradle/actions/dependency-submission@v3
 
   create-release:
     name: Creates a GitHub Release
