@@ -135,7 +135,7 @@ diktat {
 }
 
 frontend {
-    nodeVersion = "18.19.1"
+    nodeVersion = "20.15.0"
     // The plugin will NOT try to download Node.js.
     nodeDistributionProvided = getNodeExecutable.isSuccess
     verboseModeEnabled = true
