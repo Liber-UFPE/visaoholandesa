@@ -9,9 +9,9 @@ plugins {
     kotlin("plugin.serialization") version "2.0.0"
     id("com.google.devtools.ksp") version "2.0.0-1.0.23"
     id("com.github.johnrengelman.shadow") version "8.1.1"
-    id("io.micronaut.application") version "4.4.0"
+    id("io.micronaut.application") version "4.4.1"
     id("gg.jte.gradle") version "3.1.12"
-    id("io.micronaut.aot") version "4.4.0"
+    id("io.micronaut.aot") version "4.4.1"
     // Provides better test output
     id("com.adarshr.test-logger") version "4.0.0"
     // Code Coverage:
