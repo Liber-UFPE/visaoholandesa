@@ -793,16 +793,16 @@ __metadata:
   linkType: hard
 
 "@stylistic/eslint-plugin-js@npm:^2.1.0":
-  version: 2.3.0
-  resolution: "@stylistic/eslint-plugin-js@npm:2.3.0"
+  version: 2.6.1
+  resolution: "@stylistic/eslint-plugin-js@npm:2.6.1"
   dependencies:
-    "@types/eslint": "npm:^8.56.10"
-    acorn: "npm:^8.11.3"
+    "@types/eslint": "npm:^9.6.0"
+    acorn: "npm:^8.12.1"
     eslint-visitor-keys: "npm:^4.0.0"
-    espree: "npm:^10.0.1"
+    espree: "npm:^10.1.0"
   peerDependencies:
     eslint: ">=8.40.0"
-  checksum: 10c0/41edf0a6ac4643145d4ccb939b24e0227e790eb4efc7ebc4d8bb68bb99ff6406af154a3384b12147c4b34aa6c2bed506703ef8d82fb4c73ca7aa978fa4fed922
+  checksum: 10c0/d888887f6c40337fc368b1ffd02da1d3cc90076817a817b84745f9efd7b7cbb6363e9aa4106a59a1966358e8cdd11bef9e2bc4ab4fefb7ca29910df1be02cbae
   languageName: node
   linkType: hard
 
@@ -813,13 +813,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/eslint@npm:^8.56.10":
-  version: 8.56.10
-  resolution: "@types/eslint@npm:8.56.10"
+"@types/eslint@npm:^9.6.0":
+  version: 9.6.0
+  resolution: "@types/eslint@npm:9.6.0"
   dependencies:
     "@types/estree": "npm:*"
     "@types/json-schema": "npm:*"
-  checksum: 10c0/674349d6c342c3864d70f4d5a9965f96fb253801532752c8c500ad6a1c2e8b219e01ccff5dc8791dcb58b5483012c495708bb9f3ff929f5c9322b3da126c15d3
+  checksum: 10c0/69301356bc73b85e381ae00931291de2e96d1cc49a112c592c74ee32b2f85412203dea6a333b4315fd9839bb14f364f265cbfe7743fc5a78492ee0326dd6a2c1
   languageName: node
   linkType: hard
 
@@ -896,6 +896,15 @@ __metadata:
   bin:
     acorn: bin/acorn
   checksum: 10c0/a19f9dead009d3b430fa3c253710b47778cdaace15b316de6de93a68c355507bc1072a9956372b6c990cbeeb167d4a929249d0faeb8ae4bb6911d68d53299549
+  languageName: node
+  linkType: hard
+
+"acorn@npm:^8.12.1":
+  version: 8.12.1
+  resolution: "acorn@npm:8.12.1"
+  bin:
+    acorn: bin/acorn
+  checksum: 10c0/51fb26cd678f914e13287e886da2d7021f8c2bc0ccc95e03d3e0447ee278dd3b40b9c57dc222acd5881adcf26f3edc40901a4953403232129e3876793cd17386
   languageName: node
   linkType: hard
 
