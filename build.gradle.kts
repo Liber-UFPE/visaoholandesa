@@ -335,7 +335,7 @@ dependencies {
 
     // Content sanitizer
     implementation("org.owasp.antisamy:antisamy:1.7.6")
-    implementation("org.owasp.encoder:encoder:1.3.0")
+    implementation("org.owasp.encoder:encoder:1.3.1")
 
     // Accessibility Tests
     // Manually adding commons-compress due to https://devhub.checkmarx.com/cve-details/CVE-2024-26308/
