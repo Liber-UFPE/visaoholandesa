@@ -344,5 +344,5 @@ dependencies {
     accessibilityTestImplementation("com.deque.html.axe-core:selenium:4.9.1")
 
     // Apache Ant: to generate a single JUnit report
-    antJUnit("org.apache.ant", "ant-junit", "1.10.14")
+    antJUnit("org.apache.ant", "ant-junit", "1.10.15")
 }
