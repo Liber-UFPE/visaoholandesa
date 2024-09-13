@@ -19,7 +19,7 @@ plugins {
     id("org.jetbrains.kotlinx.kover") version "0.8.3"
     // Code Inspections
     // https://detekt.dev/
-    id("io.gitlab.arturbosch.detekt") version "1.23.6"
+    id("io.gitlab.arturbosch.detekt") version "1.23.7"
     // Easily add new test sets
     // https://github.com/unbroken-dome/gradle-testsets-plugin
     id("org.unbroken-dome.test-sets") version "4.1.0"
