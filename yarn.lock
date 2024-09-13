@@ -802,15 +802,14 @@ __metadata:
   linkType: hard
 
 "@stylistic/eslint-plugin-js@npm:^2.1.0":
-  version: 2.7.2
-  resolution: "@stylistic/eslint-plugin-js@npm:2.7.2"
+  version: 2.8.0
+  resolution: "@stylistic/eslint-plugin-js@npm:2.8.0"
   dependencies:
-    "@types/eslint": "npm:^9.6.1"
     eslint-visitor-keys: "npm:^4.0.0"
     espree: "npm:^10.1.0"
   peerDependencies:
     eslint: ">=8.40.0"
-  checksum: 10c0/1c1d185f823682cf9ccaa54b0ddb19ed9d44410e2496a9be65c6384d0881ec1649a86bdcf1f1b08c7a8249143a7a018e4664c941ee08891ab1524f6f1a557b80
+  checksum: 10c0/35eafe7587a9c9c06c98b1a97386a2791fac48d86ab8f7670794f7f83092956bf1b65e8b31d93315c8b459b2f45322c7f4c7ec18ef6da266a4013c1da18b0443
   languageName: node
   linkType: hard
 
@@ -818,30 +817,6 @@ __metadata:
   version: 0.23.0
   resolution: "@tootallnate/quickjs-emscripten@npm:0.23.0"
   checksum: 10c0/2a939b781826fb5fd3edd0f2ec3b321d259d760464cf20611c9877205aaca3ccc0b7304dea68416baa0d568e82cd86b17d29548d1e5139fa3155a4a86a2b4b49
-  languageName: node
-  linkType: hard
-
-"@types/eslint@npm:^9.6.1":
-  version: 9.6.1
-  resolution: "@types/eslint@npm:9.6.1"
-  dependencies:
-    "@types/estree": "npm:*"
-    "@types/json-schema": "npm:*"
-  checksum: 10c0/69ba24fee600d1e4c5abe0df086c1a4d798abf13792d8cfab912d76817fe1a894359a1518557d21237fbaf6eda93c5ab9309143dee4c59ef54336d1b3570420e
-  languageName: node
-  linkType: hard
-
-"@types/estree@npm:*":
-  version: 1.0.5
-  resolution: "@types/estree@npm:1.0.5"
-  checksum: 10c0/b3b0e334288ddb407c7b3357ca67dbee75ee22db242ca7c56fe27db4e1a31989cb8af48a84dd401deb787fe10cc6b2ab1ee82dc4783be87ededbe3d53c79c70d
-  languageName: node
-  linkType: hard
-
-"@types/json-schema@npm:*":
-  version: 7.0.15
-  resolution: "@types/json-schema@npm:7.0.15"
-  checksum: 10c0/a996a745e6c5d60292f36731dd41341339d4eeed8180bb09226e5c8d23759067692b1d88e5d91d72ee83dfc00d3aca8e7bd43ea120516c17922cbcb7c3e252db
   languageName: node
   linkType: hard
 
