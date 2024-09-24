@@ -85,7 +85,7 @@ O projeto usa [GitHub Actions](https://docs.github.com/en/actions) para executar
 
 #### Inspeções de código
 
-Para cada merge/push, e também para pull requests, existem ações do GitHub para executar [ktlint][ktlint], [detekt](https://github.com/detekt), e [DiKTat](https://diktat.saveourtool.com/) (experimental).
+Para cada merge/push, e também para pull requests, existem ações do GitHub para executar [ktlint][ktlint], [detekt](https://github.com/detekt), e [DiKTat](https://github.com/saveourtool/diktat) (experimental).
 
 O ktlint está configurado para usar o estilo de código `intellij_idea` para que ele não entre em conflito com a ação de formatação de código da IntelliJ IDEA.
 
