@@ -119,10 +119,7 @@ data class Encoding(val http: String, val extension: String, val priority: Int) 
 }
 
 @Suppress("IDENTIFIER_LENGTH") // it is okay to use `q` because it is part of the spec.
-data class AcceptEncoding(
-    val name: String,
-    val q: Optional<Float> = Optional.empty(),
-) : Comparable<AcceptEncoding> {
+data class AcceptEncoding(val name: String, val q: Optional<Float> = Optional.empty()) : Comparable<AcceptEncoding> {
     @Suppress("MAGIC_NUMBER")
     val qualityValue = q.getOrDefault(1f)
 
