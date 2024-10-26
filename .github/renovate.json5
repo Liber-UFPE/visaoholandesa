@@ -7,7 +7,7 @@
   ],
   // scheduling docs: https://docs.renovatebot.com/key-concepts/scheduling/
   "timezone": "America/Toronto",
-  "schedule": ["after 7am on friday"],
+  "schedule": ["before 1am on friday"],
   // https://docs.renovatebot.com/configuration-options/#rebasewhen
   "rebaseWhen": "conflicted",
   "packageRules": [
