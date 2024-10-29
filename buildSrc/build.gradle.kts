@@ -14,8 +14,8 @@ dependencies {
     // Assets pipeline
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.3")
     implementation("commons-codec:commons-codec:1.17.1")
-    implementation("org.apache.tika:tika-core:2.9.2")
-    implementation("org.apache.tika:tika-parsers-standard-package:2.9.2")
+    implementation("org.apache.tika:tika-core:3.0.0")
+    implementation("org.apache.tika:tika-parsers-standard-package:3.0.0")
     implementation("org.apache.logging.log4j:log4j-core:2.24.1")
     implementation("com.lordcodes.turtle:turtle:0.10.0")
 
