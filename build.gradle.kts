@@ -10,7 +10,7 @@ plugins {
     id("com.google.devtools.ksp") version "2.0.21-1.0.27"
     id("com.github.johnrengelman.shadow") version "8.1.1"
     id("io.micronaut.application") version "4.4.4"
-    id("gg.jte.gradle") version "3.1.13"
+    id("gg.jte.gradle") version "3.1.14"
     id("io.micronaut.aot") version "4.4.4"
     // Provides better test output
     id("com.adarshr.test-logger") version "4.0.0"
