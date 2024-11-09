@@ -1,7 +1,7 @@
 {
     "packageManager": "yarn@4.5.1",
     "engines": {
-        "node": ">=18 <=21"
+        "node": ">=18 <=22"
     },
     "engineStrict": true,
     "scripts": {
