@@ -18,7 +18,7 @@
         "fast-glob": "3.3.2",
         "gzipper": "^7.2.0",
         "postcss": "8.4.49",
-        "purgecss": "6.0.0",
+        "purgecss": "7.0.2",
         "sass-embedded": "^1.71.1",
         "sharp": "^0.33.2",
         "stylelint": "^16.2.1",
