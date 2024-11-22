@@ -334,7 +334,7 @@ dependencies {
     implementation("com.vladsch.flexmark:flexmark-ext-footnotes:$flexmarkVersion")
 
     // Content sanitizer
-    implementation("org.owasp.antisamy:antisamy:1.7.6")
+    implementation("org.owasp.antisamy:antisamy:1.7.7")
     implementation("org.owasp.encoder:encoder:1.3.1")
 
     // Accessibility Tests
