@@ -6,7 +6,7 @@ import path from "path";
 import {sassPlugin} from "esbuild-sass-plugin";
 import autoprefixer from "autoprefixer";
 import postcss from "postcss";
-import purgecss from "@fullhuman/postcss-purgecss";
+import { purgeCSSPlugin } from "@fullhuman/postcss-purgecss";
 
 const assetsFolder = "src/main/resources/public";
 const assetsBuildFolder = "build/resources/main/public";
@@ -77,7 +77,7 @@ await esbuild.build({
             async transform(source) {
                 const {css} = await postcss([
                     autoprefixer,
-                    purgecss({
+                    purgeCSSPlugin({
                         content: ["./src/**/*.kte", `${assetsFolder}/**/*.js`],
                         safelist: {
                             deep: [/footnotes$/]
