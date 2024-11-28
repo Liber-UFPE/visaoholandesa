@@ -26,11 +26,6 @@ jobs:
         with:
           fetch-depth: 0
       - run: corepack enable
-      - uses: actions/setup-node@v4
-        with:
-          node-version: "lts/*"  # latest lts
-          check-latest: true
-          cache: "yarn"
       - uses: ./.github/gradle-action
       - run: ./gradlew classes
       - run: yarn install

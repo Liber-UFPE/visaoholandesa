@@ -18,6 +18,11 @@ inputs:
 runs:
   using: 'composite'
   steps:
+    - uses: actions/setup-node@v4
+      with:
+        node-version: 20
+        check-latest: true
+        cache: "yarn"
     - name: Set up JDK 21
       uses: actions/setup-java@v4
       with:
@@ -26,7 +31,7 @@ runs:
     - name: Set up Gradle
       uses: gradle/actions/setup-gradle@v4
       with:
-        generate-job-summary: false
+        add-job-summary: on-failure
         cache-disabled: ${{ inputs.gradle-cache-disabled }}
         cache-read-only: ${{ inputs.gradle-cache-read-only }}
         cache-write-only: ${{ inputs.gradle-cache-write-only }}
