@@ -50,6 +50,8 @@ jobs:
       # Setup project required versions of Gradle and Java
       - name: Set up Gradle and Java
         uses: ./.github/gradle-action
+        with:
+          gradle-cache-read-only: true
 
       # Initializes the CodeQL tools for scanning.
       - name: Initialize CodeQL
