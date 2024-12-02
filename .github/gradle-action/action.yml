@@ -1,3 +1,4 @@
+---
 name: 'Gradle Build Action'
 description: 'Reusable GitHub Action for performing a gradle build or running a gradle task.'
 
