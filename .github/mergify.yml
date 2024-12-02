@@ -1,30 +1,10 @@
 ---
 # DO NOT EDIT: this file is automatically synced from the template repository
 # in https://github.com/Liber-UFPE/project-starter.
-queue_rules:
-  - name: deps-update
-    conditions:
-      - check-success=Good to merge
-    batch_size: 10
-    batch_max_wait_time: 90min
-    merge_method: rebase
-
 pull_request_rules:
-  - name: Automatic merge from renovate
-    conditions:
-      - check-success=Good to merge
-      - or:
-          - author=renovate[bot]
-          - label=file-sync
-    actions:
-      queue:
-        name: deps-update
-
   - name: Automatic merge when CI passes
     conditions:
-      - check-success=Good to merge
-      # So that renovate PRs go to the queue above
-      - author!=renovate[bot]
+      - check-success=Good to Go
     actions:
       merge:
         method: rebase

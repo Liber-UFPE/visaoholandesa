@@ -4,9 +4,6 @@
     'config:recommended',
   ],
   timezone: 'America/Toronto',
-  schedule: [
-    'after 1am on friday',
-  ],
   rebaseWhen: 'conflicted',
   packageRules: [
     {
@@ -42,9 +39,6 @@
       ],
     },
     {
-      matchSourceUrls: [
-        'https://github.com/JetBrains/kotlin',
-      ],
       groupName: 'Kotlin / Plugins',
       groupSlug: 'kotlin-plugins',
       matchPackageNames: [
