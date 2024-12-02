@@ -1,0 +1,198 @@
+---
+# DO NOT EDIT: this file is automatically synced from the template repository
+# in https://github.com/Liber-UFPE/project-starter.
+name: Release
+
+# yamllint disable rule:truthy
+on:
+  # To enable the workflow to be triggered manually
+  workflow_dispatch:
+  schedule:
+    # At 23:00 on Friday.
+    - cron: "30 23 * * FRI"
+# yamllint enable rule:truthy
+
+env:
+  REGISTRY: ghcr.io
+  GRADLE_OPTS: >
+    -Dorg.gradle.console=plain
+    -Dorg.gradle.caching=true
+    -Dsonar.gradle.skipCompile=true
+    -Dorg.gradle.jvmargs="-Xmx2g -XX:MaxMetaspaceSize=512m"'
+
+concurrency:
+  # This workflow cuts releases, so we want only a
+  # single concurrent workflow run per branch/tag/etc.
+  group: release-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check-last-build:
+    name: Check last Build
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      OWNER: ${{ github.repository_owner }}
+      REPO: ${{ github.event.repository.name }}
+    steps:
+      - uses: actions/checkout@v4
+      # language="shell script"
+      - run: |
+          checks=20
+          completed=false
+          while [ $checks != 0 ]
+          do
+            checks=$((checks - 1))
+          
+            json=$(gh run list --branch main --workflow CI --limit 1 --json name,number,url,status)
+            name=$(echo "$json" | jq -r '.[].name')
+            number=$(echo "$json" | jq -r '.[].number')
+            url=$(echo "$json" | jq -r '.[].url')
+            workflow_status=$(echo "$json" | jq -r '.[].status')
+          
+            if [ "$workflow_status" == "completed" ]; then
+              echo "Workflow $name / $number completed! See it on $url."
+              completed=true
+              break
+            fi
+          
+            echo "Workflow $url not completed yet (current status is $workflow_status). Will retry $checks more times"
+            sleep 60
+          done
+          
+          if [ "$completed" == "false" ]; then
+            echo "Workflow did not complete after all retries"
+            exit 1
+          else
+            json=$(gh run list --branch main --workflow CI --limit 1 --json conclusion,url)
+            conclusion=$(echo "$json" | jq -r '.[].conclusion')
+            url=$(echo "$json" | jq -r '.[].url')
+            if [ "$conclusion" != "success" ]; then
+              echo "Expected the conclusion for workflow $url to be success (it was $conclusion)"
+              exit 1
+            fi
+          fi
+
+  generate-tag-name:
+    name: Generate GitHub tag name
+    if: ${{ github.ref == 'refs/heads/main' }}
+    runs-on: ubuntu-latest
+    needs:
+      - check-last-build
+    # This job also has an output that can be used by downstream jobs.
+    # https://docs.github.com/en/actions/using-jobs/defining-outputs-for-jobs
+    outputs:
+      tagName: ${{ steps.generateTagName.outputs.tagName }}
+    steps:
+      - run: echo "This is a push to main branch. Following with release a new version"
+      - name: Generate tag name
+        id: generateTagName
+        # TAG_NAME value is trying to emulate semver to avoid release ordering issues.
+        # See https://github.com/orgs/community/discussions/8226.
+        run: echo "tagName=v$(date '+%Y%m%d.%H%M.%S')" >> "$GITHUB_OUTPUT"
+
+  gh-dependency-graph:
+    name: Generate and Submit Dependency Graph
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    needs:
+      - generate-tag-name
+    steps:
+      - uses: actions/checkout@v4
+      - run: corepack enable
+      - uses: ./.github/gradle-action
+      - uses: gradle/actions/dependency-submission@v4
+
+  create-release:
+    name: Creates a GitHub Release
+    runs-on: ubuntu-latest
+    needs:
+      - generate-tag-name
+    # Docs:
+    # https://docs.github.com/en/actions/using-jobs/assigning-permissions-to-jobs
+    permissions:
+      contents: write
+      packages: read  # to preserve default permissions
+    env:
+      GH_TOKEN: ${{ github.token }}
+      TAG_NAME: ${{ needs.generate-tag-name.outputs.tagName }}
+      RELEASE_TITLE: Release ${{ needs.generate-tag-name.outputs.tagName }}
+    steps:
+      - uses: actions/checkout@v4
+      - run: corepack enable
+      - uses: ./.github/gradle-action
+      - name: Generate jar artifacts
+        run: ./gradlew -PreleaseTag=$TAG_NAME clean shadowJar -x test -x accessibilityTest --no-configuration-cache
+      - name: Create Github Release
+        run: gh release create "$TAG_NAME" --title "$RELEASE_TITLE" --generate-notes --latest ./build/libs/*.jar
+
+  publish-docker-image:
+    name: Publish docker image
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ github.token }}
+      TAG_NAME: ${{ needs.generate-tag-name.outputs.tagName }}
+    needs:
+      - generate-tag-name
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/setup-buildx-action@v3
+      - name: Docker / Get image name
+        id: dockerImageName
+        # yamllint disable rule:line-length
+        # language="shell script"
+        run: |
+          echo "dockerImageName=${{ env.REGISTRY }}/${{ github.repository }}" | tr '[:upper:]' '[:lower:]'>> "$GITHUB_OUTPUT"
+        # yamllint enable rule:line-length
+      - name: Create Image
+        # language="shell script"
+        run: |
+          docker image build -t ${{ steps.dockerImageName.outputs.dockerImageName }}:latest .
+      # Needs to log in to use docker scout below
+      - uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - uses: docker/scout-action@v1
+        continue-on-error: true
+        with:
+          command: quickview
+          image: ${{ steps.dockerImageName.outputs.dockerImageName }}
+          write-comment: false
+          summary: true
+      # Adapted from https://docs.docker.com/build/ci/github-actions/test-before-push/
+      - name: Test Image
+        # From `docker run --help`:
+        #   -d, --detach          Run container in background and print container ID
+        #   --rm                  Automatically remove the container when it exits
+        #   -p, --publish list    Publish a container's port(s) to the host
+        run: |
+          containerId=$(docker run -d --rm --publish 8080:8080 ${{ steps.dockerImageName.outputs.dockerImageName }})
+          wget --retry-connrefused --tries=20 -nv --wait=1 --spider http://localhost:8080/
+          docker container logs "$containerId"
+          docker container stop "$containerId"
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Publish to GitHub Registry
+        # language="shell script"
+        run: |
+          last_git_sha=$(echo "${{ github.sha }}" | cut -c 1-7)
+          source_image_name=${{ steps.dockerImageName.outputs.dockerImageName }}
+
+          echo "Using git tag $TAG_NAME"
+          echo "Using last git sha $last_git_sha"
+
+          echo "Images to tag => $source_image_name:$TAG_NAME"
+          echo "Images to tag => $source_image_name:$last_git_sha"
+          docker tag "$source_image_name" "$source_image_name:$TAG_NAME"
+          docker tag "$source_image_name" "$source_image_name:$last_git_sha"
+
+          docker push --all-tags ${{ steps.dockerImageName.outputs.dockerImageName }}
