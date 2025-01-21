@@ -25,5 +25,5 @@ dependencies {
     // Exposed
     implementation("org.jetbrains.exposed:exposed-core:$exposedVersion")
     implementation("org.jetbrains.exposed:exposed-dao:$exposedVersion")
-    runtimeOnly("com.mysql:mysql-connector-j:9.1.0")
+    runtimeOnly("com.mysql:mysql-connector-j:9.2.0")
 }
