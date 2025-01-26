@@ -10,7 +10,7 @@
     "devDependencies": {
         "@fullhuman/postcss-purgecss": "7.0.2",
         "@lhci/cli": "0.14.0",
-        "@stylistic/eslint-plugin-js": "^2.1.0",
+        "@stylistic/eslint-plugin-js": "^3.0.0",
         "autoprefixer": "10.4.20",
         "esbuild": "0.24.2",
         "esbuild-sass-plugin": "^3.0.0",
