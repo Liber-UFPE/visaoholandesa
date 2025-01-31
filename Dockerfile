@@ -1,4 +1,4 @@
-FROM eclipse-temurin:21.0.5_11-jdk-jammy AS build
+FROM eclipse-temurin:21.0.6_7-jdk-jammy AS build
 
 # Install Node JS
 RUN apt-get update -y && apt-get install --no-install-recommends -y curl git \
@@ -26,7 +26,7 @@ RUN ./gradlew -Dsonar.gradle.skipCompile=true --console plain --no-configuration
       clean shadowJar -x test -x accessibilityTest \
       && mv -vf build/libs/*.jar app.jar
 
-FROM eclipse-temurin:21.0.5_11-jre-alpine
+FROM eclipse-temurin:21.0.6_7-jre-alpine
 
 LABEL org.opencontainers.image.description="Visao Holandesa Java Application Service"
 LABEL org.opencontainers.image.url="https://github.com/Liber-UFPE/visaoholandesa/"
