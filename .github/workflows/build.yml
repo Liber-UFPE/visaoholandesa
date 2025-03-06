@@ -44,7 +44,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: detekt report
-        uses: natiginfo/action-detekt-all@1.23.7
+        uses: natiginfo/action-detekt-all@1.23.8
         with:
           args: --report md:build/reports/detekt/detekt.md
       - name: Detekt Summary
