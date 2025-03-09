@@ -11,7 +11,7 @@
         "@fullhuman/postcss-purgecss": "7.0.2",
         "@lhci/cli": "0.14.0",
         "@stylistic/eslint-plugin-js": "^4.0.0",
-        "autoprefixer": "10.4.20",
+        "autoprefixer": "10.4.21",
         "esbuild": "0.25.0",
         "esbuild-sass-plugin": "^3.0.0",
         "eslint": "^9.0.0",
