@@ -4,10 +4,10 @@ import com.lordcodes.turtle.shellRun
 import java.lang.System.getenv
 
 plugins {
-    kotlin("jvm") version "2.0.21"
-    kotlin("plugin.allopen") version "2.0.21"
-    kotlin("plugin.serialization") version "2.0.21"
-    id("com.google.devtools.ksp") version "2.0.21-1.0.28"
+    kotlin("jvm") version "2.1.20"
+    kotlin("plugin.allopen") version "2.1.20"
+    kotlin("plugin.serialization") version "2.1.20"
+    id("com.google.devtools.ksp") version "2.1.20-2.0.0"
     id("com.github.johnrengelman.shadow") version "8.1.1"
     id("io.micronaut.application") version "4.5.3"
     id("gg.jte.gradle") version "3.2.0"
@@ -16,7 +16,7 @@ plugins {
     id("com.adarshr.test-logger") version "4.0.0"
     // Code Coverage:
     // https://github.com/Kotlin/kotlinx-kover
-    id("org.jetbrains.kotlinx.kover") version "0.8.3"
+    id("org.jetbrains.kotlinx.kover") version "0.9.1"
     // Code Inspections
     // https://detekt.dev/
     id("io.gitlab.arturbosch.detekt") version "1.23.8"
@@ -316,7 +316,7 @@ dependencies {
 
     implementation(kotlin("reflect", kotlinVersion))
     implementation(kotlin("stdlib-jdk8", kotlinVersion))
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.3")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.8.1")
 
     // jte dependencies
     jteGenerate("gg.jte:jte-models:$jteVersion")
