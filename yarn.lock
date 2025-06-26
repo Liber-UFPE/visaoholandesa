@@ -678,11 +678,11 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@lhci/cli@npm:0.15.0":
-  version: 0.15.0
-  resolution: "@lhci/cli@npm:0.15.0"
+"@lhci/cli@npm:0.15.1":
+  version: 0.15.1
+  resolution: "@lhci/cli@npm:0.15.1"
   dependencies:
-    "@lhci/utils": "npm:0.15.0"
+    "@lhci/utils": "npm:0.15.1"
     chrome-launcher: "npm:^0.13.4"
     compression: "npm:^1.7.4"
     debug: "npm:^4.3.1"
@@ -699,20 +699,20 @@ __metadata:
     yargs-parser: "npm:^13.1.2"
   bin:
     lhci: ./src/cli.js
-  checksum: 10c0/71677645c7b6355cdb39206dfb9201c7d7256c8c1666a303a500344fc104ea56730e29319823335dfb5b8cc0335ee56ec3cbd57df85048736d846a1145926757
+  checksum: 10c0/27f3f759032e1ab9f40dcfda063ec58a9884b51972b694ec44d805ae94ce3fca221eee8a54321236d254fb6f9042041f87ec5c9a4e03bf8f55a4a40f83ccbc26
   languageName: node
   linkType: hard
 
-"@lhci/utils@npm:0.15.0":
-  version: 0.15.0
-  resolution: "@lhci/utils@npm:0.15.0"
+"@lhci/utils@npm:0.15.1":
+  version: 0.15.1
+  resolution: "@lhci/utils@npm:0.15.1"
   dependencies:
     debug: "npm:^4.3.1"
     isomorphic-fetch: "npm:^3.0.0"
     js-yaml: "npm:^3.13.1"
     lighthouse: "npm:12.6.1"
     tree-kill: "npm:^1.2.1"
-  checksum: 10c0/c37bc375202477e77c81d3ff465a3d105b1fe2389add313ea6e5fe53225e2208219cb6bd3f05efa30cf6328daa18eda5010aa3d8f3e2b356d8de96e8656e01e0
+  checksum: 10c0/85668ed527d79b68f606774bc8b1d37db8e1b3a7bc3d0a151e80a9e400158abab0103927e84531f6772329d6a23e0b2545f8035cb4d25b1c20eac854474e23b9
   languageName: node
   linkType: hard
 
@@ -4960,7 +4960,7 @@ __metadata:
   resolution: "root-workspace-0b6124@workspace:."
   dependencies:
     "@fullhuman/postcss-purgecss": "npm:7.0.2"
-    "@lhci/cli": "npm:0.15.0"
+    "@lhci/cli": "npm:0.15.1"
     "@popperjs/core": "npm:^2.11.8"
     "@stylistic/eslint-plugin-js": "npm:^4.0.0"
     autoprefixer: "npm:10.4.21"
