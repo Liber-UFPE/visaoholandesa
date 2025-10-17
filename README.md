@@ -22,30 +22,6 @@ Se você quiser recarregar a aplicação a cada alteração de código, execute 
 ./gradlew run -t
 ```
 
-## Simular ambiente de produção
-
-O aplicativo é executado usando o [nginx](https://nginx.org/) como proxy, em uma máquina com o [Rocky Linux](https://rockylinux.org/). Para simular este ambiente, você pode usar o [Vagrant][vagrant], que irá configurar todos os detalhes usando um único comando:
-
-```shell
-./gradlew clean vagrantUp
-```
-
-O servidor nginx ficará acessível em <http://localhost:9080/>, e a aplicação em <http://localhost:9080/visaoholandesa>.
-
-Para acessar a VM via SSH, execute:
-
-```shell
-vagrant ssh
-```
-
-### Destruir / Reiniciar a VM Vagrant
-
-Se a VM estiver executando, execute o seguinte comando para destruí-lo:
-
-```shell
-vagrant destroy --graceful --force
-```
-
 ## Requisitos
 
 1. Java 21 (mais fácil de instalar com [SDKMAN](https://sdkman.io/))
@@ -53,7 +29,6 @@ vagrant destroy --graceful --force
 3. [Docker Desktop](https://www.docker.com/products/docker-desktop/) (se você quiser testar as imagens Docker)
 4. [Ktlint CLI][ktlint-cli] (se você quiser executar inspeções de código localmente)
 5. [Gradle](https://gradle.org/install/#with-a-package-manager) (se você não quiser usar o script `./gradlew`)
-6. [Vagrant][vagrant] (se você quiser rodar o projeto usando uma VM)
 
 
 ## Aspectos técnicos
@@ -116,22 +91,21 @@ Esse processamento é então integrado ao `build` principal da aplicação usand
 
 O projeto segue o padrão [Maven Standard Directory Layout](https://maven.apache.org/guides/introduction/introduction-to-the-standard-directory-layout.html) para projetos Kotlin. As pastas principais são:
 
-| Diretório                   | Descrição                                          |
-|:----------------------------|:---------------------------------------------------|
-| `src/main`                  | Pasta raiz para código de aplicação                |
-| `src/main/jte`              | Pasta de templates JTE                             |
-| `src/main/kotlin`           | Código Kotlin da aplicação                         |
-| `src/main/resources`        | Configurações e outros recursos                    |
-| `src/main/resources/public` | Web assets como imagens, javascript e arquivos css |
-| `src/test`                  | Pasta raiz para código de teste                    |
-| `scripts`                   | Pasta com scripts para deploy usando o Vagrant     |
-| `github`                    | Pasta raiz para configurações do GitHub            |
-| `.github/workflows`         | GitHub Ações configuração                          |
+| Diretório                   | Descrição                                            |
+|:----------------------------|:-----------------------------------------------------|
+| `src/main`                  | Pasta raiz para código de aplicação                  |
+| `src/main/jte`              | Pasta de templates JTE                               |
+| `src/main/kotlin`           | Código Kotlin da aplicação                           |
+| `src/main/resources`        | Configurações e outros recursos                      |
+| `src/main/resources/public` | Web assets como imagens, javascript e arquivos css   |
+| `src/test`                  | Pasta raiz para código de teste                      |
+| `scripts`                   | Pasta com scripts para deploy usando o nginx/SystemD |
+| `github`                    | Pasta raiz para configurações do GitHub              |
+| `.github/workflows`         | GitHub Ações configuração                            |
 
 [gradle]: https://gradle.org/
 [kotlin]: https://kotlinlang.org/
 [micronaut]: https://micronaut.io/
 [bootstrap]: https://getbootstrap.com/
-[vagrant]: https://www.vagrantup.com/
 [ktlint]: https://github.com/pinterest/ktlint
 [ktlint-cli]: https://pinterest.github.io/ktlint/latest/install/cli/
