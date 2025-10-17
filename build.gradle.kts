@@ -1,6 +1,9 @@
 import br.ufpe.liber.tasks.GenerateAssetsMetadataTask
+import br.ufpe.liber.tasks.JunitXmlResultAggregatorTask
+import br.ufpe.liber.tasks.Sources
 import com.adarshr.gradle.testlogger.theme.ThemeType
 import com.lordcodes.turtle.shellRun
+import org.gradle.kotlin.dsl.register
 import java.lang.System.getenv
 
 plugins {
@@ -8,15 +11,14 @@ plugins {
     kotlin("plugin.allopen") version "2.0.21"
     kotlin("plugin.serialization") version "2.0.21"
     id("com.google.devtools.ksp") version "2.0.21-1.0.28"
-    id("com.github.johnrengelman.shadow") version "8.1.1"
+    id("com.gradleup.shadow") version "9.2.2"
     id("io.micronaut.application") version "4.6.0"
     id("gg.jte.gradle") version "3.2.1"
-    id("io.micronaut.aot") version "4.6.0"
     // Provides better test output
     id("com.adarshr.test-logger") version "4.0.0"
     // Code Coverage:
     // https://github.com/Kotlin/kotlinx-kover
-    id("org.jetbrains.kotlinx.kover") version "0.8.3"
+    id("org.jetbrains.kotlinx.kover") version "0.9.3"
     // Code Inspections
     // https://detekt.dev/
     id("io.gitlab.arturbosch.detekt") version "1.23.8"
@@ -155,17 +157,6 @@ micronaut {
         incremental(true)
         annotations("$group.*")
     }
-    aot {
-        // Please review carefully the optimizations enabled below
-        // Check https://micronaut-projects.github.io/micronaut-aot/latest/guide/ for more details
-        optimizeServiceLoading.set(false)
-        convertYamlToJava.set(false)
-        precomputeOperations.set(true)
-        cacheEnvironment.set(true)
-        optimizeClassLoading.set(true)
-        deduceEnvironment.set(true)
-        optimizeNetty.set(true)
-    }
 }
 
 jte {
@@ -264,32 +255,19 @@ tasks {
         shellRun("git", listOf("config", "core.hooksPath", "hooks"))
     }
 
-    register("mergeJUnitReports") {
+    register<JunitXmlResultAggregatorTask>("mergeJUnitReports") {
         val resultsDir = project.layout.buildDirectory.file("test-results/test").get().asFile
         val accessibilityResultsDir = project.layout.buildDirectory.file("test-results/accessibilityTest").get().asFile
-        val aggregateFile = "build/test-results/junit.xml"
 
-        doLast {
-            ant.withGroovyBuilder {
-                "taskdef"(
-                    "name" to "junitreport",
-                    "classname" to "org.apache.tools.ant.taskdefs.optional.junit.XMLResultAggregator",
-                    "classpath" to antJUnit.asPath,
-                )
+        sources = Sources(
+            resultsDir to "TEST-*.xml",
+            accessibilityResultsDir to "TEST-*.xml",
+        )
 
-                // generates an XML report
-                "junitreport"("tofile" to aggregateFile) {
-                    "fileset"(
-                        "dir" to resultsDir,
-                        "includes" to "TEST-*.xml",
-                    )
-                    "fileset"(
-                        "dir" to accessibilityResultsDir,
-                        "includes" to "TEST-*.xml",
-                    )
-                }
-            }
-        }
+        toFile = project.layout.buildDirectory.file("junit.xml")
+        toDir = project.layout.buildDirectory.dir("test-results")
+
+        mustRunAfter("test")
     }
 }
 
@@ -342,7 +320,4 @@ dependencies {
     accessibilityTestImplementation("org.apache.commons:commons-compress:1.28.0")
     accessibilityTestImplementation("org.seleniumhq.selenium:selenium-java:4.36.0")
     accessibilityTestImplementation("com.deque.html.axe-core:selenium:4.10.2")
-
-    // Apache Ant: to generate a single JUnit report
-    antJUnit("org.apache.ant", "ant-junit", "1.10.15")
 }
