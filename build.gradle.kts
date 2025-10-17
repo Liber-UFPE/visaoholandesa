@@ -25,9 +25,6 @@ plugins {
     // Easily add new test sets
     // https://github.com/unbroken-dome/gradle-testsets-plugin
     id("org.unbroken-dome.test-sets") version "4.1.0"
-    // To manage docker images
-    // https://github.com/bmuschko/gradle-docker-plugin
-    id("com.bmuschko.docker-remote-api") version "9.4.0"
     // SonarQube/SonarCloud plugin
     // https://github.com/SonarSource/sonar-scanner-gradle
     id("org.sonarqube") version "7.0.0.6105"
