@@ -10,7 +10,7 @@ plugins {
     kotlin("jvm") version "2.2.20"
     kotlin("plugin.allopen") version "2.2.20"
     kotlin("plugin.serialization") version "2.2.20"
-    id("com.google.devtools.ksp") version "2.2.20-2.0.4"
+    id("com.google.devtools.ksp") version "2.3.0"
     id("com.gradleup.shadow") version "9.2.2"
     id("io.micronaut.application") version "4.6.0"
     id("gg.jte.gradle") version "3.2.1"
