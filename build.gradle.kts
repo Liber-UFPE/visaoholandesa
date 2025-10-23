@@ -7,9 +7,9 @@ import org.gradle.kotlin.dsl.register
 import java.lang.System.getenv
 
 plugins {
-    kotlin("jvm") version "2.2.20"
-    kotlin("plugin.allopen") version "2.2.20"
-    kotlin("plugin.serialization") version "2.2.20"
+    kotlin("jvm") version "2.2.21"
+    kotlin("plugin.allopen") version "2.2.21"
+    kotlin("plugin.serialization") version "2.2.21"
     id("com.google.devtools.ksp") version "2.3.0"
     id("com.gradleup.shadow") version "9.2.2"
     id("io.micronaut.application") version "4.6.0"
