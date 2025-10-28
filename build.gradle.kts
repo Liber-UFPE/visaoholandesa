@@ -12,7 +12,7 @@ plugins {
     kotlin("plugin.serialization") version "2.2.21"
     id("com.google.devtools.ksp") version "2.3.0"
     id("com.gradleup.shadow") version "9.2.2"
-    id("io.micronaut.application") version "4.6.0"
+    id("io.micronaut.application") version "4.6.1"
     id("gg.jte.gradle") version "3.2.1"
     // Provides better test output
     id("com.adarshr.test-logger") version "4.0.0"
