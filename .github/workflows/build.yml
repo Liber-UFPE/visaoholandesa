@@ -51,10 +51,20 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
+      - name: Install detekt
+        run: |
+          curl -fSL -o detekt-cli-1.23.8.zip \
+            --retry 8 \
+            --retry-delay 2 \
+            --retry-max-time 300 \
+            --retry-connrefused \
+            https://github.com/detekt/detekt/releases/download/v1.23.8/detekt-cli-1.23.8.zip
+          unzip detekt-cli-1.23.8.zip
+          chmod +x ./detekt-cli-1.23.8/bin/detekt-cli
+      - name: Check detekt version
+        run: ./detekt-cli-1.23.8/bin/detekt-cli --version
       - name: detekt report
-        uses: natiginfo/action-detekt-all@1.23.8
-        with:
-          args: --report md:build/reports/detekt/detekt.md
+        run: ./detekt-cli-1.23.8/bin/detekt-cli --report md:build/reports/detekt/detekt.md
       - name: Detekt Summary
         run: cat build/reports/detekt/detekt.md >> $GITHUB_STEP_SUMMARY
 
