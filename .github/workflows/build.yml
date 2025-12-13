@@ -34,9 +34,17 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
-      - uses: nbadal/action-ktlint-setup@v1
-      - run: ktlint --version
-      - run: ktlint --relative >> $GITHUB_STEP_SUMMARY
+      - name: Install ktlint
+        run: |
+          curl -fSL -o ktlint \
+            --retry 8 \
+            --retry-delay 2 \
+            --retry-max-time 300 \
+            --retry-connrefused \
+            https://github.com/pinterest/ktlint/releases/download/1.8.0/ktlint
+          chmod a+x ktlint
+      - run: ./ktlint --version
+      - run: ./ktlint --relative >> $GITHUB_STEP_SUMMARY
 
   detekt:
     name: Code Analysis / detekt
