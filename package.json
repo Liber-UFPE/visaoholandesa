@@ -10,8 +10,8 @@
     "devDependencies": {
         "@fullhuman/postcss-purgecss": "7.0.2",
         "@stylistic/eslint-plugin-js": "^4.0.0",
-        "autoprefixer": "10.4.21",
-        "esbuild": "0.25.12",
+        "autoprefixer": "10.4.22",
+        "esbuild": "0.27.1",
         "esbuild-sass-plugin": "^3.0.0",
         "eslint": "^9.0.0",
         "fast-glob": "3.3.3",
