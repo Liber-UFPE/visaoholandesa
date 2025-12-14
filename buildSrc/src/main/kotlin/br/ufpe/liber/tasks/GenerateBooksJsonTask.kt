@@ -111,8 +111,10 @@ class DatabasePage(id: EntityID<Long>) : LongEntity(id) {
             when {
                 // We want to discard lines starting with "#" because they are already formatted as titles.
                 trimmedLine.startsWith("#") -> trimmedLine
+
                 // \p{Lu} means uppercase unicode letters: https://www.regular-expressions.info/unicode.html#category
                 trimmedLine.matches("^[\\p{Lu}\\p{Punct}\\s]+\$".toRegex()) -> "### $trimmedLine"
+
                 else -> trimmedLine
             }
         }
