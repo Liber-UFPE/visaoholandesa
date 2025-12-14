@@ -25,7 +25,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
-      - uses: marcospereira/kotlin-diktat-action@v1
+      - uses: marcospereira/kotlin-diktat-action@v2
         with:
           patterns: "src/main/kotlin src/test/kotlin '!src/main/kotlin/br/ufpe/liber/tasks/*.kt'"
 
