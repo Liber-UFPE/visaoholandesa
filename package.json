@@ -20,8 +20,8 @@
         "purgecss": "7.0.2",
         "sass-embedded": "^1.71.1",
         "sharp": "^0.34.0",
-        "stylelint": "^16.2.1",
-        "stylelint-config-standard": "^39.0.0",
+        "stylelint": "^17.0.0",
+        "stylelint-config-standard": "^40.0.0",
         "stylelint-config-standard-scss": "^16.0.0"
     },
     "dependencies": {
