@@ -13,7 +13,7 @@ plugins {
     id("com.google.devtools.ksp") version "2.3.4"
     id("com.gradleup.shadow") version "9.3.1"
     id("io.micronaut.application") version "4.6.1"
-    id("gg.jte.gradle") version "3.2.1"
+    id("gg.jte.gradle") version "3.2.2"
     // Provides better test output
     id("com.adarshr.test-logger") version "4.0.0"
     // Code Coverage:
