@@ -291,7 +291,7 @@ dependencies {
 
     implementation(kotlin("reflect", kotlinVersion))
     implementation(kotlin("stdlib-jdk8", kotlinVersion))
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.9.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.10.0")
 
     // jte dependencies
     jteGenerate("gg.jte:jte-models:$jteVersion")
