@@ -12,7 +12,7 @@ val exposedVersion: String = "0.61.0"
 
 dependencies {
     // Assets pipeline
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.9.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.10.0")
     implementation("commons-codec:commons-codec:1.20.0")
     implementation("org.apache.tika:tika-core:3.2.3")
     implementation("org.apache.tika:tika-parsers-standard-package:3.2.3")
