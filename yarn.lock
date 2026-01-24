@@ -1859,7 +1859,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"fast-glob@npm:3.3.3, fast-glob@npm:^3.3.3":
+"fast-glob@npm:3.3.3, fast-glob@npm:^3.3.2, fast-glob@npm:^3.3.3":
   version: 3.3.3
   resolution: "fast-glob@npm:3.3.3"
   dependencies:
@@ -3084,7 +3084,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"postcss-selector-parser@npm:^7.1.1":
+"postcss-selector-parser@npm:^7.0.0, postcss-selector-parser@npm:^7.1.1":
   version: 7.1.1
   resolution: "postcss-selector-parser@npm:7.1.1"
   dependencies:
@@ -3172,7 +3172,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"purgecss@npm:7.0.2, purgecss@npm:^7.0.2":
+"purgecss@npm:8.0.0":
+  version: 8.0.0
+  resolution: "purgecss@npm:8.0.0"
+  dependencies:
+    commander: "npm:^12.1.0"
+    fast-glob: "npm:^3.3.2"
+    postcss: "npm:^8.4.47"
+    postcss-selector-parser: "npm:^7.0.0"
+  bin:
+    purgecss: bin/purgecss.js
+  checksum: 10c0/b1f720462da416ee22fe4899d28944eb9e8660a50c8d1e6881ddd762e3c376a5b7e1fb07501528e48964e7fb478c4345db58fe48f7e934eadd9acde233de9bad
+  languageName: node
+  linkType: hard
+
+"purgecss@npm:^7.0.2":
   version: 7.0.2
   resolution: "purgecss@npm:7.0.2"
   dependencies:
@@ -3322,7 +3336,7 @@ __metadata:
     fast-glob: "npm:3.3.3"
     gzipper: "npm:^8.0.0"
     postcss: "npm:8.5.6"
-    purgecss: "npm:7.0.2"
+    purgecss: "npm:8.0.0"
     sass-embedded: "npm:^1.71.1"
     sharp: "npm:^0.34.0"
     stylelint: "npm:^17.0.0"
