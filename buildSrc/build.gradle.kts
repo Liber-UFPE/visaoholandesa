@@ -8,7 +8,7 @@ repositories {
     gradlePluginPortal()
 }
 
-val exposedVersion: String = "0.61.0"
+val exposedVersion: String = "1.0.0"
 
 dependencies {
     // Assets pipeline
