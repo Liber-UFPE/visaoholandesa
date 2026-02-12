@@ -8,7 +8,7 @@
         "build": "node assets-pipeline.mjs"
     },
     "devDependencies": {
-        "@fullhuman/postcss-purgecss": "7.0.2",
+        "@fullhuman/postcss-purgecss": "8.0.0",
         "@stylistic/eslint-plugin-js": "^4.0.0",
         "autoprefixer": "10.4.24",
         "esbuild": "0.27.3",
