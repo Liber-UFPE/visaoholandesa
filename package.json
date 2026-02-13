@@ -13,7 +13,7 @@
         "autoprefixer": "10.4.24",
         "esbuild": "0.27.3",
         "esbuild-sass-plugin": "^3.0.0",
-        "eslint": "^9.0.0",
+        "eslint": "^10.0.0",
         "fast-glob": "3.3.3",
         "gzipper": "^8.0.0",
         "postcss": "8.5.6",
