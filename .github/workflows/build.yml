@@ -228,7 +228,7 @@ jobs:
       - compile
     steps:
       - uses: actions/checkout@v6
-      - uses: docker/setup-buildx-action@v3
+      - uses: docker/setup-buildx-action@v4
       - name: Docker / Get image name
         id: dockerImageName
         # yamllint disable rule:line-length
