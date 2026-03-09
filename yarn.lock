@@ -1581,15 +1581,15 @@ __metadata:
   linkType: hard
 
 "esbuild-sass-plugin@npm:^3.0.0":
-  version: 3.6.0
-  resolution: "esbuild-sass-plugin@npm:3.6.0"
+  version: 3.7.0
+  resolution: "esbuild-sass-plugin@npm:3.7.0"
   dependencies:
     resolve: "npm:^1.22.11"
-    sass: "npm:^1.97.2"
+    sass: "npm:^1.97.3"
   peerDependencies:
-    esbuild: ">=0.27.2"
-    sass-embedded: ^1.97.2
-  checksum: 10c0/f84869d7f13c800b8a87fe94882743c13ab4658222f23373224e7fa58665718279d30e898fcd7083f5ebdcaff7862e2e211deccd22095b73be104dae4f9e8333
+    esbuild: ">=0.27.3"
+    sass-embedded: ^1.97.3
+  checksum: 10c0/d4f6d2a1dbbf034a028ceb18aac9fe911290f4a8785020778f1bc2085df6d7038187fbed3daa4417a62d42f08f487e0265a35038dacda12d71d43224f3ee7e8c
   languageName: node
   linkType: hard
 
@@ -3623,7 +3623,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"sass@npm:1.97.3":
+"sass@npm:1.97.3, sass@npm:^1.97.3":
   version: 1.97.3
   resolution: "sass@npm:1.97.3"
   dependencies:
@@ -3637,23 +3637,6 @@ __metadata:
   bin:
     sass: sass.js
   checksum: 10c0/67f6b5d220f20c1c23a8b16dda5fd1c5d119ad5caf8195b185d553b5b239fb188a3787f04fc00171c62515f2c4e5e0eb5ad4992a80f8543428556883c1240ba3
-  languageName: node
-  linkType: hard
-
-"sass@npm:^1.97.2":
-  version: 1.97.2
-  resolution: "sass@npm:1.97.2"
-  dependencies:
-    "@parcel/watcher": "npm:^2.4.1"
-    chokidar: "npm:^4.0.0"
-    immutable: "npm:^5.0.2"
-    source-map-js: "npm:>=0.6.2 <2.0.0"
-  dependenciesMeta:
-    "@parcel/watcher":
-      optional: true
-  bin:
-    sass: sass.js
-  checksum: 10c0/5622a4f9d0acf5cdfb72c73c448366b3ec7bfe2b6e1ecb62c6e9f8eaff9c02a6afd86a31ded246fc818fe660cedea6bd27335e82fc9bd7cce46c29f95774bece
   languageName: node
   linkType: hard
 
