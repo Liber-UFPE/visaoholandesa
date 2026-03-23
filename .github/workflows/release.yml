@@ -102,7 +102,7 @@ jobs:
       - uses: actions/checkout@v6
       - run: corepack enable
       - uses: ./.github/gradle-action
-      - uses: gradle/actions/dependency-submission@v5
+      - uses: gradle/actions/dependency-submission@v6
 
   create-release:
     name: Creates a GitHub Release
