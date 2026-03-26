@@ -214,7 +214,7 @@ jobs:
           token: ${{ secrets.CODECOV_TOKEN }}
           files: ./build/test-results/junit.xml
       - name: Upload coverage reports to Codecov
-        uses: codecov/codecov-action@v5
+        uses: codecov/codecov-action@v6
         continue-on-error: true
         env:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
