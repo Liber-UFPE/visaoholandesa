@@ -29,5 +29,5 @@ dependencies {
 
     // Add the Ant JUnit dependency. This was removed in Gradle 9.0.0 and
     // now needs to be included manually.
-    implementation("org.apache.ant:ant-junit:1.10.16")
+    implementation("org.apache.ant:ant-junit:1.10.17")
 }
