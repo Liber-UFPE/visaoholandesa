@@ -16,7 +16,7 @@
         "eslint": "^9.0.0",
         "fast-glob": "3.3.3",
         "gzipper": "^8.0.0",
-        "postcss": "8.5.10",
+        "postcss": "8.5.11",
         "purgecss": "8.0.0",
         "sass-embedded": "^1.71.1",
         "sharp": "^0.34.0",
